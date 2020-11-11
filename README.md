@@ -1,5 +1,5 @@
 # One-off Projects & Analyses
 
-[Proportional Circle Cartogram](https://github.com/rjake/one-off-projects/tree/main/map-cartogram-dorling)
+* [Dorling Cartogram (packed circles)](https://github.com/rjake/one-off-projects/tree/main/map-cartogram-dorling)
 
-<img src="map-cartogram-dorling/tmap-cartogram.png"/>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="map-cartogram-dorling/img/tmap-cartogram.png" height="300"/>
