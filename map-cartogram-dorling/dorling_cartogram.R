@@ -4,6 +4,8 @@ library(urbnmapr) # devtools::install_github("UrbanInstitute/urbnmapr")
 library(sf)
 library(tmap)
 
+# _____________________----
+# _COVID EXAMPLE_____ ----
 # raw data ----
 covid_raw <-
   read_csv(
@@ -63,12 +65,7 @@ counties_sf <-
 covid_dorling <-
   cartogram_dorling(counties_sf, "pop", k = 0.5, itermax = 100)
 
-map_limits <-
-  st_bbox(covid_dorling)
-
 # tmap ----
-tmap_mode("view")
-
 tm_basemap() +
   tm_shape(covid_dorling, bbox = map_limits) +
   tm_polygons(
@@ -85,8 +82,34 @@ ggplot(covid_dorling) +
   labs(title = "US Population")
 
 # save ----
-covid_dorling %>%
-  select(fips:state_name, pop_2010 = pop) %>%
-  saveRDS("map_dorling_cartogram.Rds")
+# covid_dorling %>%
+#   select(fips:state_name, pop_2010 = pop) %>%
+#   saveRDS("map_dorling_cartogram.Rds")
 
-new_df <- readRDS("map_dorling_cartogram.Rds")
+
+# _____________________----
+# _US POP EXAMPLE____ ----
+us_pop <- readRDS("map_dorling_cartogram.Rds")
+
+map_limits <- st_bbox(us_pop)
+
+# tmap ----
+tmap_mode("view")
+
+tm_basemap() +
+  tm_shape(us_pop, bbox = map_limits) +
+  tm_polygons(
+    "pop_2010", style = "fisher",
+    border.col = "grey60",
+    legend.title = "2010 Population by county"
+  )
+
+# ggplot ----
+ggplot(us_pop) +
+  geom_sf(aes(fill = pop_2010), color = "grey80") +
+  scale_fill_viridis_b(direction = -1, option = "B", trans = "log") +
+  theme_void() +
+  labs(title = "US Population")
+
+
+
