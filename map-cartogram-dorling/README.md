@@ -11,7 +11,7 @@ Here is:
 
 * the **[code](dorling_cartogram.R)** used to generate the bubbles
 
-* **[an Rds file](map_dorling_cartogram.Rds)** with the circle radius proportional to the population (2010 census) Note: they are `sf` polygons
+* **[an Rds file](map_dorling_cartogram.Rds)** with the circle radius proportional to the population (2015 census) Note: they are `sf` polygons
   
 * What it looks like with `ggplot2`
 
