@@ -18,22 +18,25 @@ counties_sf <-
   drop_na(pop_2015)
 
 
-county_dorling <-
+county_dorling <- # takes a while
   cartogram_dorling(
     x = counties_sf,
     weight = "pop_2015",
     k = 0.45,
-    itermax = 100
+    itermax = 500
   )
 
+dorling_wgs84 <-
+  county_dorling %>%
+  st_transform(4326)
 
 # tmap ----
 tmap_mode("view")
 
-map_limits <- st_bbox(county_dorling)
+map_limits <- st_bbox(dorling_wgs84 )
 
 tm_basemap() +
-  tm_shape(county_dorling, bbox = map_limits) +
+  tm_shape(dorling_wgs84 , bbox = map_limits) +
   tm_polygons(
     "state_abbv",
     #"pop_2015",
@@ -42,26 +45,56 @@ tm_basemap() +
   )
 
 
-ggplot(county_dorling, aes(fill = pop_2015)) +
-  geom_sf(color = "grey80", show.legend = FALSE) +
-  scale_fill_viridis_b(direction = -1, option = "C", trans = "log10") +
+ggplot() +
+  # geom_sf(data = counties_sf, color = "grey80", fill = "white") +
+  geom_sf(
+    data = urbnmapr::get_urbn_map(sf = TRUE), fill =  NA, color = "grey60"
+  ) +
+  geom_sf(
+    data = dorling_wgs84,
+    aes(fill = pop_2015),
+    color = "grey80"
+  ) +
+  scale_fill_viridis_b(
+    direction = -1,
+    option = "C", begin = 0.1, end = 0.7,
+    labels = scales::number_format(big.mark = ","),
+    trans = "log10"
+  ) +
   theme_void() +
-  labs(title = "US Population")
+  labs(title = "US Population", fill = "2015 Census")
 
 
 
 #save ----
-saveRDS(county_dorling, "map_dorling_cartogram.Rds")
+saveRDS(dorling_wgs84, "geospatial/cartogram_county_pop.Rds")
 
-county_dorling %>%
-  st_transform(4326) %>%
+dorling_wgs84 %>%
   st_centroid() %>%
   cbind(st_coordinates(.)) %>%
   st_set_geometry(NULL) %>%
-  write_csv("map_dorling_cartogram.csv")
+  write_csv("geospatial/cartogram_county_pop.csv")
 
-st_write(
-  county_dorling,
-  dsn = "map_dorling_cartogram.geojson",
-  driver = "GeoJSON"
-)
+# geojson
+dorling_wgs84 %>%
+  st_write(
+    dsn = "geospatial/cartogram_county_pop.geojson",
+    driver = "GeoJSON",
+    delete_dsn = TRUE
+  )
+
+urbnmapr::get_urbn_map(sf = TRUE) %>%
+  st_transform(4326) %>%
+  st_write(
+    dsn = "geospatial/basemap_state.geojson",
+    driver = "GeoJSON",
+    delete_dsn = TRUE
+  )
+
+counties_sf %>%
+  st_transform(4326) %>%
+  st_write(
+    dsn = "geospatial/basemap_county.geojson",
+    driver = "GeoJSON",
+    delete_dsn = TRUE
+  )
