@@ -1,17 +1,20 @@
 # Dorling Cartogram (packed circles)
 
-Inspired by [this post](https://twitter.com/i/status/1324333128375279616):
+Inspired by [this post](https://twitter.com/karim_douieb/status/1181695687005745153):
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<a href="https://twitter.com/i/status/1324333128375279616"><img src="img/election_pop.png" height="200"/></a>
+<a href="https://twitter.com/karim_douieb/status/1181695687005745153"><img src="img/original_tweet.png" height="400"/></a>
 
-I was able to use the `cartogram` package to create what is called a "dorling cartogram"
+I was able to use the [`cartogram`](https://github.com/sjewo/cartogram) package to create what is called a "dorling cartogram"
 
 Here is: 
 
 * the **[code](dorling_cartogram.R)** used to generate the bubbles
 
-* **[an Rds file](map_dorling_cartogram.Rds)** with the circle radius proportional to the population (2015 census) Note: they are `sf` polygons
+* **[Geospatial files](geospatial)** with the circle radius proportional to the population (2015 census) 
+    * `Rds` file - `sf` polygons of circles
+    * `geojson` files - the circles plus normal state and county polygons. Including these as Alaska & Hawaii moved to the lower left. These come from [`urbnmapr`](https://urbaninstitute.github.io/urbnmapr/articles/introducing-urbnmapr.html)
+    * `csv` of circle centroids and population sizes
   
 * What it looks like with `ggplot2`
 
