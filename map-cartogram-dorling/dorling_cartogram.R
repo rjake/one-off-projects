@@ -22,7 +22,7 @@ county_dorling <-
   cartogram_dorling(
     x = counties_sf,
     weight = "pop_2015",
-    k = 0.5,
+    k = 0.45,
     itermax = 100
   )
 
@@ -35,8 +35,9 @@ map_limits <- st_bbox(county_dorling)
 tm_basemap() +
   tm_shape(county_dorling, bbox = map_limits) +
   tm_polygons(
-    "pop_2015",
-    style = "fisher",
+    "state_abbv",
+    #"pop_2015",
+    #style = "fisher",
     border.col = "grey60"
   )
 
@@ -50,9 +51,7 @@ ggplot(county_dorling, aes(fill = pop_2015)) +
 
 
 #save ----
-county_dorling %>%
-  select(county_fips:state_name, pop_2015) %>%
-  saveRDS("map_dorling_cartogram.Rds")
+saveRDS(county_dorling, "map_dorling_cartogram.Rds")
 
 county_dorling %>%
   st_transform(4326) %>%
@@ -60,3 +59,9 @@ county_dorling %>%
   cbind(st_coordinates(.)) %>%
   st_set_geometry(NULL) %>%
   write_csv("map_dorling_cartogram.csv")
+
+st_write(
+  county_dorling,
+  dsn = "map_dorling_cartogram.geojson",
+  driver = "GeoJSON"
+)
