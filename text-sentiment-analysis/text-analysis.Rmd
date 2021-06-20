@@ -1,0 +1,597 @@
+---
+title: "text sentiment analysis"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+```
+
+
+## Helpful links
+* `spacyr` tags use Penn Treebank [taglist](https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html)
+* [Supervised Machine Learning for Text Analysis in R](https://smltar.com/stemming.html#lemmatization)
+* [Text Mining with R](https://www.tidytextmining.com/nasa.html#networks-of-keywords)
+* `tidytext` [docs](https://juliasilge.github.io/tidytext/articles/tidytext.html)
+
+
+```{r}
+library(tidytext)
+library(tidyverse)
+library(widyr)
+library(igraph)
+library(ggraph)
+library(spacyr)
+
+
+# reticulate::install_miniconda()
+# spacyr::spacy_install()
+spacyr::spacy_initialize(model = "en_core_web_sm")
+
+lexicon <- # list of sentiment tables 
+  list(
+    bing = get_sentiments("bing"), # binary positive / negative
+    afinn = get_sentiments("afinn"), # values weighted numerically
+    loughran = get_sentiments("loughran"), # one word can have multiple sentiments
+    nrc = get_sentiments("nrc") # one word can have multiple sentiments
+  )
+
+use_sentiments <- 
+  lexicon$afinn |> 
+  transmute(
+    word,
+    sentiment_value = value,
+    sentiment = ifelse(value < 0, "negative", "positive")
+  ) 
+
+```
+
+
+```{r amazon}
+#amazon_reviews <- "https://raw.githubusercontent.com/BambiplayGit/Final_Project_dp/4ec61a7f4d9e0c1a0fb61892b907a6462f683936/dataset_amazon/fuzzydataset%20.csv"
+
+amazon_reviews <- "https://raw.githubusercontent.com/arpitmohanty9/DataVizProject/936fcd3a25408d74a75c88b206ca86419d32318c/data/brands/3M.csv"
+
+
+raw_data <- read_csv(amazon_reviews) 
+
+prep_data <-
+  raw_data |>
+  transmute(
+    text_id = row_number(),
+    object_id = asin,
+    author_id = reviewerID,
+    date = as.Date(lubridate::as_datetime(unixReviewTime)),
+    rating = overall,  
+    text = reviewText
+  ) |> 
+  mutate(
+    text = 
+      text |> 
+      str_replace_all("(--)|\\/", " ") |> # replace double hyphens and slashes with a space
+      str_remove_all('"') |> # remove double quotes
+      str_remove_all("[\\(\\)]") |> # remove ( )
+      str_replace_all("((\\.)(\\s?)){3}", " ") |> # remove ... or . . . 
+      str_replace_all("i\\.e\\.", "ie") |>  # replace i.e. with ie
+      str_replace_all("grea\\.t", "great") |> # fix typo
+      str_replace_all("  ", " ") # edits caused some double spaces, make them single spaces
+  )
+
+
+extract_sentences <-
+  prep_data |> 
+  separate_rows(text, sep = "\\.") |> 
+  mutate(text = trimws(text)) |> 
+  filter(text != "") |> 
+  mutate(
+    phrase_id = row_number(), 
+    nchar = nchar(text)
+  )
+
+spacy_sentences <-
+  extract_sentences |>
+  #slice(1:10) |> 
+  rename(doc_id = phrase_id) |> 
+  spacyr::spacy_parse(tag = TRUE, lemma = TRUE, nounphrase = TRUE, dependency = TRUE) |>
+  mutate(
+    word =
+      tolower(lemma) |>
+      str_replace("n't", "not"),
+  )
+```
+
+## Data
+
+### Raw data
+```{r}
+head(prep_data)
+```
+
+### Extract sentences
+```{r}
+head(extract_sentences)
+```
+
+### `spacyr` lemmanization & part of speech tagging
+```{r}
+as_tibble(spacy_sentences) |> head(10)
+
+```
+
+### Noun-phrases
+
+```{r}
+find_nounphrases <- function(fun, field) {
+  f <- fun
+  
+  spacy_sentences |> 
+    mutate(token = tolower(token)) |> 
+    filter(
+      !pos %in% c("ADP", "CONJ", "DET", "PUNCT", "PRON")
+      | token %in% c("all", "any", "every", "no")
+    ) |> 
+    filter(!str_detect(token, "^(a|an|the|this|my|your|his|her|i|me|you|it|they)$")) |> 
+    f() |> 
+    count({{field}}, sort = TRUE) |> 
+    filter(str_detect({{field}}, "_")) |> 
+    head(10)  
+}
+```
+
+### `spacyr::nounphrase_consolidate`
+```{r}
+find_nounphrases(fun = spacyr::nounphrase_consolidate, field = lemma)
+```
+
+### `spacyr::nounphrase_extract`
+```{r}
+find_nounphrases(fun = spacyr::nounphrase_extract,     field = nounphrase)
+```
+
+
+```{r}
+# close spacy
+spacyr::spacy_finalize()
+```
+
+## Sentiment Plots
+
+### Sentiment lexicon [`AFINN`](http://corpustext.com/reference/sentiment_afinn.html)
+```{r}
+head(use_sentiments)
+
+```
+
+```{r}
+as_sentiments <-
+  spacy_sentences |> 
+  as_tibble() |> 
+  transmute(
+    phrase_id = as.integer(doc_id), 
+    phrase_part = sentence_id,
+    word
+  ) |>
+  left_join(use_sentiments |> rename_all(str_replace, "sentiment", "afinn")) |>
+  left_join(lexicon$bing |> rename(bing = sentiment)) |> 
+  mutate(
+    n = 2- (is.na(afinn) + is.na(bing)),
+    sentiment = coalesce(afinn, bing),
+    sentiment_value = case_when(
+      !is.na(afinn) ~ afinn_value,
+      sentiment == "positive" ~ 0.5,
+      sentiment == "negative" ~ -0.5,
+      str_detect(word, "^(not|pric(e)?y|letdown)$") ~ -0.5,
+      TRUE ~ NA_real_
+    )
+    #, match = afinn == bing
+  ) |> 
+  inner_join(
+    extract_sentences |> 
+      select(
+        phrase_id,
+        text_id, 
+        object_id, 
+        author_id, 
+        rating
+      )
+  )
+
+```
+
+```{r plot_work_rank}
+plot_word_rank_sentiment <- function(df, split_on, word_n = 8, across_n = 3) {
+  df |> 
+    mutate(split = get(split_on)) |> 
+    drop_na(sentiment) |>
+    count(
+      split,
+      word,
+      sentiment,
+      sort = TRUE
+    ) |>
+    filter(n > word_n) |>
+    add_count(word) |>
+    filter(nn >= across_n) |>
+    mutate(n = ifelse(sentiment == "negative", -n, n)) |>
+    mutate(word = reorder(word, n)) |>
+    ggplot(aes(n, word, fill = sentiment)) +
+    geom_col() +
+    facet_grid(~split, scales = "free_x") +
+    labs(title = paste("Contribution to sentiment by", split_on))
+}
+
+
+plot_word_rank_sentiment(as_sentiments, "object_id", 10)
+plot_word_rank_sentiment(as_sentiments, "rating", 8)
+
+as_sentiments |>
+  filter(rating >= 3) |> 
+  mutate(object_and_rating = (paste(object_id, rating, sep = "\n"))) |> 
+  plot_word_rank_sentiment("object_and_rating", word_n = 4, across_n = 6)
+
+```
+
+```{r sentence_patterns}
+sentence_patterns <-
+  as_sentiments |> 
+  #filter(text_id %in% 1:12) |>
+  group_by(text_id) |> 
+  mutate(word_order = row_number()) |> 
+  ungroup() |>
+  arrange(phrase_id) |> 
+  group_by(phrase_id, phrase_part) |> 
+  mutate(negate = ifelse(max(word %in% c("not")), -0.5, 0)) |> 
+  ungroup() |> 
+  group_by(text_id) |> 
+  mutate(
+    sentence_id = dense_rank(phrase_id),
+    sentiment = replace_na(sentiment, "missing"),
+    sentiment_value = replace_na(sentiment_value, 0),# + negate,
+    cumsum_n = cumsum(sentiment_value)
+  ) |> 
+  ungroup()
+
+
+
+sentence_patterns |> 
+  # filter(text_id == 5) |> 
+  filter(text_id %in% 1:12) |> #View()
+  #filter(text_id == 9) |> 
+  filter(sentiment != "missing") |> 
+  mutate(
+    x = word_order,
+    y = sentiment_value
+  ) |> 
+  #view()
+  ggplot(aes(x, y, color = factor(rating))) +
+  facet_wrap(~text_id, scales = "free_x") + 
+  geom_hline(yintercept = 0, color = "black") +
+  geom_smooth(
+    se = FALSE, method = "lm", color = "black", 
+    size = 0.5, alpha = 0.5
+  ) +
+  geom_step(
+    #aes(group = sentence_id),
+    size = 2, alpha = 0.8, color = "grey80"
+  ) +
+  geom_point(
+    data = ~filter(.x, sentiment != "missing"), 
+    size = 3, alpha = 0.8
+  ) +
+  # scale_color_gradient(mid = "grey90") +
+  scale_color_manual(values = c(
+    "3" = "red",
+    "4" = "grey20",
+    "5" = "blue"
+  )) +
+  theme_bw() +
+  theme(panel.grid = element_blank()) +
+  labs(title = "Sentiment values by word in first 12 reviews")
+
+
+sentence_patterns |> 
+  filter(sentiment != "missing") |> 
+  filter(rating >= 3) |> 
+  group_by(text_id, rating) |> 
+  summarise(
+    percent_positive = mean(sentiment_value > 0),
+    #pct_neg = mean(sentiment_value < 0),
+    mean_sentiment = mean(sentiment_value),
+    slope_of_points = lm(cumsum_n ~ word_order)$coef[2]
+  ) |> 
+  ungroup() |> 
+  pivot_longer(c(percent_positive:slope_of_points)) |> 
+  filter(!(name == "slope_of_points" & value > 0.5)) |> 
+  ggplot(aes(rating, value, color = factor(rating))) +
+  facet_wrap(~name, scales = "free") + 
+  geom_jitter(width = 0.1, color = "black") +
+  geom_smooth(aes(group = 1)) +
+  geom_boxplot(aes(group = rating), alpha = 0.8) +
+  labs(title = "sentiment stats about each review by rating")
+
+```
+
+## Network graph using `ggraph` & `widyr`
+```{r igraph_network_diagram}
+
+sentiment_count <-
+  sentence_patterns |> 
+  group_by(word) |> 
+  summarise(
+    n = n(),
+    mean = mean(sentiment_value)
+  ) |> 
+  ungroup() |> 
+  filter(n >= 20)
+
+
+sentiment_cor <- 
+  sentence_patterns |>
+  filter(word %in% sentiment_count$word) |> 
+  # calculate correlations
+  widyr::pairwise_cor(word, phrase_id, sort = TRUE) |>
+  rename(
+    word = item1,
+    word2 = item2
+  ) |> 
+  # omit combinations with a low correlation
+  filter(correlation > 0.3) |> 
+  left_join(sentiment_count)
+
+
+# create a graph data frame  using igraph
+igraph::graph_from_data_frame(
+  d = select(sentiment_cor, word:correlation,  mean_edge = mean),
+  vertices = distinct(sentiment_cor, word, n, mean_point = mean)
+) |>
+  ggraph::ggraph(layout = "fr") + #, algorithm = 'kk') +
+  ggraph::geom_edge_link(aes(edge_width = correlation, color = mean_edge), show.legend = FALSE) +
+  ggraph::geom_node_point(aes(size = n, fill = mean_point), shape = 21) +
+  ggraph::geom_node_text(aes(label = name), repel = TRUE, size = 5) +
+  ggraph::scale_edge_color_gradient2(mid = "grey80") +
+  scale_fill_steps2(mid = "grey80") +
+  theme_bw() +
+  theme(panel.grid = element_blank()) +
+  labs(
+    title = "Correlations Between Most Common Words",
+    fill = "Mean sentiment"
+  )
+```
+
+
+```{r}
+knitr::knit_exit()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+# NOT USING
+
+```{r jane_austen}
+
+library(janeaustenr)
+emma <- 
+  austen_books() |>
+  filter(book == "Emma") |> 
+  mutate(orig_seq = row_number())
+
+
+original_text <-
+  emma |>
+  select(-c(book)) |> 
+  mutate(author_id = cumsum(str_detect(text, "^CHAPTER "))) |> 
+  filter(author_id > 0) |> 
+  group_by(author_id) |>
+  mutate(
+    corpus_id = cumsum(text == ""), # paragraph
+    seq = row_number()
+  ) |> 
+  ungroup() |> 
+  filter(text != "") |> 
+  filter(!str_detect(text, "^CHAPTER |^FINIS$")) |>
+  relocate(text, .after = seq)
+
+
+collapse_text <-
+  original_text |> 
+  group_by(author_id, corpus_id) |> 
+  arrange(seq) |> 
+  summarise(
+    min_orig_seq = min(orig_seq),
+    text = paste0(text, collapse = " ")
+  ) |> 
+  ungroup() |> 
+  mutate(
+    text = 
+      text |> 
+      str_remove_all('["\'_\\(\\)\\[\\]]') |> # quotes italics, parentheses, brackets
+      str_remove_all("'s|&c\\.|etc\\.") |> # weird pattern
+      str_replace_all("([DM][rs]+|Miss)[\\. ]+", "\\1 ") |> # formal titles
+      str_replace_all("(\\d),(\\d)", "\\1\\2") |> 
+      str_replace_all("--|[;:]|(\\.){3}", " ") |>
+      str_replace("(three of us)\\.( besides)", "\\1\\2") |> 
+      str_replace_all(" (\\w)\\.", " \\1") |> # single letter followed by .
+      str_replace_all("\\!( [a-z])", "\\1") |> # ! mid sentence
+      str_replace_all("\\!", ".") |>
+      str_replace_all(",", " ") |> 
+      str_replace_all(" +", " ") |> # multiple spaces
+      trimws()
+  )
+
+
+extract_sentences <-
+  collapse_text |> 
+  #filter(min_orig_seq == 20) |>
+  separate_rows(text, sep = "\\.") |> 
+  mutate(text = trimws(text)) |> 
+  filter(text != "") |> 
+  mutate(
+    sentence_id = row_number(), 
+    nchar = nchar(text)
+  )
+
+
+sentence_tokens <- 
+  extract_sentences |> 
+  tidytext::unnest_tokens(
+    output = word, # new column name
+    input = text   # field to unnest
+  ) |> 
+  anti_join(get_stopwords()) |>
+  mutate(
+    snowballc = SnowballC::wordStem(word)
+  ) |> 
+  filter(
+    word != snowballc
+  )
+
+  
+
+#
+```
+
+```{r spacyr}
+# https://spacyr.quanteda.io/articles/using_spacyr.html
+
+fir_tree <-
+  hcandersenr::hca_fairytales() |>
+  filter(
+    book == "The fir tree",
+    language == "English"
+  )
+
+fir_tree |> 
+  mutate(doc_id = paste0("doc", row_number())) |>
+  select(doc_id, everything()) |>
+  spacy_parse() |>
+  anti_join(get_stopwords(), by = c("lemma" = "word"))
+
+
+|>
+  mutate(doc_id = paste0("doc", row_number())) |>
+  select(doc_id, everything()) |>
+  spacy_parse() |>
+  anti_join(get_stopwords(), by = c("lemma" = "word")) |>
+  count(lemma, sort = TRUE) |>
+  top_n(20, n) |>
+  ggplot(aes(n, fct_reorder(lemma, n))) +
+  geom_col() +
+  labs(x = "Frequency", y = NULL)
+
+
+spacy_sentences <-
+  extract_sentences |> 
+  spacyr::spacy_parse(text)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+metadata <- fromJSON("https://data.nasa.gov/data.json")
+
+raw_data <-
+    tibble(
+    id = seq_along(metadata$dataset$keyword),
+    title = metadata$dataset$title,
+    description = metadata$dataset$description,
+    phrase = metadata$dataset$keyword
+  )
+
+  
+phrases <- 
+  raw_data |> 
+  unnest(phrase) #|>   mutate(phrase = str_replace_all(phrase, " ", "_"))
+
+
+```
+
+
+```{r}
+raw_data |> 
+  unnest_tokens(word, title) |> 
+  anti_join(stop_words)
+```
+
+
+
+```{r}
+
+threshold <- 700
+
+phrases_cors <- 
+  phrases |>
+  group_by(phrase) |>
+  filter(n() >= threshold) |>
+  pairwise_cor(
+    item = phrase, 
+    feature = id, 
+    sort = TRUE, 
+    upper = FALSE
+  )
+
+set.seed(1234)
+
+phrases_cors |>
+  filter(correlation > .6) |>
+  igraph::graph_from_data_frame() |>
+  ggraph::ggraph(layout = "fr") +
+  ggraph::geom_edge_link(
+    aes(edge_alpha = correlation, edge_width = correlation), 
+    edge_colour = "royalblue"
+  ) +
+  ggraph::geom_node_point(size = 5) +
+  geom_node_text(
+    aes(label = name),
+    repel = TRUE,
+    point.padding = unit(0.2, "lines")
+  ) +
+  theme_void()
+```
+
+```{r}
+set.seed(1234)
+phrases_cors |>
+filter(correlation > .6) |>
+igraph::graph_from_data_frame(
+  vertices = phrases |> count(phrase) |> filter(n >= threshold)
+) |>
+ggraph::ggraph(layout = "fr") +
+  ggraph::geom_edge_link(
+    aes(edge_alpha = correlation, edge_width = correlation),
+    edge_colour = "royalblue"
+  ) +
+  geom_node_point(aes(size = n)) + scale_size(range = c(1, 10)) +
+  geom_node_text(aes(label = name),
+    repel = TRUE,
+    point.padding = unit(0.2, "lines")
+  ) +
+  theme_void()
+```
+
