@@ -72,6 +72,7 @@ prep_data <-
   mutate(
     text = 
       text |> 
+      tolower() |> 
       str_replace_all("(--)|\\/", " ") |> # replace double hyphens and slashes with a space
       str_remove_all('"') |> # remove double quotes
       str_remove_all("[\\(\\)]") |> # remove ( )
@@ -84,7 +85,7 @@ prep_data <-
 
 extract_sentences <-
   prep_data |> 
-  separate_rows(text, sep = "\\.") |> 
+  separate_rows(text, sep = "\\. ") |> 
   mutate(text = trimws(text)) |> 
   filter(text != "") |> 
   mutate(
@@ -122,29 +123,45 @@ as_tibble(spacy_sentences) |> head(10)
 
 ```
 
-### Noun-phrases
-
+### Noun-phrases with  `spacyr::nounphrase_consolidate()`
 ```{r}
-find_nounphrases <- function(fun, field) {
-  f <- fun
-  
-  spacy_sentences |> 
-    mutate(token = tolower(token)) |> 
-    filter(
-      !pos %in% c("ADP", "CONJ", "DET", "PUNCT", "PRON")
-      | token %in% c("all", "any", "every", "no")
-    ) |> 
-    filter(!str_detect(token, "^(a|an|the|this|my|your|his|her|i|me|you|it|they)$")) |> 
-    f() |> 
-    count({{field}}, sort = TRUE) |> 
-    filter(str_detect({{field}}, "_")) |> 
-    head(10)  
-}
-```
+found_nounphrases <- spacyr::nounphrase_consolidate(spacy_sentences)
 
-### `spacyr::nounphrase_consolidate`
-```{r}
-find_nounphrases(fun = spacyr::nounphrase_consolidate, field = lemma)
+remove_words <- "\\b(a|an|the|this|my|your|his|her|i|me|you|it|they)\\b"
+
+unique_text_nounphrases <-
+  found_nounphrases |> 
+  as_tibble() |>
+  mutate(
+    phrase = 
+      lemma |> 
+      str_replace_all("_", " ") |> 
+      str_replace_all(remove_words, " ") |> 
+      str_replace_all(" +", " ") |> 
+      trimws()
+  ) |> 
+  filter(str_detect(phrase, " ")) |> 
+  transmute(
+    phrase_id = as.integer(doc_id),
+    phrase
+  ) |> 
+  left_join(
+    select(extract_sentences, ends_with("_id"), rating, date)
+  ) |> 
+  distinct(text_id, object_id, phrase, rating, date)
+
+
+unique_text_nounphrases |> 
+  mutate(split = rating > 3) |> 
+  count(split, phrase, sort = TRUE) |> 
+  group_by(split) |> 
+  slice_head(n = 20) |> 
+  ungroup() |> 
+  ggplot(aes(n, fct_reorder(phrase, n))) +
+  facet_wrap(~split, scales = "free_y") +
+  geom_col()
+
+# find_nounphrases(fun = spacyr::nounphrase_consolidate, field = lemma)
 ```
 
 ### `spacyr::nounphrase_extract`
@@ -167,6 +184,16 @@ head(use_sentiments)
 ```
 
 ```{r}
+merge_lemmas <-
+  spacy_sentences |> 
+  as_tibble() |> 
+  rename(phrase_id = doc_id) |> 
+  mutate(phrase_id = as.integer(phrase_id)) |> 
+  left_join(
+    select(extract_sentences, ends_with("_id"), rating, date)
+  ) |> 
+  print()
+
 as_sentiments <-
   spacy_sentences |> 
   as_tibble() |> 
@@ -226,12 +253,15 @@ plot_word_rank_sentiment <- function(df, split_on, word_n = 8, across_n = 3) {
 
 
 plot_word_rank_sentiment(as_sentiments, "object_id", 10)
-plot_word_rank_sentiment(as_sentiments, "rating", 8)
+
+as_sentiments |> 
+  filter(rating >= 3) |>
+  plot_word_rank_sentiment("rating", 6)
 
 as_sentiments |>
-  filter(rating >= 3) |> 
-  mutate(object_and_rating = (paste(object_id, rating, sep = "\n"))) |> 
-  plot_word_rank_sentiment("object_and_rating", word_n = 4, across_n = 6)
+  mutate(split = ifelse(rating <= 3, "3 & under", "4+")) |> 
+  mutate(object_and_rating = (paste(split, object_id, sep = "\n"))) |> 
+  plot_word_rank_sentiment("object_and_rating", word_n = 4, across_n = 4)
 
 ```
 
@@ -250,7 +280,7 @@ sentence_patterns <-
   mutate(
     sentence_id = dense_rank(phrase_id),
     sentiment = replace_na(sentiment, "missing"),
-    sentiment_value = replace_na(sentiment_value, 0),# + negate,
+    sentiment_value = replace_na(sentiment_value, 0) + negate,
     cumsum_n = cumsum(sentiment_value)
   ) |> 
   ungroup()
@@ -318,8 +348,8 @@ sentence_patterns |>
 ## Network graph using `ggraph` & `widyr`
 ```{r igraph_network_diagram}
 
-sentiment_count <-
-  sentence_patterns |> 
+phrase_count <-
+  as_sentiments |> 
   group_by(word) |> 
   summarise(
     n = n(),
@@ -329,9 +359,9 @@ sentiment_count <-
   filter(n >= 20)
 
 
-sentiment_cor <- 
-  sentence_patterns |>
-  filter(word %in% sentiment_count$word) |> 
+phrase_cor <- 
+  as_sentiments |>
+  filter(word %in% phrase_count$word) |> 
   # calculate correlations
   widyr::pairwise_cor(word, phrase_id, sort = TRUE) |>
   rename(
@@ -345,8 +375,8 @@ sentiment_cor <-
 
 # create a graph data frame  using igraph
 igraph::graph_from_data_frame(
-  d = select(sentiment_cor, word:correlation,  mean_edge = mean),
-  vertices = distinct(sentiment_cor, word, n, mean_point = mean)
+  d = select(phrase_cor, word:correlation,  mean_edge = mean),
+  vertices = distinct(phrase_cor, word, n, mean_point = mean)
 ) |>
   ggraph::ggraph(layout = "fr") + #, algorithm = 'kk') +
   ggraph::geom_edge_link(aes(edge_width = correlation, color = mean_edge), show.legend = FALSE) +
