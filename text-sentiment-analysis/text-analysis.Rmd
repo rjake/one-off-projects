@@ -20,6 +20,13 @@ knitr::opts_chunk$set(
 
 
 ```{r}
+# run these once (ever)
+#   require(textdata)
+#   require(reticulate)
+#   reticulate::install_miniconda()
+#   spacyr::spacy_install()
+
+
 library(tidytext)
 library(tidyverse)
 library(widyr)
@@ -28,10 +35,144 @@ library(ggraph)
 library(spacyr)
 
 
-# reticulate::install_miniconda()
-# spacyr::spacy_install()
 spacyr::spacy_initialize(model = "en_core_web_sm")
+```
 
+
+```{r amazon}
+#amazon_reviews <- "https://raw.githubusercontent.com/BambiplayGit/Final_Project_dp/4ec61a7f4d9e0c1a0fb61892b907a6462f683936/dataset_amazon/fuzzydataset%20.csv"
+
+amazon_reviews <- "https://raw.githubusercontent.com/arpitmohanty9/DataVizProject/936fcd3a25408d74a75c88b206ca86419d32318c/data/brands/3M.csv"
+
+
+raw_data <- 
+  read_csv(amazon_reviews) 
+```
+
+### Base Data
+```{r prep-data}
+prep_data <-
+  raw_data |>
+  transmute(
+    text_id = row_number(),
+    subject = asin,
+    author = reviewerID,
+    date = as.Date(lubridate::as_datetime(unixReviewTime)),
+    score = overall,  
+    text = reviewText
+  ) |> 
+  mutate(
+    text = 
+      text |> 
+      tolower() |> 
+      str_replace_all("(--)|\\/", " ") |> # replace double hyphens and slashes with a space
+      str_remove_all('"') |> # remove double quotes
+      str_remove_all("[\\(\\)]") |> # remove ( )
+      str_replace_all("((\\.)(\\s?)){3}", " ") |> # remove ... or . . . 
+      str_replace_all("i\\.e\\.", "ie") |>  # replace i.e. with ie
+      str_replace_all("grea\\.t", "great") |> # fix typo
+      str_replace_all("  ", " ") |>  # edits caused some double spaces, make them single spaces
+      trimws()
+  ) |> 
+  print()
+```
+
+### extract sentences
+```{r extract-sentences}
+extract_sentences <-
+  prep_data |> 
+  separate_rows(text, sep = "\\. ") |> 
+  mutate(text = trimws(text)) |> 
+  filter(text != "") |> 
+  mutate(
+    doc_id = row_number(), # spacyr needs a field called "doc_id" that is a unique value per row 
+    nchar = nchar(text)
+  ) |> 
+  print()
+```
+
+### lemmanization & part of speech tagging with `spacyr::spacy_parse()`
+```{r spacy-sentences}
+spacy_sentences <-
+  extract_sentences |>
+  #slice(1:300) |>
+  spacyr::spacy_parse(tag = TRUE, lemma = TRUE, nounphrase = TRUE, dependency = TRUE) |>
+  mutate(
+    doc_id = as.integer(doc_id), # make integer for future joins
+    word =
+      tolower(lemma) |>
+      str_replace("n't", "not"),
+  )
+
+as_tibble(spacy_sentences)
+```
+
+
+### Noun-phrases with  `spacyr::nounphrase_consolidate()`
+```{r}
+found_nounphrases <- 
+  spacyr::nounphrase_consolidate(spacy_sentences)
+
+as_tibble(found_nounphrases) |> 
+  arrange(doc_id)
+
+remove_words <- "\\b(a|an|the|this|my|your|his|her|i|me|you|it|they)\\b"
+
+unique_text_nounphrases <-
+  found_nounphrases |> 
+  as_tibble() |>
+  mutate(
+    doc_id = as.integer(doc_id),
+    phrase = 
+      lemma |> 
+      str_replace_all("_", " ") |> 
+      str_replace_all(remove_words, " ") |> 
+      str_replace_all(" +", " ") |> 
+      trimws()
+  ) |> 
+  filter(str_detect(phrase, " ")) |> 
+  distinct(
+    doc_id = as.integer(doc_id),
+    phrase
+  ) |> 
+  arrange(doc_id) |> 
+  left_join(
+    select(extract_sentences, -c(text, nchar))
+  ) |> 
+  print()
+
+
+unique_text_nounphrases |> 
+  mutate(split = ifelse(score <= 3, "3 & under", "4+")) |> 
+  count(split, phrase, sort = TRUE) |> 
+  group_by(split) |> 
+  slice_head(n = 15) |> 
+  ungroup() |> 
+  ggplot(aes(n, fct_reorder(phrase, n))) +
+  facet_wrap(~split, scales = "free_y") +
+  geom_col()
+
+# find_nounphrases(fun = spacyr::nounphrase_consolidate, field = lemma)
+```
+
+```{r}
+# close spacy
+spacyr::spacy_finalize()
+
+merge_lemmas <-
+  spacy_sentences |> 
+  as_tibble() |> 
+  left_join(
+    select(extract_sentences, -text, -nchar)
+  ) |> 
+  print()
+```
+
+## Sentiment Plots
+
+### Sentiment lexicon [`AFINN`](http://corpustext.com/reference/sentiment_afinn.html)
+
+```{r}
 lexicon <- # list of sentiment tables 
   list(
     bing = get_sentiments("bing"), # binary positive / negative
@@ -46,166 +187,22 @@ use_sentiments <-
     word,
     sentiment_value = value,
     sentiment = ifelse(value < 0, "negative", "positive")
-  ) 
-
-```
-
-
-```{r amazon}
-#amazon_reviews <- "https://raw.githubusercontent.com/BambiplayGit/Final_Project_dp/4ec61a7f4d9e0c1a0fb61892b907a6462f683936/dataset_amazon/fuzzydataset%20.csv"
-
-amazon_reviews <- "https://raw.githubusercontent.com/arpitmohanty9/DataVizProject/936fcd3a25408d74a75c88b206ca86419d32318c/data/brands/3M.csv"
-
-
-raw_data <- read_csv(amazon_reviews) 
-
-prep_data <-
-  raw_data |>
-  transmute(
-    text_id = row_number(),
-    object_id = asin,
-    author_id = reviewerID,
-    date = as.Date(lubridate::as_datetime(unixReviewTime)),
-    rating = overall,  
-    text = reviewText
-  ) |> 
-  mutate(
-    text = 
-      text |> 
-      tolower() |> 
-      str_replace_all("(--)|\\/", " ") |> # replace double hyphens and slashes with a space
-      str_remove_all('"') |> # remove double quotes
-      str_remove_all("[\\(\\)]") |> # remove ( )
-      str_replace_all("((\\.)(\\s?)){3}", " ") |> # remove ... or . . . 
-      str_replace_all("i\\.e\\.", "ie") |>  # replace i.e. with ie
-      str_replace_all("grea\\.t", "great") |> # fix typo
-      str_replace_all("  ", " ") # edits caused some double spaces, make them single spaces
   )
 
-
-extract_sentences <-
-  prep_data |> 
-  separate_rows(text, sep = "\\. ") |> 
-  mutate(text = trimws(text)) |> 
-  filter(text != "") |> 
-  mutate(
-    phrase_id = row_number(), 
-    nchar = nchar(text)
-  )
-
-spacy_sentences <-
-  extract_sentences |>
-  #slice(1:10) |> 
-  rename(doc_id = phrase_id) |> 
-  spacyr::spacy_parse(tag = TRUE, lemma = TRUE, nounphrase = TRUE, dependency = TRUE) |>
-  mutate(
-    word =
-      tolower(lemma) |>
-      str_replace("n't", "not"),
-  )
-```
-
-## Data
-
-### Raw data
-```{r}
-head(prep_data)
-```
-
-### Extract sentences
-```{r}
-head(extract_sentences)
-```
-
-### `spacyr` lemmanization & part of speech tagging
-```{r}
-as_tibble(spacy_sentences) |> head(10)
-
-```
-
-### Noun-phrases with  `spacyr::nounphrase_consolidate()`
-```{r}
-found_nounphrases <- spacyr::nounphrase_consolidate(spacy_sentences)
-
-remove_words <- "\\b(a|an|the|this|my|your|his|her|i|me|you|it|they)\\b"
-
-unique_text_nounphrases <-
-  found_nounphrases |> 
-  as_tibble() |>
-  mutate(
-    phrase = 
-      lemma |> 
-      str_replace_all("_", " ") |> 
-      str_replace_all(remove_words, " ") |> 
-      str_replace_all(" +", " ") |> 
-      trimws()
-  ) |> 
-  filter(str_detect(phrase, " ")) |> 
-  transmute(
-    phrase_id = as.integer(doc_id),
-    phrase
-  ) |> 
-  left_join(
-    select(extract_sentences, ends_with("_id"), rating, date)
-  ) |> 
-  distinct(text_id, object_id, phrase, rating, date)
-
-
-unique_text_nounphrases |> 
-  mutate(split = rating > 3) |> 
-  count(split, phrase, sort = TRUE) |> 
-  group_by(split) |> 
-  slice_head(n = 20) |> 
-  ungroup() |> 
-  ggplot(aes(n, fct_reorder(phrase, n))) +
-  facet_wrap(~split, scales = "free_y") +
-  geom_col()
-
-# find_nounphrases(fun = spacyr::nounphrase_consolidate, field = lemma)
-```
-
-### `spacyr::nounphrase_extract`
-```{r}
-find_nounphrases(fun = spacyr::nounphrase_extract,     field = nounphrase)
-```
-
-
-```{r}
-# close spacy
-spacyr::spacy_finalize()
-```
-
-## Sentiment Plots
-
-### Sentiment lexicon [`AFINN`](http://corpustext.com/reference/sentiment_afinn.html)
-```{r}
-head(use_sentiments)
-
-```
-
-```{r}
-merge_lemmas <-
-  spacy_sentences |> 
-  as_tibble() |> 
-  rename(phrase_id = doc_id) |> 
-  mutate(phrase_id = as.integer(phrase_id)) |> 
-  left_join(
-    select(extract_sentences, ends_with("_id"), rating, date)
-  ) |> 
-  print()
+sample_n(use_sentiments, 10)
 
 as_sentiments <-
-  spacy_sentences |> 
-  as_tibble() |> 
-  transmute(
-    phrase_id = as.integer(doc_id), 
+  merge_lemmas |> 
+  select(
+    text_id:score,
+    doc_id,
     phrase_part = sentence_id,
     word
   ) |>
   left_join(use_sentiments |> rename_all(str_replace, "sentiment", "afinn")) |>
   left_join(lexicon$bing |> rename(bing = sentiment)) |> 
   mutate(
-    n = 2- (is.na(afinn) + is.na(bing)),
+    n = 2 - (is.na(afinn) + is.na(bing)),
     sentiment = coalesce(afinn, bing),
     sentiment_value = case_when(
       !is.na(afinn) ~ afinn_value,
@@ -216,16 +213,7 @@ as_sentiments <-
     )
     #, match = afinn == bing
   ) |> 
-  inner_join(
-    extract_sentences |> 
-      select(
-        phrase_id,
-        text_id, 
-        object_id, 
-        author_id, 
-        rating
-      )
-  )
+  print()
 
 ```
 
@@ -252,38 +240,121 @@ plot_word_rank_sentiment <- function(df, split_on, word_n = 8, across_n = 3) {
 }
 
 
-plot_word_rank_sentiment(as_sentiments, "object_id", 10)
+plot_word_rank_sentiment(as_sentiments, "subject", 10)
 
 as_sentiments |> 
-  filter(rating >= 3) |>
-  plot_word_rank_sentiment("rating", 6)
+  filter(score >= 3) |>
+  plot_word_rank_sentiment("score", 6)
 
 as_sentiments |>
-  mutate(split = ifelse(rating <= 3, "3 & under", "4+")) |> 
-  mutate(object_and_rating = (paste(split, object_id, sep = "\n"))) |> 
-  plot_word_rank_sentiment("object_and_rating", word_n = 4, across_n = 4)
+  mutate(split = ifelse(score <= 3, "3 & under", "4+")) |> 
+  mutate(object_and_score = (paste(split, subject, sep = "\n"))) |> 
+  plot_word_rank_sentiment("object_and_score", word_n = 4, across_n = 4)
 
 ```
 
-```{r sentence_patterns}
+## Network graph using `ggraph` & `widyr`
+```{r igraph_network_diagram}
+# this function is used to rescale a range, ex: 0:10 -> -10:10
+change_range <- function(x, to) {
+  new_min <- to[1] 
+  new_max <- to[2]
+  old_min <- range(x)[1]
+  old_max <- range(x)[2]
+  
+  (x - old_min) / (old_max - old_min) * (new_max - new_min) + new_min
+}
+
+
+phrase_count <-
+  merge_lemmas |> 
+  group_by(word) |> 
+  summarise(
+    n = n(),
+    mean_score = mean(score) # mean rating/score/etc from 'score' field
+  ) |> 
+  ungroup() |> 
+  filter(n >= 20)
+
+
+phrase_cor <- 
+  merge_lemmas |>
+  filter(word %in% phrase_count$word) |> 
+  # calculate correlations
+  widyr::pairwise_cor(word, doc_id, sort = TRUE) |>
+  rename(
+    word = item1,
+    word2 = item2
+  ) |> 
+  print()
+
+
+network_prep <-
+  phrase_cor |> 
+  # omit combinations with a low correlation
+  filter(correlation > 0.3) |> 
+  left_join(phrase_count) |> 
+  # rescale means so there are over/under values with a red/blue color scale
+  mutate(rescale_mean = change_range(mean_score, c(-1, 1)))
+
+
+# create a graph data frame  using igraph
+igraph::graph_from_data_frame(
+  d = select(network_prep, word:correlation,  mean_edge = rescale_mean),
+  vertices = distinct(network_prep, word, n, mean_point = rescale_mean)
+) |>
+  ggraph::ggraph(layout = "fr") + #, algorithm = 'kk') +
+  ggraph::geom_edge_link(
+    aes(edge_width = correlation, color = mean_edge), 
+    show.legend = FALSE
+  ) +
+  ggraph::geom_node_point(aes(size = n, fill = mean_point), shape = 21) +
+  ggraph::geom_node_text(aes(label = name), repel = TRUE, size = 5) +
+  ggraph::scale_edge_color_gradient2(mid = "grey80") +
+  scale_fill_steps2(mid = "grey80") +
+  theme_bw() +
+  theme(panel.grid = element_blank()) +
+  labs(
+    title = "Correlations Between Most Common Words",
+    fill = "Mean sentiment"
+  )
+```
+
+```{r stop-knitting}
+knitr::knit_exit()
+```
+
+
+
+# --------------------------
+
+
+# NOT USING
+
+
+```{r sentence_patterns, eval=FALSE}
+# this chunk is experimental ^^^^^^ and not using
 sentence_patterns <-
   as_sentiments |> 
   #filter(text_id %in% 1:12) |>
   group_by(text_id) |> 
   mutate(word_order = row_number()) |> 
   ungroup() |>
-  arrange(phrase_id) |> 
-  group_by(phrase_id, phrase_part) |> 
+  arrange(doc_id) |> 
+  group_by(doc_id, phrase_part) |> 
   mutate(negate = ifelse(max(word %in% c("not")), -0.5, 0)) |> 
   ungroup() |> 
   group_by(text_id) |> 
   mutate(
-    sentence_id = dense_rank(phrase_id),
+    sentence_id = dense_rank(doc_id),
     sentiment = replace_na(sentiment, "missing"),
     sentiment_value = replace_na(sentiment_value, 0) + negate,
-    cumsum_n = cumsum(sentiment_value)
+    running_sentiment = cumsum(sentiment_value)
   ) |> 
-  ungroup()
+  ungroup() |> 
+  select(-c(afinn_value:n)) |> 
+  relocate(sentence_id, .after = doc_id) |> 
+  print()
 
 
 
@@ -297,7 +368,7 @@ sentence_patterns |>
     y = sentiment_value
   ) |> 
   #view()
-  ggplot(aes(x, y, color = factor(rating))) +
+  ggplot(aes(x, y, color = factor(score))) +
   facet_wrap(~text_id, scales = "free_x") + 
   geom_hline(yintercept = 0, color = "black") +
   geom_smooth(
@@ -325,92 +396,29 @@ sentence_patterns |>
 
 sentence_patterns |> 
   filter(sentiment != "missing") |> 
-  filter(rating >= 3) |> 
-  group_by(text_id, rating) |> 
+  filter(score >= 3) |> 
+  group_by(text_id, score) |> 
   summarise(
     percent_positive = mean(sentiment_value > 0),
     #pct_neg = mean(sentiment_value < 0),
     mean_sentiment = mean(sentiment_value),
-    slope_of_points = lm(cumsum_n ~ word_order)$coef[2]
+    slope_of_points = lm(running_sentiment ~ word_order)$coef[2]
   ) |> 
   ungroup() |> 
   pivot_longer(c(percent_positive:slope_of_points)) |> 
   filter(!(name == "slope_of_points" & value > 0.5)) |> 
-  ggplot(aes(rating, value, color = factor(rating))) +
+  ggplot(aes(score, value, color = factor(score))) +
   facet_wrap(~name, scales = "free") + 
   geom_jitter(width = 0.1, color = "black") +
   geom_smooth(aes(group = 1)) +
-  geom_boxplot(aes(group = rating), alpha = 0.8) +
-  labs(title = "sentiment stats about each review by rating")
+  geom_boxplot(aes(group = score), alpha = 0.8) +
+  labs(title = "sentiment stats about each review by score")
 
 ```
 
-## Network graph using `ggraph` & `widyr`
-```{r igraph_network_diagram}
-
-phrase_count <-
-  as_sentiments |> 
-  group_by(word) |> 
-  summarise(
-    n = n(),
-    mean = mean(sentiment_value)
-  ) |> 
-  ungroup() |> 
-  filter(n >= 20)
 
 
-phrase_cor <- 
-  as_sentiments |>
-  filter(word %in% phrase_count$word) |> 
-  # calculate correlations
-  widyr::pairwise_cor(word, phrase_id, sort = TRUE) |>
-  rename(
-    word = item1,
-    word2 = item2
-  ) |> 
-  # omit combinations with a low correlation
-  filter(correlation > 0.3) |> 
-  left_join(sentiment_count)
-
-
-# create a graph data frame  using igraph
-igraph::graph_from_data_frame(
-  d = select(phrase_cor, word:correlation,  mean_edge = mean),
-  vertices = distinct(phrase_cor, word, n, mean_point = mean)
-) |>
-  ggraph::ggraph(layout = "fr") + #, algorithm = 'kk') +
-  ggraph::geom_edge_link(aes(edge_width = correlation, color = mean_edge), show.legend = FALSE) +
-  ggraph::geom_node_point(aes(size = n, fill = mean_point), shape = 21) +
-  ggraph::geom_node_text(aes(label = name), repel = TRUE, size = 5) +
-  ggraph::scale_edge_color_gradient2(mid = "grey80") +
-  scale_fill_steps2(mid = "grey80") +
-  theme_bw() +
-  theme(panel.grid = element_blank()) +
-  labs(
-    title = "Correlations Between Most Common Words",
-    fill = "Mean sentiment"
-  )
-```
-
-
-```{r}
-knitr::knit_exit()
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-# NOT USING
-
+### from tutorials
 ```{r jane_austen}
 
 library(janeaustenr)
@@ -423,9 +431,9 @@ emma <-
 original_text <-
   emma |>
   select(-c(book)) |> 
-  mutate(author_id = cumsum(str_detect(text, "^CHAPTER "))) |> 
-  filter(author_id > 0) |> 
-  group_by(author_id) |>
+  mutate(author = cumsum(str_detect(text, "^CHAPTER "))) |> 
+  filter(author > 0) |> 
+  group_by(author) |>
   mutate(
     corpus_id = cumsum(text == ""), # paragraph
     seq = row_number()
@@ -438,7 +446,7 @@ original_text <-
 
 collapse_text <-
   original_text |> 
-  group_by(author_id, corpus_id) |> 
+  group_by(author, corpus_id) |> 
   arrange(seq) |> 
   summarise(
     min_orig_seq = min(orig_seq),
@@ -488,9 +496,6 @@ sentence_tokens <-
   filter(
     word != snowballc
   )
-
-  
-
 #
 ```
 
@@ -598,7 +603,7 @@ phrases_cors |>
   ) +
   ggraph::geom_node_point(size = 5) +
   geom_node_text(
-    aes(label = name),
+    aes(score = name),
     repel = TRUE,
     point.padding = unit(0.2, "lines")
   ) +
@@ -618,7 +623,7 @@ ggraph::ggraph(layout = "fr") +
     edge_colour = "royalblue"
   ) +
   geom_node_point(aes(size = n)) + scale_size(range = c(1, 10)) +
-  geom_node_text(aes(label = name),
+  geom_node_text(aes(score = name),
     repel = TRUE,
     point.padding = unit(0.2, "lines")
   ) +
