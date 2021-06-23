@@ -70,3 +70,6 @@ visNetwork(
   edges = filter(edges, from != to)
 ) |> 
   visIgraphLayout()
+
+# see also:
+# https://yjunechoe.github.io/posts/2020-06-25-indexing-tip-for-spacyr/#the-challenge
