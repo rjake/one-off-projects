@@ -1,0 +1,1030 @@
+code,label,name
+1,metropolitan police,police force
+3,cumbria,police force
+4,lancashire,police force
+5,merseyside,police force
+6,greater manchester,police force
+7,cheshire,police force
+10,northumbria,police force
+11,durham,police force
+12,north yorkshire,police force
+13,west yorkshire,police force
+14,south yorkshire,police force
+16,humberside,police force
+17,cleveland,police force
+20,west midlands,police force
+21,staffordshire,police force
+22,west mercia,police force
+23,warwickshire,police force
+30,derbyshire,police force
+31,nottinghamshire,police force
+32,lincolnshire,police force
+33,leicestershire,police force
+34,northamptonshire,police force
+35,cambridgeshire,police force
+36,norfolk,police force
+37,suffolk,police force
+40,bedfordshire,police force
+41,hertfordshire,police force
+42,essex,police force
+43,thames valley,police force
+44,hampshire,police force
+45,surrey,police force
+46,kent,police force
+47,sussex,police force
+48,city of london,police force
+50,devon and cornwall,police force
+52,avon and somerset,police force
+53,gloucestershire,police force
+54,wiltshire,police force
+55,dorset,police force
+60,north wales,police force
+61,gwent,police force
+62,south wales,police force
+63,dyfed-powys,police force
+91,northern,police force
+92,grampian,police force
+93,tayside,police force
+94,fife,police force
+95,lothian and borders,police force
+96,central,police force
+97,strathclyde,police force
+98,dumfries and galloway,police force
+1,fatal,accident severity
+2,serious,accident severity
+3,slight,accident severity
+1,sunday,day of week
+2,monday,day of week
+3,tuesday,day of week
+4,wednesday,day of week
+5,thursday,day of week
+6,friday,day of week
+7,saturday,day of week
+1,westminster,local authority (district)
+2,camden,local authority (district)
+3,islington,local authority (district)
+4,hackney,local authority (district)
+5,tower hamlets,local authority (district)
+6,greenwich,local authority (district)
+7,lewisham,local authority (district)
+8,southwark,local authority (district)
+9,lambeth,local authority (district)
+10,wandsworth,local authority (district)
+11,hammersmith and fulham,local authority (district)
+12,kensington and chelsea,local authority (district)
+13,waltham forest,local authority (district)
+14,redbridge,local authority (district)
+15,havering,local authority (district)
+16,barking and dagenham,local authority (district)
+17,newham,local authority (district)
+18,bexley,local authority (district)
+19,bromley,local authority (district)
+20,croydon,local authority (district)
+21,sutton,local authority (district)
+22,merton,local authority (district)
+23,kingston upon thames,local authority (district)
+24,richmond upon thames,local authority (district)
+25,hounslow,local authority (district)
+26,hillingdon,local authority (district)
+27,ealing,local authority (district)
+28,brent,local authority (district)
+29,harrow,local authority (district)
+30,barnet,local authority (district)
+31,haringey,local authority (district)
+32,enfield,local authority (district)
+33,hertsmere,local authority (district)
+38,epsom and ewell,local authority (district)
+40,spelthorne,local authority (district)
+57,london airport (heathrow),local authority (district)
+60,allerdale,local authority (district)
+61,barrow-in-furness,local authority (district)
+62,carlisle,local authority (district)
+63,copeland,local authority (district)
+64,eden,local authority (district)
+65,south lakeland,local authority (district)
+70,blackburn with darwen,local authority (district)
+71,blackpool,local authority (district)
+72,burnley,local authority (district)
+73,chorley,local authority (district)
+74,fylde,local authority (district)
+75,hyndburn,local authority (district)
+76,lancaster,local authority (district)
+77,pendle,local authority (district)
+79,preston,local authority (district)
+80,ribble valley,local authority (district)
+82,rossendale,local authority (district)
+83,south ribble,local authority (district)
+84,west lancashire,local authority (district)
+85,wyre,local authority (district)
+90,knowsley,local authority (district)
+91,liverpool,local authority (district)
+92,st. helens,local authority (district)
+93,sefton,local authority (district)
+95,wirral,local authority (district)
+100,bolton,local authority (district)
+101,bury,local authority (district)
+102,manchester,local authority (district)
+104,oldham,local authority (district)
+106,rochdale,local authority (district)
+107,salford,local authority (district)
+109,stockport,local authority (district)
+110,tameside,local authority (district)
+112,trafford,local authority (district)
+114,wigan,local authority (district)
+120,chester,local authority (district)
+121,congleton,local authority (district)
+122,crewe and nantwich,local authority (district)
+123,ellesmere port and neston,local authority (district)
+124,halton,local authority (district)
+126,macclesfield,local authority (district)
+127,vale royal,local authority (district)
+128,warrington,local authority (district)
+129,cheshire east,local authority (district)
+130,cheshire west and chester,local authority (district)
+139,northumberland,local authority (district)
+140,alnwick,local authority (district)
+141,berwick-upon-tweed,local authority (district)
+142,blyth valley,local authority (district)
+143,castle morpeth,local authority (district)
+144,tynedale,local authority (district)
+145,wansbeck,local authority (district)
+146,gateshead,local authority (district)
+147,newcastle upon tyne,local authority (district)
+148,north tyneside,local authority (district)
+149,south tyneside,local authority (district)
+150,sunderland,local authority (district)
+160,chester-le-street,local authority (district)
+161,darlington,local authority (district)
+162,derwentside,local authority (district)
+163,durham,local authority (district)
+164,easington,local authority (district)
+165,sedgefield,local authority (district)
+166,teesdale,local authority (district)
+168,wear valley,local authority (district)
+169,county durham,local authority (district)
+180,craven,local authority (district)
+181,hambleton,local authority (district)
+182,harrogate,local authority (district)
+184,richmondshire,local authority (district)
+185,ryedale,local authority (district)
+186,scarborough,local authority (district)
+187,selby,local authority (district)
+189,york,local authority (district)
+200,bradford,local authority (district)
+202,calderdale,local authority (district)
+203,kirklees,local authority (district)
+204,leeds,local authority (district)
+206,wakefield,local authority (district)
+210,barnsley,local authority (district)
+211,doncaster,local authority (district)
+213,rotherham,local authority (district)
+215,sheffield,local authority (district)
+228,"kingston upon hull, city of",local authority (district)
+231,east riding of yorkshire,local authority (district)
+232,north lincolnshire,local authority (district)
+233,north east lincolnshire,local authority (district)
+240,hartlepool,local authority (district)
+241,redcar and cleveland,local authority (district)
+243,middlesbrough,local authority (district)
+245,stockton-on-tees,local authority (district)
+250,cannock chase,local authority (district)
+251,east staffordshire,local authority (district)
+252,lichfield,local authority (district)
+253,newcastle-under-lyme,local authority (district)
+254,south staffordshire,local authority (district)
+255,stafford,local authority (district)
+256,staffordshire moorlands,local authority (district)
+257,stoke-on-trent,local authority (district)
+258,tamworth,local authority (district)
+270,bromsgrove,local authority (district)
+273,malvern hills,local authority (district)
+274,redditch,local authority (district)
+276,worcester,local authority (district)
+277,wychavon,local authority (district)
+278,wyre forest,local authority (district)
+279,bridgnorth,local authority (district)
+280,north shropshire,local authority (district)
+281,oswestry,local authority (district)
+282,shrewsbury and atcham,local authority (district)
+283,south shropshire,local authority (district)
+284,telford and wrekin,local authority (district)
+285,"herefordshire, county of",local authority (district)
+286,shropshire,local authority (district)
+290,north warwickshire,local authority (district)
+291,nuneaton and bedworth,local authority (district)
+292,rugby,local authority (district)
+293,stratford-upon-avon,local authority (district)
+294,warwick,local authority (district)
+300,birmingham,local authority (district)
+302,coventry,local authority (district)
+303,dudley,local authority (district)
+305,sandwell,local authority (district)
+306,solihull,local authority (district)
+307,walsall,local authority (district)
+309,wolverhampton,local authority (district)
+320,amber valley,local authority (district)
+321,bolsover,local authority (district)
+322,chesterfield,local authority (district)
+323,derby,local authority (district)
+324,erewash,local authority (district)
+325,high peak,local authority (district)
+327,north east derbyshire,local authority (district)
+328,south derbyshire,local authority (district)
+329,derbyshire dales,local authority (district)
+340,ashfield,local authority (district)
+341,bassetlaw,local authority (district)
+342,broxtowe,local authority (district)
+343,gedling,local authority (district)
+344,mansfield,local authority (district)
+345,newark and sherwood,local authority (district)
+346,nottingham,local authority (district)
+347,rushcliffe,local authority (district)
+350,boston,local authority (district)
+351,east lindsey,local authority (district)
+352,lincoln,local authority (district)
+353,north kesteven,local authority (district)
+354,south holland,local authority (district)
+355,south kesteven,local authority (district)
+356,west lindsey,local authority (district)
+360,blaby,local authority (district)
+361,hinckley and bosworth,local authority (district)
+362,charnwood,local authority (district)
+363,harborough,local authority (district)
+364,leicester,local authority (district)
+365,melton,local authority (district)
+366,north west leicestershire,local authority (district)
+367,oadby and wigston,local authority (district)
+368,rutland,local authority (district)
+380,corby,local authority (district)
+381,daventry,local authority (district)
+382,east northamptonshire,local authority (district)
+383,kettering,local authority (district)
+384,northampton,local authority (district)
+385,south northamptonshire,local authority (district)
+386,wellingborough,local authority (district)
+390,cambridge,local authority (district)
+391,east cambridgeshire,local authority (district)
+392,fenland,local authority (district)
+393,huntingdonshire,local authority (district)
+394,peterborough,local authority (district)
+395,south cambridgeshire,local authority (district)
+400,breckland,local authority (district)
+401,broadland,local authority (district)
+402,great yarmouth,local authority (district)
+404,norwich,local authority (district)
+405,north norfolk,local authority (district)
+406,south norfolk,local authority (district)
+407,king's lynn and west norfolk,local authority (district)
+410,babergh,local authority (district)
+411,forest heath,local authority (district)
+412,ipswich,local authority (district)
+413,mid suffolk,local authority (district)
+414,st. edmundsbury,local authority (district)
+415,suffolk coastal,local authority (district)
+416,waveney,local authority (district)
+420,bedford,local authority (district)
+421,luton,local authority (district)
+422,mid bedfordshire,local authority (district)
+423,south bedfordshire,local authority (district)
+424,central bedfordshire,local authority (district)
+430,broxbourne,local authority (district)
+431,dacorum,local authority (district)
+432,east hertfordshire,local authority (district)
+433,north hertfordshire,local authority (district)
+434,st. albans,local authority (district)
+435,stevenage,local authority (district)
+436,three rivers,local authority (district)
+437,watford,local authority (district)
+438,welwyn hatfield,local authority (district)
+450,basildon,local authority (district)
+451,braintree,local authority (district)
+452,brentwood,local authority (district)
+453,castle point,local authority (district)
+454,chelmsford,local authority (district)
+455,colchester,local authority (district)
+456,epping forest,local authority (district)
+457,harlow,local authority (district)
+458,maldon,local authority (district)
+459,rochford,local authority (district)
+460,southend-on-sea,local authority (district)
+461,tendring,local authority (district)
+462,thurrock,local authority (district)
+463,uttlesford,local authority (district)
+470,bracknell forest,local authority (district)
+471,west berkshire,local authority (district)
+472,reading,local authority (district)
+473,slough,local authority (district)
+474,windsor and maidenhead,local authority (district)
+475,wokingham,local authority (district)
+476,aylesbury vale,local authority (district)
+477,south bucks,local authority (district)
+478,chiltern,local authority (district)
+479,milton keynes,local authority (district)
+480,wycombe,local authority (district)
+481,cherwell,local authority (district)
+482,oxford,local authority (district)
+483,vale of white horse,local authority (district)
+484,south oxfordshire,local authority (district)
+485,west oxfordshire,local authority (district)
+490,basingstoke and deane,local authority (district)
+491,eastleigh,local authority (district)
+492,fareham,local authority (district)
+493,gosport,local authority (district)
+494,hart,local authority (district)
+495,havant,local authority (district)
+496,new forest,local authority (district)
+497,east hampshire,local authority (district)
+498,portsmouth,local authority (district)
+499,rushmoor,local authority (district)
+500,southampton,local authority (district)
+501,test valley,local authority (district)
+502,winchester,local authority (district)
+505,isle of wight,local authority (district)
+510,elmbridge,local authority (district)
+511,guildford,local authority (district)
+512,mole valley,local authority (district)
+513,reigate and banstead,local authority (district)
+514,runnymede,local authority (district)
+515,surrey heath,local authority (district)
+516,tandridge,local authority (district)
+517,waverley,local authority (district)
+518,woking,local authority (district)
+530,ashford,local authority (district)
+531,canterbury,local authority (district)
+532,dartford,local authority (district)
+533,dover,local authority (district)
+535,gravesham,local authority (district)
+536,maidstone,local authority (district)
+538,sevenoaks,local authority (district)
+539,shepway,local authority (district)
+540,swale,local authority (district)
+541,thanet,local authority (district)
+542,tonbridge and malling,local authority (district)
+543,tunbridge wells,local authority (district)
+544,medway,local authority (district)
+551,eastbourne,local authority (district)
+552,hastings,local authority (district)
+554,lewes,local authority (district)
+555,rother,local authority (district)
+556,wealden,local authority (district)
+557,adur,local authority (district)
+558,arun,local authority (district)
+559,chichester,local authority (district)
+560,crawley,local authority (district)
+562,horsham,local authority (district)
+563,mid sussex,local authority (district)
+564,worthing,local authority (district)
+565,brighton and hove,local authority (district)
+570,city of london,local authority (district)
+580,east devon,local authority (district)
+581,exeter,local authority (district)
+582,north devon,local authority (district)
+583,plymouth,local authority (district)
+584,south hams,local authority (district)
+585,teignbridge,local authority (district)
+586,mid devon,local authority (district)
+587,torbay,local authority (district)
+588,torridge,local authority (district)
+589,west devon,local authority (district)
+590,caradon,local authority (district)
+591,carrick,local authority (district)
+592,kerrier,local authority (district)
+593,north cornwall,local authority (district)
+594,penwith,local authority (district)
+595,restormel,local authority (district)
+596,cornwall,local authority (district)
+601,"bristol, city of",local authority (district)
+605,north somerset,local authority (district)
+606,mendip,local authority (district)
+607,sedgemoor,local authority (district)
+608,taunton deane,local authority (district)
+609,west somerset,local authority (district)
+610,south somerset,local authority (district)
+611,bath and north east somerset,local authority (district)
+612,south gloucestershire,local authority (district)
+620,cheltenham,local authority (district)
+621,cotswold,local authority (district)
+622,forest of dean,local authority (district)
+623,gloucester,local authority (district)
+624,stroud,local authority (district)
+625,tewkesbury,local authority (district)
+630,kennet,local authority (district)
+631,north wiltshire,local authority (district)
+632,salisbury,local authority (district)
+633,swindon,local authority (district)
+634,west wiltshire,local authority (district)
+635,wiltshire,local authority (district)
+640,bournemouth,local authority (district)
+641,christchurch,local authority (district)
+642,north dorset,local authority (district)
+643,poole,local authority (district)
+644,purbeck,local authority (district)
+645,west dorset,local authority (district)
+646,weymouth and portland,local authority (district)
+647,east dorset,local authority (district)
+720,isle of anglesey,local authority (district)
+721,conwy,local authority (district)
+722,gwynedd,local authority (district)
+723,denbighshire,local authority (district)
+724,flintshire,local authority (district)
+725,wrexham,local authority (district)
+730,blaenau gwent,local authority (district)
+731,caerphilly,local authority (district)
+732,monmouthshire,local authority (district)
+733,newport,local authority (district)
+734,torfaen,local authority (district)
+740,bridgend,local authority (district)
+741,cardiff,local authority (district)
+742,merthyr tydfil,local authority (district)
+743,neath port talbot,local authority (district)
+744,"rhondda, cynon, taff",local authority (district)
+745,swansea,local authority (district)
+746,the vale of glamorgan,local authority (district)
+750,ceredigion,local authority (district)
+751,carmarthenshire,local authority (district)
+752,pembrokeshire,local authority (district)
+753,powys,local authority (district)
+910,aberdeen city,local authority (district)
+911,aberdeenshire,local authority (district)
+912,angus,local authority (district)
+913,argyll and bute,local authority (district)
+914,scottish borders,local authority (district)
+915,clackmannanshire,local authority (district)
+916,west dunbartonshire,local authority (district)
+917,dumfries and galloway,local authority (district)
+918,dundee city,local authority (district)
+919,east ayrshire,local authority (district)
+920,east dunbartonshire,local authority (district)
+921,east lothian,local authority (district)
+922,east renfrewshire,local authority (district)
+923,"edinburgh, city of",local authority (district)
+924,falkirk,local authority (district)
+925,fife,local authority (district)
+926,glasgow city,local authority (district)
+927,highland,local authority (district)
+928,inverclyde,local authority (district)
+929,midlothian,local authority (district)
+930,moray,local authority (district)
+931,north ayrshire,local authority (district)
+932,north lanarkshire,local authority (district)
+933,orkney islands,local authority (district)
+934,perth and kinross,local authority (district)
+935,renfrewshire,local authority (district)
+936,shetland islands,local authority (district)
+937,south ayrshire,local authority (district)
+938,south lanarkshire,local authority (district)
+939,stirling,local authority (district)
+940,west lothian,local authority (district)
+941,western isles,local authority (district)
+s12000033,aberdeen city,local authority (highway)
+s12000034,aberdeenshire,local authority (highway)
+s12000041,angus,local authority (highway)
+s12000035,argyll & bute,local authority (highway)
+e09000002,barking and dagenham,local authority (highway)
+e09000003,barnet,local authority (highway)
+e08000016,barnsley,local authority (highway)
+e06000022,bath and north east somerset,local authority (highway)
+e06000055,bedford,local authority (highway)
+e09000004,bexley,local authority (highway)
+e08000025,birmingham,local authority (highway)
+e06000008,blackburn with darwen,local authority (highway)
+e06000009,blackpool,local authority (highway)
+w06000019,blaenau gwent,local authority (highway)
+e08000001,bolton,local authority (highway)
+e06000028,bournemouth,local authority (highway)
+e06000036,bracknell forest,local authority (highway)
+e08000032,bradford,local authority (highway)
+e09000005,brent,local authority (highway)
+w06000013,bridgend,local authority (highway)
+e06000043,brighton and hove,local authority (highway)
+e06000023,"bristol, city of",local authority (highway)
+e09000006,bromley,local authority (highway)
+e10000002,buckinghamshire,local authority (highway)
+e08000002,bury,local authority (highway)
+w06000018,caerphilly,local authority (highway)
+e08000033,calderdale,local authority (highway)
+e10000003,cambridgeshire,local authority (highway)
+e09000007,camden,local authority (highway)
+w06000015,cardiff,local authority (highway)
+w06000010,carmarthenshire,local authority (highway)
+e06000056,central bedfordshire,local authority (highway)
+w06000008,ceredigion,local authority (highway)
+e06000049,cheshire east,local authority (highway)
+e06000050,cheshire west and chester,local authority (highway)
+e09000001,city of london,local authority (highway)
+s12000005,clackmannanshire,local authority (highway)
+w06000003,conwy,local authority (highway)
+e06000052,cornwall,local authority (highway)
+e06000047,county durham,local authority (highway)
+e08000026,coventry,local authority (highway)
+e09000008,croydon,local authority (highway)
+e10000006,cumbria,local authority (highway)
+e06000005,darlington,local authority (highway)
+w06000004,denbighshire,local authority (highway)
+e06000015,derby,local authority (highway)
+e10000007,derbyshire,local authority (highway)
+e10000008,devon,local authority (highway)
+e08000017,doncaster,local authority (highway)
+e10000009,dorset,local authority (highway)
+e08000027,dudley,local authority (highway)
+s12000006,dumfries & galloway,local authority (highway)
+s12000042,dundee city,local authority (highway)
+e09000009,ealing,local authority (highway)
+s12000008,east ayrshire,local authority (highway)
+s12000009,east dunbartonshire,local authority (highway)
+s12000010,east lothian,local authority (highway)
+s12000011,east renfrewshire,local authority (highway)
+e06000011,east riding of yorkshire,local authority (highway)
+e10000011,east sussex,local authority (highway)
+s12000036,"edinburgh, city of",local authority (highway)
+e09000010,enfield,local authority (highway)
+e10000012,essex,local authority (highway)
+s12000014,falkirk,local authority (highway)
+s12000015,fife,local authority (highway)
+w06000005,flintshire,local authority (highway)
+e08000020,gateshead,local authority (highway)
+s12000043,glasgow city,local authority (highway)
+e10000013,gloucestershire,local authority (highway)
+e09000011,greenwich,local authority (highway)
+w06000002,gwynedd,local authority (highway)
+e09000012,hackney,local authority (highway)
+e06000006,halton,local authority (highway)
+e09000013,hammersmith and fulham,local authority (highway)
+e10000014,hampshire,local authority (highway)
+e09000014,haringey,local authority (highway)
+e09000015,harrow,local authority (highway)
+e06000001,hartlepool,local authority (highway)
+e09000016,havering,local authority (highway)
+e06000019,"herefordshire, county of",local authority (highway)
+e10000015,hertfordshire,local authority (highway)
+s12000017,highland,local authority (highway)
+e09000017,hillingdon,local authority (highway)
+e09000018,hounslow,local authority (highway)
+s12000018,inverclyde,local authority (highway)
+w06000001,isle of anglesey,local authority (highway)
+e06000046,isle of wight,local authority (highway)
+e06000053,isles of scilly,local authority (highway)
+e09000019,islington,local authority (highway)
+e09000020,kensington and chelsea,local authority (highway)
+e10000016,kent,local authority (highway)
+e06000010,"kingston upon hull, city of",local authority (highway)
+e09000021,kingston upon thames,local authority (highway)
+e08000034,kirklees,local authority (highway)
+e08000011,knowsley,local authority (highway)
+e09000022,lambeth,local authority (highway)
+e10000017,lancashire,local authority (highway)
+e08000035,leeds,local authority (highway)
+e06000016,leicester,local authority (highway)
+e10000018,leicestershire,local authority (highway)
+e09000023,lewisham,local authority (highway)
+e10000019,lincolnshire,local authority (highway)
+e08000012,liverpool,local authority (highway)
+eheathrow,london airport (heathrow),local authority (highway)
+e06000032,luton,local authority (highway)
+e08000003,manchester,local authority (highway)
+e06000035,medway,local authority (highway)
+w06000024,merthyr tydfil,local authority (highway)
+e09000024,merton,local authority (highway)
+e06000002,middlesbrough,local authority (highway)
+s12000019,midlothian,local authority (highway)
+e06000042,milton keynes,local authority (highway)
+w06000021,monmouthshire,local authority (highway)
+s12000020,moray,local authority (highway)
+s12000013,na h-eileanan an iar (western isles),local authority (highway)
+w06000012,neath port talbot,local authority (highway)
+e08000021,newcastle upon tyne,local authority (highway)
+e09000025,newham,local authority (highway)
+w06000022,newport,local authority (highway)
+e10000020,norfolk,local authority (highway)
+s12000021,north ayrshire,local authority (highway)
+e06000012,north east lincolnshire,local authority (highway)
+s12000044,north lanarkshire,local authority (highway)
+e06000013,north lincolnshire,local authority (highway)
+e06000024,north somerset,local authority (highway)
+e08000022,north tyneside,local authority (highway)
+e10000023,north yorkshire,local authority (highway)
+e10000021,northamptonshire,local authority (highway)
+e06000048,northumberland,local authority (highway)
+e06000018,nottingham,local authority (highway)
+e10000024,nottinghamshire,local authority (highway)
+e08000004,oldham,local authority (highway)
+s12000023,orkney islands,local authority (highway)
+e10000025,oxfordshire,local authority (highway)
+w06000009,pembrokeshire,local authority (highway)
+s12000024,perth and kinross,local authority (highway)
+e06000031,peterborough,local authority (highway)
+e06000026,plymouth,local authority (highway)
+e06000029,poole,local authority (highway)
+e06000044,portsmouth,local authority (highway)
+w06000023,powys,local authority (highway)
+e06000038,reading,local authority (highway)
+e09000026,redbridge,local authority (highway)
+e06000003,redcar and cleveland,local authority (highway)
+s12000038,renfrewshire,local authority (highway)
+w06000016,"rhondda, cynon, taff",local authority (highway)
+e09000027,richmond upon thames,local authority (highway)
+e08000005,rochdale,local authority (highway)
+e08000018,rotherham,local authority (highway)
+e06000017,rutland,local authority (highway)
+e08000006,salford,local authority (highway)
+e08000028,sandwell,local authority (highway)
+s12000026,scottish borders,local authority (highway)
+e08000014,sefton,local authority (highway)
+e08000019,sheffield,local authority (highway)
+s12000027,shetland islands,local authority (highway)
+e06000051,shropshire,local authority (highway)
+e06000039,slough,local authority (highway)
+e08000029,solihull,local authority (highway)
+e10000027,somerset,local authority (highway)
+s12000028,south ayrshire,local authority (highway)
+e06000025,south gloucestershire,local authority (highway)
+s12000029,south lanarkshire,local authority (highway)
+e08000023,south tyneside,local authority (highway)
+e06000045,southampton,local authority (highway)
+e06000033,southend-on-sea,local authority (highway)
+e09000028,southwark,local authority (highway)
+e08000013,st. helens,local authority (highway)
+e10000028,staffordshire,local authority (highway)
+s12000030,stirling,local authority (highway)
+e08000007,stockport,local authority (highway)
+e06000004,stockton-on-tees,local authority (highway)
+e06000021,stoke-on-trent,local authority (highway)
+e10000029,suffolk,local authority (highway)
+e08000024,sunderland,local authority (highway)
+e10000030,surrey,local authority (highway)
+e09000029,sutton,local authority (highway)
+w06000011,swansea,local authority (highway)
+e06000030,swindon,local authority (highway)
+e08000008,tameside,local authority (highway)
+e06000020,telford and wrekin,local authority (highway)
+w06000014,the vale of glamorgan,local authority (highway)
+e06000034,thurrock,local authority (highway)
+e06000027,torbay,local authority (highway)
+w06000020,torfaen,local authority (highway)
+e09000030,tower hamlets,local authority (highway)
+e08000009,trafford,local authority (highway)
+e08000036,wakefield,local authority (highway)
+e08000030,walsall,local authority (highway)
+e09000031,waltham forest,local authority (highway)
+e09000032,wandsworth,local authority (highway)
+e06000007,warrington,local authority (highway)
+e10000031,warwickshire,local authority (highway)
+e06000037,west berkshire,local authority (highway)
+s12000039,west dunbartonshire,local authority (highway)
+s12000040,west lothian,local authority (highway)
+e10000032,west sussex,local authority (highway)
+e09000033,westminster,local authority (highway)
+e08000010,wigan,local authority (highway)
+e06000054,wiltshire,local authority (highway)
+e06000040,windsor and maidenhead,local authority (highway)
+e08000015,wirral,local authority (highway)
+e06000041,wokingham,local authority (highway)
+e08000031,wolverhampton,local authority (highway)
+e10000034,worcestershire,local authority (highway)
+w06000006,wrexham,local authority (highway)
+e06000014,york,local authority (highway)
+1,motorway,1st road class
+2,a(m),1st road class
+3,a,1st road class
+4,b,1st road class
+5,c,1st road class
+6,unclassified,1st road class
+1,roundabout,road type
+2,one way street,road type
+3,dual carriageway,road type
+6,single carriageway,road type
+7,slip road,road type
+9,unknown,road type
+12,one way street/slip road,road type
+-1,data missing or out of range,road type
+20,20 mph,speed limit
+30,30 mph,speed limit
+40,40 mph,speed limit
+50,50 mph,speed limit
+60,60 mph,speed limit
+70,70 mph,speed limit
+-1,data missing or out of range,speed limit
+0,not at junction or within 20 metres,junction detail
+1,roundabout,junction detail
+2,mini-roundabout,junction detail
+3,t or staggered junction,junction detail
+5,slip road,junction detail
+6,crossroads,junction detail
+7,more than 4 arms (not roundabout),junction detail
+8,private drive or entrance,junction detail
+9,other junction,junction detail
+-1,data missing or out of range,junction detail
+0,not at junction or within 20 metres,junction control
+1,authorised person,junction control
+2,auto traffic signal,junction control
+3,stop sign,junction control
+4,give way or uncontrolled,junction control
+-1,data missing or out of range,junction control
+0,not at junction or within 20 metres,2nd road class
+1,motorway,2nd road class
+2,a(m),2nd road class
+3,a,2nd road class
+4,b,2nd road class
+5,c,2nd road class
+6,unclassified,2nd road class
+0,none within 50 metres,ped cross - human
+1,control by school crossing patrol,ped cross - human
+2,control by other authorised person,ped cross - human
+-1,data missing or out of range,ped cross - human
+0,no physical crossing facilities within 50 metres,ped cross - physical
+1,zebra,ped cross - physical
+4,"pelican, puffin, toucan or similar non-junction pedestrian light crossing",ped cross - physical
+5,pedestrian phase at traffic signal junction,ped cross - physical
+7,footbridge or subway,ped cross - physical
+8,central refuge,ped cross - physical
+-1,data missing or out of range,ped cross - physical
+1,daylight,light conditions
+4,darkness - lights lit,light conditions
+5,darkness - lights unlit,light conditions
+6,darkness - no lighting,light conditions
+7,darkness - lighting unknown,light conditions
+-1,data missing or out of range,light conditions
+1,fine no high winds,weather
+2,raining no high winds,weather
+3,snowing no high winds,weather
+4,fine + high winds,weather
+5,raining + high winds,weather
+6,snowing + high winds,weather
+7,fog or mist,weather
+8,other,weather
+9,unknown,weather
+-1,data missing or out of range,weather
+1,dry,road surface
+2,wet or damp,road surface
+3,snow,road surface
+4,frost or ice,road surface
+5,flood over 3cm. deep,road surface
+6,oil or diesel,road surface
+7,mud,road surface
+-1,data missing or out of range,road surface
+0,none,special conditions at site
+1,auto traffic signal - out,special conditions at site
+2,auto signal part defective,special conditions at site
+3,road sign or marking defective or obscured,special conditions at site
+4,roadworks,special conditions at site
+5,road surface defective,special conditions at site
+6,oil or diesel,special conditions at site
+7,mud,special conditions at site
+-1,data missing or out of range,special conditions at site
+0,none,carriageway hazards
+1,vehicle load on road,carriageway hazards
+2,other object on road,carriageway hazards
+3,previous accident,carriageway hazards
+4,dog on road,carriageway hazards
+5,other animal on road,carriageway hazards
+6,pedestrian in carriageway - not injured,carriageway hazards
+7,any animal in carriageway (except ridden horse),carriageway hazards
+-1,data missing or out of range,carriageway hazards
+1,urban,urban rural
+2,rural,urban rural
+3,unallocated,urban rural
+1,yes,police officer attend
+2,no,police officer attend
+3,no - accident was reported using a self completion  form (self rep only),police officer attend
+1,pedal cycle,vehicle type
+2,motorcycle 50cc and under,vehicle type
+3,motorcycle 125cc and under,vehicle type
+4,motorcycle over 125cc and up to 500cc,vehicle type
+5,motorcycle over 500cc,vehicle type
+8,taxi/private hire car,vehicle type
+9,car,vehicle type
+10,minibus (8 - 16 passenger seats),vehicle type
+11,bus or coach (17 or more pass seats),vehicle type
+16,ridden horse,vehicle type
+17,agricultural vehicle,vehicle type
+18,tram,vehicle type
+19,van / goods 3.5 tonnes mgw or under,vehicle type
+20,goods over 3.5t. and under 7.5t,vehicle type
+21,goods 7.5 tonnes mgw and over,vehicle type
+22,mobility scooter,vehicle type
+23,electric motorcycle,vehicle type
+90,other vehicle,vehicle type
+97,motorcycle - unknown cc,vehicle type
+98,goods vehicle - unknown weight,vehicle type
+-1,data missing or out of range,vehicle type
+0,no tow/articulation,towing and articulation
+1,articulated vehicle,towing and articulation
+2,double or multiple trailer,towing and articulation
+3,caravan,towing and articulation
+4,single trailer,towing and articulation
+5,other tow,towing and articulation
+-1,data missing or out of range,towing and articulation
+1,reversing,vehicle manoeuvre
+2,parked,vehicle manoeuvre
+3,waiting to go - held up,vehicle manoeuvre
+4,slowing or stopping,vehicle manoeuvre
+5,moving off,vehicle manoeuvre
+6,u-turn,vehicle manoeuvre
+7,turning left,vehicle manoeuvre
+8,waiting to turn left,vehicle manoeuvre
+9,turning right,vehicle manoeuvre
+10,waiting to turn right,vehicle manoeuvre
+11,changing lane to left,vehicle manoeuvre
+12,changing lane to right,vehicle manoeuvre
+13,overtaking moving vehicle - offside,vehicle manoeuvre
+14,overtaking static vehicle - offside,vehicle manoeuvre
+15,overtaking - nearside,vehicle manoeuvre
+16,going ahead left-hand bend,vehicle manoeuvre
+17,going ahead right-hand bend,vehicle manoeuvre
+18,going ahead other,vehicle manoeuvre
+-1,data missing or out of range,vehicle manoeuvre
+0,on main c'way - not in restricted lane,vehicle location
+1,tram/light rail track,vehicle location
+2,bus lane,vehicle location
+3,busway (including guided busway),vehicle location
+4,cycle lane (on main carriageway),vehicle location
+5,cycleway or shared use footway (not part of  main carriageway),vehicle location
+6,on lay-by or hard shoulder,vehicle location
+7,entering lay-by or hard shoulder,vehicle location
+8,leaving lay-by or hard shoulder,vehicle location
+9,footway (pavement),vehicle location
+10,not on carriageway,vehicle location
+-1,data missing or out of range,vehicle location
+0,not at or within 20 metres of junction,junction location
+1,approaching junction or waiting/parked at junction approach,junction location
+2,cleared junction or waiting/parked at junction exit,junction location
+3,leaving roundabout,junction location
+4,entering roundabout,junction location
+5,leaving main road,junction location
+6,entering main road,junction location
+7,entering from slip road,junction location
+8,mid junction - on roundabout or on main road,junction location
+-1,data missing or out of range,junction location
+0,none,skidding and overturning
+1,skidded,skidding and overturning
+2,skidded and overturned,skidding and overturning
+3,jackknifed,skidding and overturning
+4,jackknifed and overturned,skidding and overturning
+5,overturned,skidding and overturning
+-1,data missing or out of range,skidding and overturning
+0,none,hit object in carriageway
+1,previous accident,hit object in carriageway
+2,road works,hit object in carriageway
+4,parked vehicle,hit object in carriageway
+5,bridge (roof),hit object in carriageway
+6,bridge (side),hit object in carriageway
+7,bollard or refuge,hit object in carriageway
+8,open door of vehicle,hit object in carriageway
+9,central island of roundabout,hit object in carriageway
+10,kerb,hit object in carriageway
+11,other object,hit object in carriageway
+12,any animal (except ridden horse),hit object in carriageway
+-1,data missing or out of range,hit object in carriageway
+0,did not leave carriageway,veh leaving carriageway
+1,nearside,veh leaving carriageway
+2,nearside and rebounded,veh leaving carriageway
+3,straight ahead at junction,veh leaving carriageway
+4,offside on to central reservation,veh leaving carriageway
+5,offside on to centrl res + rebounded,veh leaving carriageway
+6,offside - crossed central reservation,veh leaving carriageway
+7,offside,veh leaving carriageway
+8,offside and rebounded,veh leaving carriageway
+-1,data missing or out of range,veh leaving carriageway
+0,none,hit object off carriageway
+1,road sign or traffic signal,hit object off carriageway
+2,lamp post,hit object off carriageway
+3,telegraph or electricity pole,hit object off carriageway
+4,tree,hit object off carriageway
+5,bus stop or bus shelter,hit object off carriageway
+6,central crash barrier,hit object off carriageway
+7,near/offside crash barrier,hit object off carriageway
+8,submerged in water,hit object off carriageway
+9,entered ditch,hit object off carriageway
+10,other permanent object,hit object off carriageway
+11,wall or fence,hit object off carriageway
+-1,data missing or out of range,hit object off carriageway
+0,did not impact,1st point of impact
+1,front,1st point of impact
+2,back,1st point of impact
+3,offside,1st point of impact
+4,nearside,1st point of impact
+-1,data missing or out of range,1st point of impact
+1,no,was vehicle left hand drive
+2,yes,was vehicle left hand drive
+-1,data missing or out of range,was vehicle left hand drive
+1,journey as part of work,journey purpose
+2,commuting to/from work,journey purpose
+3,taking pupil to/from school,journey purpose
+4,pupil riding to/from school,journey purpose
+5,other,journey purpose
+6,not known,journey purpose
+15,other/not known (2005-10),journey purpose
+-1,data missing or out of range,journey purpose
+1,male,sex of driver
+2,female,sex of driver
+3,not known,sex of driver
+-1,data missing or out of range,sex of driver
+1,0 - 5,age band
+2,6 - 10,age band
+3,11 - 15,age band
+4,16 - 20,age band
+5,21 - 25,age band
+6,26 - 35,age band
+7,36 - 45,age band
+8,46 - 55,age band
+9,56 - 65,age band
+10,66 - 75,age band
+11,over 75,age band
+-1,data missing or out of range,age band
+1,petrol,vehicle propulsion code
+2,heavy oil,vehicle propulsion code
+3,electric,vehicle propulsion code
+4,steam,vehicle propulsion code
+5,gas,vehicle propulsion code
+6,petrol/gas (lpg),vehicle propulsion code
+7,gas/bi-fuel,vehicle propulsion code
+8,hybrid electric,vehicle propulsion code
+9,gas diesel,vehicle propulsion code
+10,new fuel technology,vehicle propulsion code
+11,fuel cells,vehicle propulsion code
+12,electric diesel,vehicle propulsion code
+m,undefined,vehicle propulsion code
+1,driver or rider,casualty class
+2,passenger,casualty class
+3,pedestrian,casualty class
+1,male,sex of casualty
+2,female,sex of casualty
+-1,data missing or out of range,sex of casualty
+0-120,0-120,age of casualty
+-1,data missing or out of range,age of casualty
+1,fatal,casualty severity
+2,serious,casualty severity
+3,slight,casualty severity
+0,not a pedestrian,ped location
+1,crossing on pedestrian crossing facility,ped location
+2,crossing in zig-zag approach lines,ped location
+3,crossing in zig-zag exit lines,ped location
+4,crossing elsewhere within 50m. of pedestrian crossing,ped location
+5,"in carriageway, crossing elsewhere",ped location
+6,on footway or verge,ped location
+7,"on refuge, central island or central reservation",ped location
+8,"in centre of carriageway - not on refuge, island or central reservation",ped location
+9,"in carriageway, not crossing",ped location
+10,unknown or other,ped location
+-1,data missing or out of range,ped location
+0,not a pedestrian,ped movement
+1,crossing from driver's nearside,ped movement
+2,crossing from nearside - masked by parked or stationary vehicle,ped movement
+3,crossing from driver's offside,ped movement
+4,crossing from offside - masked by  parked or stationary vehicle,ped movement
+5,"in carriageway, stationary - not crossing  (standing or playing)",ped movement
+6,"in carriageway, stationary - not crossing  (standing or playing) - masked by parked or stationary vehicle",ped movement
+7,"walking along in carriageway, facing traffic",ped movement
+8,"walking along in carriageway, back to traffic",ped movement
+9,unknown or other,ped movement
+-1,data missing or out of range,ped movement
+0,not car passenger,car passenger
+1,front seat passenger,car passenger
+2,rear seat passenger,car passenger
+-1,data missing or out of range,car passenger
+0,not a bus or coach passenger,bus passenger
+1,boarding,bus passenger
+2,alighting,bus passenger
+3,standing passenger,bus passenger
+4,seated passenger,bus passenger
+-1,data missing or out of range,bus passenger
+0,no / not applicable,ped road maintenance worker
+1,yes,ped road maintenance worker
+2,not known,ped road maintenance worker
+-1,data missing or out of range,ped road maintenance worker
+0,pedestrian,casualty type
+1,cyclist,casualty type
+2,motorcycle 50cc and under rider or passenger,casualty type
+3,motorcycle 125cc and under rider or passenger,casualty type
+4,motorcycle over 125cc and up to 500cc rider or  passenger,casualty type
+5,motorcycle over 500cc rider or passenger,casualty type
+8,taxi/private hire car occupant,casualty type
+9,car occupant,casualty type
+10,minibus (8 - 16 passenger seats) occupant,casualty type
+11,bus or coach occupant (17 or more pass seats),casualty type
+16,horse rider,casualty type
+17,agricultural vehicle occupant,casualty type
+18,tram occupant,casualty type
+19,van / goods vehicle (3.5 tonnes mgw or under) occupant,casualty type
+20,goods vehicle (over 3.5t. and under 7.5t.) occupant,casualty type
+21,goods vehicle (7.5 tonnes mgw and over) occupant,casualty type
+22,mobility scooter rider,casualty type
+23,electric motorcycle rider or passenger,casualty type
+90,other vehicle occupant,casualty type
+97,motorcycle - unknown cc rider or passenger,casualty type
+98,goods vehicle (unknown weight) occupant,casualty type
+1,most deprived 10%,imd decile
+2,more deprived 10-20%,imd decile
+3,more deprived 20-30%,imd decile
+4,more deprived 30-40%,imd decile
+5,more deprived 40-50%,imd decile
+6,less deprived 40-50%,imd decile
+7,less deprived 30-40%,imd decile
+8,less deprived 20-30%,imd decile
+9,less deprived 10-20%,imd decile
+10,least deprived 10%,imd decile
+-1,data missing or out of range,imd decile
+1,urban area,home area type
+2,small town,home area type
+3,rural,home area type
+-1,data missing or out of range,home area type
