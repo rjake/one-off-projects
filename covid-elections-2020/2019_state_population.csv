@@ -1,0 +1,53 @@
+state_fips,state_name,state_pop
+28,Mississippi,2976149
+29,Missouri,6137428
+30,Montana,1068778
+31,Nebraska,1934408
+32,Nevada,3080156
+33,New Hampshire,1359711
+34,New Jersey,8882190
+35,New Mexico,2096829
+36,New York,19453561
+37,North Carolina,10488084
+38,North Dakota,762062
+39,Ohio,11689100
+40,Oklahoma,3956971
+41,Oregon,4217737
+42,Pennsylvania,12801989
+44,Rhode Island,1059361
+45,South Carolina,5148714
+46,South Dakota,884659
+47,Tennessee,6829174
+48,Texas,28995881
+50,Vermont,623989
+49,Utah,3205958
+51,Virginia,8535519
+53,Washington,7614893
+54,West Virginia,1792147
+55,Wisconsin,5822434
+56,Wyoming,578759
+72,Puerto Rico,3193694
+01,Alabama,4903185
+02,Alaska,731545
+04,Arizona,7278717
+05,Arkansas,3017804
+06,California,39512223
+08,Colorado,5758736
+10,Delaware,973764
+11,District of Columbia,705749
+09,Connecticut,3565287
+12,Florida,21477737
+13,Georgia,10617423
+16,Idaho,1787065
+15,Hawaii,1415872
+17,Illinois,12671821
+18,Indiana,6732219
+19,Iowa,3155070
+20,Kansas,2913314
+21,Kentucky,4467673
+22,Louisiana,4648794
+23,Maine,1344212
+24,Maryland,6045680
+25,Massachusetts,6892503
+26,Michigan,9986857
+27,Minnesota,5639632
