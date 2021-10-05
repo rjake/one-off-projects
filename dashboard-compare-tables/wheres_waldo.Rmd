@@ -1,0 +1,179 @@
+---
+title: "Where's Waldo"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+    source_code: embed
+    theme: readable
+runtime: shiny
+---
+
+```{css css-style}
+/* add scroll bar to htmlOutput() */
+.chart-wrapper .chart-stage {
+    overflow-y: scroll;
+}
+```
+
+```{r input_demo, eval = FALSE}
+input <- 
+  list(
+    data = "mpg",
+    distort = "Yes"
+  )
+```
+
+
+```{r packages, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+options(
+  crayon.enabled = TRUE,  # to get cli/ansi colors
+  width = 300             # width of tibble output
+)
+
+library(shiny)
+library(shinyWidgets)
+library(tidyverse)
+library(glue)
+library(waldo)
+library(fansi)
+```
+
+```{r functions}
+#' function to get colors & output from console
+#' @examples
+#' ansi_to_html(x = head(mpg))
+ansi_to_html <- function(x) {
+  fansi::sgr_to_html(x) |>
+    as.character() |>
+    str_replace_all("\n", "<br/>") |>
+    # change missing from yellow to pink
+    str_replace_all("#BBBB00", "#d01c65;font-weight:bold;") |>
+    # change added from green to blue
+    str_replace_all("#00BB00|#0000BB", "#33a0bb;font-weight:bold;") |> 
+    # change existing to a lighter grey
+    str_replace_all("#555555", "#a3a3a3") |> 
+    sprintf(fmt = "<pre>%s</pre>") |> 
+    HTML()
+}
+```
+
+Sidebar {.sidebar data-width=200}
+=================================
+
+```{r inputs}
+# select data ----
+radioGroupButtons(
+  inputId = "data",
+  label = "Select data set",
+  choices = c("storms", "diamonds", "mpg"),
+  direction = "vertical"
+)
+
+
+# select distort ----
+radioGroupButtons(
+  inputId = "distort",
+  label = "Distort data?",
+  choices = c("Yes", "No")
+)
+```
+
+Details
+================================
+
+```{r prep-data}
+#' For example to work, this function distorts the data
+#' @example
+#' distort_data(mpg)
+distort_data <- function(x) {
+  set.seed(1234)
+  add_to <- sample(c(0, 1), nrow(x), replace = TRUE, prob = c(0.95, 0.05))
+  x |> 
+    mutate(
+      across(where(is.character),  str_remove, "^\\w+ "),
+      across(where(is.double), ~ (.x + add_to)),
+      across(where(is.integer), ~ (.x + add_to))
+    )
+}
+
+
+use_data <- reactive({
+  set.seed(123)
+  df <- 
+    get(input$data) |> 
+    sample_n(4) |> 
+    mutate(id = row_number()) |> 
+    relocate(id) |> 
+    mutate_if(is.integer, as.numeric)
+  
+  x <- slice(df, 1:3)
+  
+  if (input$distort == "Yes") {
+    y <- 
+      distort_data(df) |> 
+      slice(2:4)
+  } else {
+    y <- x
+  }
+  
+  list(
+    correct = x,
+    attempt = y
+  )
+})
+```
+
+
+```{r comparison}
+output$comparison <- renderUI({
+
+  x <- use_data()$correct
+  y <- use_data()$attempt
+  
+  results <- 
+    waldo::compare(
+      x, 
+      y,
+      x_arg = "correct",
+      y_arg = "attempt"
+    )
+  
+  
+  if (!length(results)) {
+    # add message like waldo::compare(1, 1)
+    return({
+        HTML("\U2714 No differences")
+    })
+  }
+  
+  # else
+  results |> 
+    glue_collapse("\n\n\n") |>
+    as_glue() |>
+    ansi_to_html()
+})
+
+htmlOutput("comparison")
+```
+
+Data
+================================
+
+
+```{r show-data}
+
+renderUI({
+  df_list <- 
+    use_data() |> 
+    map(right_join, tibble(id = 1:5)) |> 
+    map(arrange, id)
+
+  capture.output(df_list) |> 
+    paste(collapse = "<br>") |> 
+    ansi_to_html()
+})
+
+```
