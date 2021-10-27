@@ -145,10 +145,31 @@ list(
 
 # \faIcon{cogs} Skills
 
-* **highly proficient** cleaning data, data visualization, tidyverse suite of packages, R package development, code review and mentorship 
-* **proficient** SQL, Tableau, Qliksense, shiny, github, geospatial relationships, census data
-* **novice** js, css, APIs
-* **interested** python, machine learning, statistics
+```{r eval=FALSE}
+library(kableExtra)
+
+list(
+  `highly proficient` = c("data manipulation", "data viz", "tidyverse", "package dev", "code review"),
+  proficient = c("SQL", "Tableau", "Qliksense", "shiny", "GitHub", "GIS", "demography"),
+  novice = c("JavaScript", "CSS", "DBT", "APIs"),
+  interested = c("Python", "Machine Learning", "Statistics")
+) |>
+  map(sort) |>
+  map(glue_collapse, " -- ") |>
+  flatten_df() |>
+  kable(booktabs = TRUE, align = "c", escape = FALSE, format = "latex") |>
+  # kable(booktabs = TRUE, align = "c") |>
+  kable_styling(full_width = F, font_size = 9) |>
+  row_spec(0, bold = T, color = "#009acd") |>
+  row_spec(1, bold = F, color = "#7f7f7f") |>
+  column_spec(column = 1:4, width = "4.75cm")
+```
+
+
+* **highly proficient** data manipulation & visualization -- tidyverse -- package development -- code review 
+* **proficient** sql -- tableau -- qliksense -- shiny -- github -- gis -- census data
+* **novice** javascript -- css -- dbt -- api
+* **interested** python -- machine learning -- advanced statistics
 
 # \faIcon{laptop-code} R Packages
 
