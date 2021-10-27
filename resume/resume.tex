@@ -1,0 +1,229 @@
+%!TEX TS-program = xelatex
+%!TEX encoding = UTF-8 Unicode
+% Awesome CV LaTeX Template for CV/Resume
+%
+% This template has been downloaded from:
+% https://github.com/posquit0/Awesome-CV
+%
+% Author:
+% Claud D. Park <posquit0.bj@gmail.com>
+% http://www.posquit0.com
+%
+%
+% Adapted to be an Rmarkdown template by Mitchell O'Hara-Wild
+% 23 November 2018
+%
+% Template license:
+% CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)
+%
+%-------------------------------------------------------------------------------
+% CONFIGURATIONS
+%-------------------------------------------------------------------------------
+% A4 paper size by default, use 'letterpaper' for US letter
+\documentclass[11pt, a4paper]{awesome-cv}
+
+% Configure page margins with geometry
+\geometry{left=1.4cm, top=.8cm, right=1.4cm, bottom=1.8cm, footskip=.5cm}
+
+% Specify the location of the included fonts
+\fontdir[fonts/]
+
+% Color for highlights
+% Awesome Colors: awesome-emerald, awesome-skyblue, awesome-red, awesome-pink, awesome-orange
+%                 awesome-nephritis, awesome-concrete, awesome-darknight
+
+\definecolor{awesome}{HTML}{333333}
+
+% Colors for text
+% Uncomment if you would like to specify your own color
+% \definecolor{darktext}{HTML}{414141}
+% \definecolor{text}{HTML}{333333}
+% \definecolor{graytext}{HTML}{5D5D5D}
+% \definecolor{lighttext}{HTML}{999999}
+
+% Set false if you don't want to highlight section with awesome color
+\setbool{acvSectionColorHighlight}{true}
+
+% If you would like to change the social information separator from a pipe (|) to something else
+\renewcommand{\acvHeaderSocialSep}{\quad\textbar\quad}
+
+\def\endfirstpage{\newpage}
+
+%-------------------------------------------------------------------------------
+%	PERSONAL INFORMATION
+%	Comment any of the lines below if they are not required
+%-------------------------------------------------------------------------------
+% Available options: circle|rectangle,edge/noedge,left/right
+
+\name{Jake}{Riley}
+
+\position{Senior Data Analyst \textbar{} Philadelphia, PA}
+
+\mobile{202-243-9677}
+\email{\href{mailto:rjake@sas.upenn.edu}{\nolinkurl{rjake@sas.upenn.edu}}}
+\github{rjake}
+
+% \gitlab{gitlab-id}
+% \stackoverflow{SO-id}{SO-name}
+% \skype{skype-id}
+% \reddit{reddit-id}
+
+\quote{I have been working with data since 2003. I have a deep passion
+for automation, collaboration, and advancing data literacy. This resume
+was even compiled with code. My work history is interwoven with school
+and working for social service organizations; this is resume reflects
+the most relevant work history in my analytics career.}
+
+\usepackage{booktabs}
+
+\providecommand{\tightlist}{%
+	\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+%------------------------------------------------------------------------------
+
+
+
+% Pandoc CSL macros
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newenvironment{CSLReferences}[3] % #1 hanging-ident, #2 entry spacing
+ {% don't indent paragraphs
+  \setlength{\parindent}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1 \everypar{\setlength{\hangindent}{\cslhangindent}}\ignorespaces\fi
+  % set entry spacing
+  \ifnum #2 > 0
+  \setlength{\parskip}{#2\baselineskip}
+  \fi
+ }%
+ {}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{#1\hfill\break}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+
+\begin{document}
+
+% Print the header with above personal informations
+% Give optional argument to change alignment(C: center, L: left, R: right)
+\makecvheader
+
+% Print the footer with 3 arguments(<left>, <center>, <right>)
+% Leave any of these blank if they are not needed
+% 2019-02-14 Chris Umphlett - add flexibility to the document name in footer, rather than have it be static Curriculum Vitae
+\makecvfooter
+  {October 2021}
+    {Jake Riley~~~·~~~Curriculum Vitae}
+  {\thepage}
+
+
+%-------------------------------------------------------------------------------
+%	CV/RESUME CONTENT
+%	Each section is imported separately, open each file in turn to modify content
+%------------------------------------------------------------------------------
+
+
+
+\hypertarget{relevant-work-experience}{%
+\section{\texorpdfstring{\faIcon{briefcase} Relevant Work
+Experience}{ Relevant Work Experience}}\label{relevant-work-experience}}
+
+\begin{cventries}
+    \cventry{Clinical Data Programmer/Analyst III}{Children's Hospital of Philadelphia}{Philadelphia, PA}{2017 - Present}{\begin{cvitems}
+\item Mentor and accelerate technical capital of analytics team while reducing technical debt
+\item Innovate and enhance in-house data solutions (R packages, dashboard templates, trusted data layer)
+\item Analytics pipeline from query (SQL) to dashboards and reporting
+\item Consult on analytic strategy, data visualization, and technical solutions
+\item Developed automated query generation methodology for US News (~1000 questions)
+\item Introduced novel datasets to our data warehouse (diagnosis hierarchy, self-generating hospital calendar, zipcode markets for strategy)
+\item Built data infrastructure that became foundation for enterprise tables
+\item Tools: SQL, Qliksense, dbt, R, shiny, VS Code
+\end{cvitems}}
+    \cventry{BI Analyst - Human Resources}{Comcast}{Philadelphia, PA}{2016 - 2017}{\begin{cvitems}
+\item Built new dashboards for employee turnover, data dictionary, and underrepresented minorities for up to 1,200 end users
+\item Automated a quarterly report for the senior vice president of human resources
+\item Helped peers use the right methods to generate insights and visualize results
+\item Provided difficult analyses such as travelling salesman problems
+\item Tools: SAP Business Objects, Tableau, R
+\end{cvitems}}
+    \cventry{Data Analyst}{PolicyMap}{Philadelphia, PA}{2015 - 2016}{\begin{cvitems}
+\item Aggregated over 150 national datasets across 9 geographies
+\item Developed new automated process for testing and data validation
+\item Tools: SQL, ArcMap, R
+\end{cvitems}}
+    \cventry{Production Analyst}{Whole Foods Market}{Landover, MD}{2003 - 2008}{\begin{cvitems}
+\item Responsible for automating the production schedule for the Mid-Atlantic commissary
+\item Determined ingredient quantity for daily and holiday orders of 32 stores
+\item Minimized redundant usage of kitchen equipment (only want to prep and clean each station once)
+\item Determined how many 180-gallon kettles of soup to be made each hour
+\item Tools: Excel/VBA
+\end{cvitems}}
+\end{cventries}
+
+\hypertarget{education}{%
+\section{\texorpdfstring{\faIcon{university}
+Education}{ Education}}\label{education}}
+
+\begin{cventries}
+    \cventry{B.A. Sociology - Quantitative Methods  |  summa cum laude  |  phi beta kappa}{University of Pennsylvania}{Philadelphia, PA}{2012-2015}{\begin{cvitems}
+\item Non-traditional student. Coursework focused on data analysis, GIS, and data visualization. Projects focused on census data and demography.
+\end{cvitems}}
+    \cventry{A.A. Liberal Arts | with highest honors | phi theta kappa}{Community College of Philadelphia}{Philadelphia, PA}{2011-2012}{}\vspace{-4.0mm}
+\end{cventries}
+
+\hypertarget{skills}{%
+\section{\texorpdfstring{\faIcon{cogs} Skills}{ Skills}}\label{skills}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{highly proficient} cleaning data, data visualization,
+  tidyverse suite of packages, R package development, code review and
+  mentorship
+\item
+  \textbf{proficient} SQL, Tableau, Qliksense, shiny, github, geospatial
+  relationships, census data
+\item
+  \textbf{novice} js, css, APIs
+\item
+  \textbf{interested} python, machine learning, statistics
+\end{itemize}
+
+\hypertarget{r-packages}{%
+\section{\texorpdfstring{\faIcon{laptop-code} R
+Packages}{ R Packages}}\label{r-packages}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{headliner} \emph{(github)} generates building blocks for
+  creating dynamic text
+\item
+  \textbf{shinyobjects} \emph{(CRAN)} allows the user to debug reactive
+  objects interactively
+\item
+  \textbf{simplecolors} \emph{(CRAN)} a simple color palette that is
+  intuitive and easy to remember
+\item
+  \textbf{whereiation} \emph{(github)} where(is the var)iation - an
+  automated exploratory data analytics pacakage
+\end{itemize}
+
+\hypertarget{volunteercommunity}{%
+\section{\texorpdfstring{\faIcon{users}
+Volunteer/Community}{ Volunteer/Community}}\label{volunteercommunity}}
+
+\textbf{Philadelphia, PA} Code for Philly (contributor), Compass (data),
+Iraq Veterans Against the War (data), \#MakeoverMonday (tableau), Men's
+Resource Center (facilitator), Mill Creek Farm (data), Neighborhood Bike
+Works (facilitator), OpenDataPhilly (data), Project HOME (data),
+R-Ladies (speaker), TechCamp Philly (data), TransHealth Conference
+(data)
+
+\textbf{Washington, DC} DC Trans Coalition (advocate), Emergence
+Community Arts Collective (data), OneDC (data)
+
+\end{document}
