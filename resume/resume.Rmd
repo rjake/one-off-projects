@@ -1,0 +1,179 @@
+---
+name: Jake
+surname: Riley
+position: "Senior Data Analyst | Philadelphia, PA"
+phone: 202-243-9677
+#www: xyz.com
+email: "rjake@sas.upenn.edu"
+#twitter: xyz
+github: rjake
+#linkedin: xyz
+headcolor:  "333333" # "3E7474" # simplecolors::sc("dullteal4")
+date: "`r format(Sys.time(), '%B %Y')`"
+aboutme: "I have been working with data since 2003. I have a deep passion for automation, collaboration, and advancing data literacy. This resume was even compiled with code. My work history is interwoven with school and working for social service organizations; this is resume reflects the most relevant work history in my analytics career."
+
+output: 
+    vitae::awesomecv:
+      keep_tex: true
+      #latex_engine: xelatex # may need to run tinytex::install_tinytex()
+always_allow_html: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+library(vitae)
+library(tidyverse)
+library(glue)
+library(rlang)
+library(fontawesome)
+
+list_to_entry <- function(x) {
+  df <- purrr::map_dfr(x, as_tibble)
+  f <- detailed_entries #partial(detailed_entries, .protect = FALSE)
+  
+  # rearrange formals
+  formal_names <- names(formals(f))
+  
+  explicit_args <- 
+    match(
+      c("data", names(df)),
+      formal_names
+    )
+    
+  missing_args <- setdiff(seq_along(formal_names), explicit_args)
+  
+  formals(f) <- formals(f)[c(explicit_args, missing_args)]
+
+  # make expr
+  expr(f(df, !!!parse_exprs(names(df)))) |> 
+    eval()
+}
+
+
+```
+
+# \faIcon{briefcase} Relevant Work Experience
+
+```{r}
+list(
+  list(
+    with = "Children's Hospital of Philadelphia",
+    what = "Clinical Data Programmer/Analyst III",
+    when = "2017 - Present",
+    where = "Philadelphia, PA",
+    why = c(
+      "Mentor and accelerate technical capital of analytics team while reducing technical debt",
+      "Innovate and enhance in-house data solutions (R packages, dashboard templates, trusted data layer)",
+      "Analytics pipeline from query (SQL) to dashboards and reporting",
+      "Consult on analytic strategy, data visualization, and technical solutions", 
+      "Developed automated query generation methodology for US News (~1000 questions)",
+      "Introduced novel datasets to our data warehouse (diagnosis hierarchy, self-generating hospital calendar, zipcode markets for strategy)",
+      "Built data infrastructure that became foundation for enterprise tables",
+      "Tools: SQL, Qliksense, dbt, R, shiny, VS Code"
+    )
+  ),
+  list(
+    with = "Comcast",
+    what = "BI Analyst - Human Resources",
+    when = "2016 - 2017",
+    where = "Philadelphia, PA",
+    why = c(
+      "Built new dashboards for employee turnover, data dictionary, and underrepresented minorities for up to 1,200 end users", 
+      "Automated a quarterly report for the senior vice president of human resources",
+      "Helped peers use the right methods to generate insights and visualize results",
+      "Provided difficult analyses such as travelling salesman problems",
+      "Tools: SAP Business Objects, Tableau, R"
+    )
+  ),
+  list(
+    with = "PolicyMap",
+    what = "Data Analyst",
+    when = "2015 - 2016",
+    where = "Philadelphia, PA",
+    why = c(
+      "Aggregated over 150 national datasets across 9 geographies", 
+      "Developed new automated process for testing and data validation",
+      "Tools: SQL, ArcMap, R"
+    )
+  ),
+  list(
+    with = "Whole Foods Market",
+    what = "Production Analyst",
+    when = "2003 - 2008",
+    where = "Landover, MD",
+    why = c(
+      "Responsible for automating the production schedule for the Mid-Atlantic commissary", 
+      "Determined ingredient quantity for daily and holiday orders of 32 stores", 
+      "Minimized redundant usage of kitchen equipment (only want to prep and clean each station once)",
+      "Determined how many 180-gallon kettles of soup to be made each hour",
+      "Tools: Excel/VBA"
+    )
+  )
+) |> 
+  list_to_entry()
+```
+
+# \faIcon{university} Education
+
+```{r}
+list(
+  list(
+    with = "University of Pennsylvania",
+    what = "B.A. Sociology - Quantitative Methods  |  summa cum laude  |  phi beta kappa",
+    when = "2012-2015",
+    where = "Philadelphia, PA",
+    why = "Non-traditional student. Coursework focused on data analysis, GIS, and data visualization. Projects focused on census data and demography."
+  ),
+  list(
+    with = "Community College of Philadelphia",
+    what = "A.A. Liberal Arts | with highest honors | phi theta kappa",
+    when = "2011-2012",
+    where = "Philadelphia, PA",
+    why = NA_character_
+  )#,
+  # list(
+  #   with = "Montgomery County Community College",
+  #   what = "part-time general studies",
+  #   when = "2003-2005",
+  #   where = "Rockville, MD",
+  #   why = NA_character_
+  # )
+) |> 
+  list_to_entry()
+```
+
+# \faIcon{cogs} Skills
+
+* **highly proficient** cleaning data, data visualization, tidyverse suite of packages, R package development, code review and mentorship 
+* **proficient** SQL, Tableau, Qliksense, shiny, github, geospatial relationships, census data
+* **novice** js, css, APIs
+* **interested** python, machine learning, statistics
+
+# \faIcon{laptop-code} R Packages
+
+* **headliner** *(github)* generates building blocks for creating dynamic text
+* **shinyobjects** *(CRAN)* allows the user to debug reactive objects interactively
+* **simplecolors** *(CRAN)* a simple color palette that is intuitive and easy to remember
+* **whereiation** *(github)* where(is the var)iation - an automated exploratory data analytics pacakage
+
+
+# \faIcon{users} Volunteer/Community
+
+**Philadelphia, PA** Code for Philly (contributor), Compass (data), Iraq Veterans Against the War (data), #MakeoverMonday (tableau), Men’s Resource Center (facilitator), Mill Creek Farm (data), Neighborhood Bike Works (facilitator), OpenDataPhilly (data), Project HOME (data), R-Ladies (speaker), TechCamp Philly (data), TransHealth Conference (data)
+
+**Washington, DC** DC Trans Coalition (advocate), Emergence Community Arts Collective (data), OneDC (data)
+
+```{r}
+knitr::knit_exit()
+```
+
+# Examples:
+https://github.com/tallguyjenks/CV/blob/master/CV.pdf
+https://github.com/akirosingh/CV/blob/master/CV.pdf
+https://github.com/mlampros/My.CVitae/blob/master/docs/cv.pdf
+https://github.com/loreabad6/R-CV/blob/master/CV.pdf
+https://github.com/jooyoungseo/jy_CV/blob/master/docs/JooYoung_Seo_Short_CV.pdf
+https://github.com/seabbs/cv/blob/master/cv/cv.pdf
+
+Can open like this??? https://docs.google.com/viewer?url=https://raw.githubusercontent.com/loreabad6/R-CV/master/CV.pdf
