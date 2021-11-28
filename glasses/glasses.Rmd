@@ -1,0 +1,260 @@
+---
+title: "Glasses Fit"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+    source_code: embed
+    theme: lumen
+    
+runtime: shiny
+---
+
+```{r input_demo, eval = FALSE}
+input <- list(
+  pd = 59,
+  offset = c(-2, 4),
+  frame = c(125, 130),
+  bridge = c(18, 20),
+  lens = c(35, 45)
+)
+
+options(shiny.suppressMissingContextError = TRUE)
+```
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(shiny)
+library(shinyWidgets)
+library(simplecolors)
+library(gt)
+
+enableBookmarking(store = "url")
+
+```
+
+Sidebar {.sidebar data-width=300}
+-----------------------------------------------------------------------
+
+**Pupillary Distance**
+
+Distance from pupil to pupil.
+```{r inpud-pd}
+numericInput(
+  inputId = "pd",
+  label = NULL,
+  value = 59
+)
+```
+
+**Offset Tolerance (mm)**
+
+How "off from center" can the glasses be based on your PD? Lower will place your pupils closer to the center. Higher will place your pupils towards the edge of the frame.
+```{r slider_offset}
+sliderInput(
+  inputId = "offset",
+  label = NULL,
+  min = -10,
+  max = 10,
+  value = c(0, 6)
+)
+```
+
+**Lens Width**
+```{r slider-lens}
+sliderInput(
+  inputId = "lens",
+  label = NULL,
+  min = 25,
+  max = 60,
+  value = c(35, 50)
+)
+```
+
+**Bridge Width**
+```{r slider-bridge}
+sliderInput(
+  inputId = "bridge",
+  label = NULL,
+  min = 14,
+  max = 25,
+  value = c(17, 20)
+)
+```
+
+
+**Frame Width**
+```{r}
+sliderInput(
+  inputId = "frame",
+  label = NULL,
+  min = 115,
+  max = 160,
+  value = c(125, 135)
+)
+```
+
+```{r bookmark}
+shiny::bookmarkButton()
+```
+
+
+```{r base_df}
+base_df <- reactive({
+  tibble(
+    lens = seq(input$lens[1], input$lens[2])
+  ) %>% 
+    expand(
+      lens, 
+      bridge = seq(input$bridge[1], input$bridge[2])
+    ) %>% 
+    mutate(
+      pd = lens + bridge - input$pd
+    ) %>% 
+    pivot_wider(names_from = lens, values_from = pd) 
+})
+```
+
+Column
+-----------------------------------------------------------------------
+
+### Best Fit
+
+```{r fns}
+# find columns within range of offset value
+find_column <- function(df, f) {
+  # df <- base_df(); cond = "GTE"; f = min
+  test_result <-  
+    df[-1] >= min(input$offset) & df[-1] <= max(input$offset)
+  
+  suppressWarnings(
+    apply(
+      X = test_result,
+      MARGIN = 1, 
+      FUN = function(x) {
+        which(x) %>% 
+          names() %>% 
+          as.integer() %>% 
+          f()
+      }
+    )
+  )
+}
+
+# link info here: 
+# https://community.rstudio.com/t/create-interactive-links-in-gt-table-in-rmarkdown/70266/2
+zenni_link <- function(df, lens, bridge, frame) {
+  df %>%
+    mutate(
+      min_lens = find_column(., min),
+      max_lens = find_column(., max)
+    ) %>%
+    mutate(
+      zenni = paste0(
+        "https://www.zennioptical.com/b/?",
+        "Nf=Bridge%7CBTWN+", bridge, ".0+", bridge, ".0",
+        "%7C%7CLens%20Width%7CBTWN+", min_lens, "+", max_lens,
+        "||Frame%20Width|BTWN+", min(input$frame), "+", max(input$frame)
+      )
+    ) %>% 
+    mutate(
+      zenni = map2(zenni, glue::glue("{min_lens} - {max_lens}"), ~ htmltools::a(href = .x, .y)),
+      zenni = map(zenni, ~ gt::html(as.character(.x)))
+    ) %>% 
+    select(-min_lens, - max_lens)
+}
+```
+
+```{r as_plot, eval = FALSE}
+library(plotly)
+
+renderPlotly({
+  df <- 
+    base_df() %>% 
+    zenni_link() %>% 
+    pivot_longer(
+      cols = -c(bridge, zenni),
+      names_to = "lens",
+      values_to = "pd"
+    ) %>% 
+    mutate(
+      lens = as.integer(lens),
+      color = case_when(
+        pd == 0 ~ "center",
+        between(pd, min(input$offset), max(input$offset)) ~ "in-range",
+        TRUE ~ "outside"
+      )
+    )
+
+  link <-
+    df %>% 
+    group_by(bridge, zenni) %>% 
+    summarise(lens = max(lens) + 1) %>% 
+    ungroup()
+
+  ggplot(df, aes(lens, bridge, fill = color)) +
+    geom_tile(color = sc("grey3")) +
+    scale_y_reverse() +
+    scale_fill_manual(values = c(
+      "center" = "white",
+      "in-range" = sc("yellow2"),
+      "outside" = sc("grey2")
+    ))
+  
+})
+```
+
+
+```{r gt}
+gt::render_gt({
+  
+  # slow_df <- shiny::debounce(base_df(), 1000)
+  cols_to_color <- names(base_df())[-1]
+
+  # color_cells <- function(x) {
+  #   case_when(
+  #     x == 0 ~ "white",
+  #     between(x, input$offset[1], input$offset[2]) ~ sc("yellow1"),
+  #     x < input$offset[1] ~ sc("orange1"),
+  #     TRUE ~ sc("blue1")
+  #   )
+  # }
+  
+  base_df() %>% 
+    zenni_link() %>% 
+    gt::gt(
+      rowname_col = "bridge"
+    ) %>% 
+    gt::tab_stubhead(label = "bridge") %>% 
+    gt::tab_spanner(
+      label = "Lens Width", 
+      columns = everything()
+    ) %>% 
+    gt::tab_options(
+      data_row.padding = px(1)
+    ) %>% 
+    gt::data_color(
+      columns = one_of(cols_to_color),
+      colors = 
+        scales::col_bin(
+          palette = sc("grey2", "yellow2", "yellow2", "grey2"),
+          domain = c(-8, 8),
+          bins = c(-8, min(input$offset), max(input$offset) + 1, 8)
+          )
+    )
+  })
+
+
+knitr::knit_exit()
+  
+```
+
+# TODO:
+
+* [ ] add hover text of pd values https://github.com/rstudio/gt/issues/181
+* [x] add links for zenni
+* [ ] glasses usa
+* [ ] eyebuydirect
+* [ ] warby parker
+* [ ] add pause before rendering (debounce, throttle)
+
