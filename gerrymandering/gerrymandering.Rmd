@@ -1,0 +1,403 @@
+---
+title: "Untitled"
+author: "Jake"
+date: "June 25, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#First establish your workspace & libraries
+  setwd("C:\\Users\\foxtr\\Downloads\\cb_2016_us_cd115_500k")
+
+  library(tidyverse)  #dplyr piping
+  library(stringr)
+  library(maptools)   #fortify requires rgeos which is here
+  library(mapproj)
+  library(rgeos)
+  library(rgdal)      #readOGR and spTransform
+
+  options(scipen = 999)
+```
+
+```{r eval = F}
+#This script will convert a GIS polygon to Tableau polygon
+#Read in map (change "layer = ..." to match you file) then assign CRS (second line)
+  us <- readOGR(dsn=".", 
+                layer="cb_2016_us_cd115_500k",
+                stringsAsFactors=FALSE) %>%
+           spTransform(., CRS("+init=epsg:4326")) #this is WGS84
+```
+
+```{r eval = F}
+  # https://www.census.gov/geo/maps-data/data/cbf/cbf_counties.html
+  # convert it to Albers equal area
+    us_aea <- 
+      spTransform(us, 
+                  CRS("+proj=laea +lat_0=45 +lon_0=-100 
+                      +x_0=0 +y_0=0 
+                      +a=6370997 +b=6370997 
+                      +units=m +no_defs"))
+
+    us_aea@data$id <- rownames(us_aea@data)
+  
+  # extract, then rotate, shrink & move alaska (and reset projection)
+  # need to use state IDs via # https://www.census.gov/geo/reference/ansi_statetables.html
+    alaska <- us_aea[us_aea$STATEFP=="02",]
+    alaska <- elide(alaska, rotate=-35)
+    alaska <- elide(alaska, scale=max(apply(bbox(alaska), 1, diff)) / 2.3)
+    alaska <- elide(alaska, shift=c(-2100000, -2500000))
+    proj4string(alaska) <- proj4string(us_aea)
+    plot(alaska)
+  
+  # extract, then rotate & shift hawaii
+    hawaii <- us_aea[us_aea$STATEFP=="15",]
+    hawaii <- elide(hawaii, rotate=-35)
+    hawaii <- elide(hawaii, shift=c(5400000, -1700000))
+    proj4string(hawaii) <- proj4string(us_aea)
+    hawaii <- hawaii[as.integer(hawaii$CD115FP) %in% 
+                      #remove those not in these congressional districts
+                     c(1:8, 12, 24, 27), ]
+    plot(hawaii)
+    
+    plot(rbind(alaska, hawaii, us_aea[us_aea$STATEFP %in% c("48"),]))
+```
+
+```{r eval = F}
+  # remove old states and put new ones back in; note the different order
+  # we're also removing puerto rico in this example but you can move it
+  # between texas and florida via similar methods to the ones we just used
+    us_aea_remove <-  
+        us_aea[!us_aea$STATEFP %in% 
+               c("02", "15", "60", "66", "69", "72", "78"), ]
+
+    us_aea_final <- rbind(us_aea_remove, alaska, hawaii)
+    #rescale to fit WGS84
+      us_aea_final <- elide(us_aea_final, scale = 10) 
+
+      plot(us_aea_final)
+      
+  # get ready for ggplot
+  map_attr <-
+    as.data.frame(us_aea_final) %>% 
+    select(GEOID, STATEFP, CD115FP)
+
+  a <- map_attr %>% distinct(STATEFP)  
+    
+  map_fortify <- 
+    fortify(us_aea_final, region="GEOID") 
+  
+  map_polygons <- 
+    map_fortify %>% 
+    left_join(map_attr, by = c("id" = "GEOID")) %>%
+    mutate(piece = as.integer(piece),
+           group = as.character(group)) %>% 
+    filter((STATEFP != "15") | 
+           (STATEFP == "15" & 
+              (piece %in% c(1:8, 12, 24, 27))))
+
+  # write to .csv and .shp
+    write.csv(map_polygons, "map_polygons.csv", row.names = F)
+```
+
+```{r eval = F}
+map_polygons <- read.csv("map_polygons.csv", stringsAsFactors = F)
+
+#Generate polygon outlines
+  dist_groups <-
+    map_polygons %>% 
+    distinct(id, STATEFP, CD115FP)
+  
+  group_outline <- 
+    data.frame(long = vector("numeric", 0),
+               lat = vector("numeric", 0),
+               id = vector(class(map_polygons$id), length = 0))
+
+  for(i in 1:nrow(dist_groups)){
+    #i = 289
+    group_id <- 
+      map_polygons %>% 
+      filter(id == dist_groups$id[i])
+    
+    group_points <-
+      group_id %>% 
+      select(long, lat)
+    
+    select_hull <- chull(group_points)
+    select_hull <- c(select_hull, select_hull[1])
+    
+    group_outline <-
+      group_points[select_hull, ] %>%
+      mutate(id = dist_groups$id[i]) %>% 
+      rbind(group_outline)
+  }
+
+write.csv(group_outline, "map_hulls.csv", row.names = F)
+```
+
+#convert these back to polygons
+The function comes from [this thread](https://stackoverflow.com/questions/33841985/polygon-intersection-in-r)
+
+#read in CSVs
+```{r}
+  group_outline <- 
+  read.csv("map_hulls.csv", stringsAsFactors = F) %>% 
+  mutate(id = str_pad(id, 4, "left", "0"))
+
+  map_polygons <- 
+    read.csv("map_polygons.csv", stringsAsFactors = F) %>% 
+    mutate(id = str_pad(id, 4, "left", "0"),
+           STATEFP = str_pad(STATEFP, 2, "left", "0"),
+           CD115FP = str_pad(CD115FP, 2, "left", "0"),
+           group = paste0(id, "_", piece)
+    )
+```
+
+#test map of all districts in new projection
+```{r}
+# plot it
+  ggplot() + 
+  geom_polygon(data = map_polygons,
+               aes(x = long, y = lat, group = group),
+               size = .05, color = "grey60") +
+  coord_equal() +
+  theme_void()
+```
+
+#Test map of discrepancy
+```{r}
+test_district <- 3706
+
+  ggplot() +
+  geom_polygon(data = filter(group_outline, id == test_district), 
+               aes(long, lat, group = id), 
+               color = "grey50", alpha = .1) +
+  geom_polygon(data = filter(map_polygons, id == test_district),
+             aes(long, lat, group = group), 
+             alpha = .8, color = "white") +
+  coord_equal() +
+  theme_void()
+
+```
+
+#Convert dataframes to shapefiles
+```{r eval = F}
+convert_df2sp <-
+  function(df, group_field){
+      df2convert <- 
+        df %>% 
+        mutate_(sp_group = group_field)
+
+      sp_object <-
+        lapply(unique(df2convert$sp_group), 
+               function(i){
+                Polygons(
+                  list(
+                    Polygon(
+                      df2convert[df2convert$sp_group == i,
+                                 1:2])),
+                ID=i)
+        }) %>% 
+        SpatialPolygons(.) %>% 
+        methods::as(Class = "SpatialPolygonsDataFrame")
+      
+      sp_object@data[1] <- row.names(sp_object)
+      colnames(sp_object@data)[1] <- group_field
+      
+      sp_object_final <-
+        sp_object
+      
+      return(sp_object_final)
+  }
+
+str_pad_0 <-
+  function(x, n){
+    str_pad(x, width = n, pad = "0")
+  }
+
+#test
+  convert_df2sp(df = filter(map_polygons, STATEFP == "15"),
+                group_field = "group")%>% plot()
+
+#hulls   
+  map_hulls <- convert_df2sp(group_outline, "id")
+  map_hulls$id <- str_pad_0(map_hulls$id, 4)
+  map_hulls$STATEFP <- str_sub(map_hulls$id, 1, 2)
+  
+#districts
+  map_districts <-
+    convert_df2sp(map_polygons, "group") %>% 
+    merge(map_polygons %>% 
+                distinct(group, STATEFP, CD115FP, id), 
+          by = "group") %>% 
+    #fix overlapping points
+    gBuffer(byid=TRUE, width=0)
+
+  map_districts$id <- str_pad_0(map_districts$id, 4)
+  map_districts$CD115FP <- str_pad_0(map_districts$CD115FP, 2)
+  map_districts$STATEFP <- str_pad_0(map_districts$STATEFP, 2)
+  map_districts$area <- gArea(map_districts, byid=TRUE)*100000
+
+#dissolve to states
+  map_states <-
+    gUnaryUnion(map_districts, 
+                id = map_districts$STATEFP) %>%
+    #convert to dataframe
+    methods::as(Class = "SpatialPolygonsDataFrame")
+  
+  map_states@data[1] <- row.names(map_states)
+  colnames(map_states@data)[1] <- "STATEFP"
+```
+
+#Save shapefiles
+```{r eval = F}
+save_as_shp <-
+  function(x){
+    writeOGR(obj = get(x), 
+             dsn=".", 
+             layer = as.character(x), 
+             driver="ESRI Shapefile",
+             overwrite_layer = T)
+  }
+
+
+save_as_shp("map_hulls")
+save_as_shp("map_districts")
+save_as_shp("map_states")
+```
+
+#Read in shapefiles
+```{r}
+map_hulls <- readOGR(dsn = ".", "map_hulls",
+                     stringsAsFactors=FALSE)
+
+map_districts <- readOGR(dsn = ".", "map_districts",
+                         stringsAsFactors=FALSE)
+
+map_states <- readOGR(dsn = ".", "map_states",
+                      stringsAsFactors=FALSE)
+```
+
+#create function for clipping hulls
+```{r}
+compare_list <-
+  map_districts@data %>% 
+  distinct(STATEFP, CD115FP, id) %>% 
+  mutate(area_pct = 0.0)
+
+clip_shapes <-
+  function(index, plot_yn){
+    #index = 24
+      compare_district <- compare_list$id[index]
+      compare_state <- compare_list$STATEFP[index]
+
+      w <- map_states[map_states$STATEFP == compare_state, ]
+      x <- map_hulls[map_hulls$id == compare_district, ]
+      y <- map_districts[map_districts$id == compare_district, ]
+      z <- 
+        gIntersection(x, w, byid = TRUE, drop_lower_td = TRUE) %>%
+        methods::as(Class = "SpatialPolygonsDataFrame") 
+      
+    
+      z@data[1] <- compare_district
+      colnames(z@data)[1] <- "id"
+
+      if(missing(plot_yn)) {
+        return(z)
+
+      } else if(plot_yn == T){
+            #plot(w, col = "grey80")
+            #plot(x, add = T)
+            #plot(z, add = T, col = "yellow")
+            #plot(y, add = T, col = "blue")
+            return(plot(z))
+      } 
+  }
+```
+
+#Example
+```{r}
+  rbind(clip_shapes(132), clip_shapes(133)) %>% 
+  plot(col = rgb(0, 0, 1, 0.5), asp = 1)
+```
+
+#build new shapefile with clipped hulls
+```{r eval = F}
+clipped_hulls <- clip_shapes(1)
+
+for(i in 2:nrow(compare_list)){
+    clipped_hulls <- rbind(clipped_hulls, clip_shapes(i))
+  }
+
+  plot(clipped_hulls, col = rgb(0, 0, 1, 0.2), asp = 1)
+  plot(map_districts, add = T)
+  
+  state_ex <- which(compare_list$STATEFP == 24)
+  a <- map_districts[which(map_districts$STATEFP == 24), ]
+  plot(clipped_hulls[state_ex,], col = rgb(0, 0, 1, 0.2), asp = 1)
+  plot(a, add = T)
+
+clipped_hulls$area <- gArea(clipped_hulls, byid=TRUE)*100000
+#clipped_hulls$STATEFP <- str_sub(clipped_hulls$id, 1, 2)
+#clipped_hulls$CD115FP <- str_sub(clipped_hulls$id, 3, 4)
+
+save_as_shp("clipped_hulls")
+```
+
+```{r eval = F}
+map_area_dist <-
+  map_districts@data %>% 
+  group_by(id) %>% 
+  summarise(area_dist = sum(area))
+
+map_area_pct <-
+  clipped_hulls@data %>% 
+  group_by(id) %>% 
+  summarise(area_hull = sum(area)) %>% 
+  left_join(map_area_dist) %>% 
+  mutate(area_pct = round(area_dist/area_hull, 3)*100,
+         STATEFP = str_sub(id, 1, 2))
+
+write.csv(map_area_pct, "map_area_pct.csv", 
+          row.names = F)
+```
+
+```{r}
+map_districts@data <- 
+  map_districts@data %>% 
+  left_join(map_area_pct)
+
+save_as_shp("map_districts")
+```
+
+
+#final CSVs
+```{r eval = F}
+map_states_df <- 
+  fortify(map_states, region="STATEFP") %>%
+  mutate(STATEFP = id)
+
+clipped_hulls_df <-
+  fortify(clipped_hulls, region="id") %>%
+  mutate(STATEFP = str_sub(id, 1, 2),
+         CD115FP = str_sub(id, 3, 4))
+
+map_districts_df <-
+  fortify(map_districts, region="id") %>%
+  left_join(map_area_pct) %>% 
+  mutate(STATEFP = str_sub(id, 1, 2),
+         CD115FP = str_sub(id, 3, 4))
+
+write.csv(clipped_hulls_df, "clipped_hulls_df.csv", row.names = F)
+write.csv(map_districts_df, "map_districts_df.csv", row.names = F)
+write.csv(map_states_df, "map_states_df.csv", row.names = F)
+```
+
+```{r}
+clipped_hulls22 <- readOGR(dsn = ".", "clipped_hulls",
+                     stringsAsFactors=FALSE)
+```
+
