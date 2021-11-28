@@ -1,0 +1,206 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(sf)
+library(imager)
+library(tidyverse)
+library(stringr)
+options(scipen = 999)
+
+#setwd("C:/Users/Public/Pictures")
+
+image_file <- "./images/patrick_stewart.png"
+```
+
+```{r}
+get_modulo <- 10
+
+get_image <-
+    load.image(image_file) %>% 
+    rm.alpha() %>% 
+    grayscale(drop = F) %>%
+    as.data.frame() %>% 
+    filter((x %% get_modulo == 0  & 
+                y %% get_modulo == 0) |
+           (x %% get_modulo == (get_modulo/2) & 
+                y %% get_modulo == (get_modulo/2))) %>% 
+    mutate(y = -y,
+           white = (value*100),
+           black = 100-white,
+           value = black^3) %>% 
+    mutate(ntile = ntile(value, 4),
+           ntile = ifelse(ntile > 2, 2, ntile),
+           x = x/10,
+           y = y/10)
+
+ggplot(get_image) +
+    geom_point(aes(x, y, color = -ntile)) +
+    #scale_alpha_identity() +
+    theme_minimal() +
+    coord_fixed() #+ facet_wrap(~factor(ntile))
+```
+
+```{r}
+center_x <- median(get_image$x)+.08 #over -80
+center_y <- median(get_image$y)+.08 #up  +70
+get_radius <- abs(min(get_image$y))/2.1
+
+n_points <- 80
+
+get_circle_points <-
+    tibble(ord = 1:n_points) %>%
+    mutate(angle = ord * (2 * pi)/max(n_points),
+           x = center_x + get_radius * cos(angle),
+           y = center_y + get_radius * sin(angle))
+
+expand_lines <-
+    expand.grid(ord_1 = 1:n_points,
+                ord_2 = 1:n_points, 
+                KEEP.OUT.ATTRS = F) %>% 
+    mutate(combo = 
+               case_when(ord_1 < ord_2 ~ paste(ord_1, ord_2),
+                         ord_1 > ord_2 ~ paste(ord_2, ord_1),
+                         TRUE ~ NA_character_
+                         )) %>% 
+    distinct(combo) %>% 
+    separate(combo, 
+             into = c("ord_1", "ord_2"), 
+             sep = " ", remove = F, convert = T) %>% 
+    filter(!is.na(combo)) %>% 
+    left_join(get_circle_points %>% select(ord, x1 = x, y1 = y), 
+              by = c("ord_1" = "ord")) %>% 
+    left_join(get_circle_points %>% select(ord, x2 = x, y2 = y), 
+              by = c("ord_2" = "ord")) %>% 
+    mutate(line_id = row_number(),
+           line_length = sqrt((x2-x1)^2 + (y2-y1)^2)) 
+#%>% 
+#    filter(line_length > 30)
+
+hist(expand_lines$line_length)
+hist(expand_lines$ord_dist)
+    
+ggplot() +
+#    geom_point(data = get_circle_points, aes(x, y)) +
+#    geom_point(data = get_image, aes(x, y, alpha = ntile)) +
+    geom_segment(data = expand_lines %>% filter(ord_1 == 1), 
+                 aes(x = x1, y = y1, xend = x2, yend = y2),
+                 color = "red") +
+    coord_fixed()
+```
+
+```{r}
+make_lines <-
+    rbind(expand_lines %>% select(line_id, ord_1, ord_2, x=x1, y=y1),
+          expand_lines %>% select(line_id, ord_1, ord_2, x=x2, y=y2))%>% 
+    st_as_sf(coords = c("x","y")) %>% 
+    st_set_crs(4326) %>% 
+    group_by(line_id) %>% 
+    summarise(do_union = FALSE) %>% 
+    st_cast("LINESTRING")
+
+make_circle <-
+    st_point(c(center_x, center_y)) %>%
+    st_sfc(crs = 4326) %>% 
+    st_sf() %>% 
+    st_buffer(get_radius)
+
+get_image_points <-
+    get_image %>% 
+    st_as_sf(coords = c("x", "y")) %>%
+    st_set_crs(4326) %>% 
+    st_intersection(make_circle) %>% 
+    st_buffer(.5, nQuadSegs = 1) %>% #
+    mutate(poly_id = row_number())
+# %>% 
+#     mutate(area = 1) %>%
+#     group_by(ntile) %>%
+#     summarise(a = 1,
+#               area = sum(area)) %>%
+#     ungroup()
+
+ggplot(get_image_points %>% slice(1:205)) + 
+    geom_sf(aes(fill = -ntile), alpha = .5) 
++
+    geom_segment(data = expand_lines %>% 
+                     filter(between(ord_1, 9, 30) &
+                                between(ord_2, 9, 30)), 
+                 aes(x = x1, y = y1, xend = x2, yend = y2),
+                 color = "red")
+
+# get_image_polygons <-
+#     get_image_points %>% 
+#     st_cast() %>% st_cast("POLYGON") %>%#st_simplify(dTolerance = 10) %>%
+#     mutate(area = st_area(.)/1000000/1000,
+#            area = as.numeric(area),
+#            weight = ((max(area)+1-area) * (1/ntile)),
+#            poly_id = row_number())
+
+#get_image_polygons$area %>% fivenum    
+#get_image_polygons$weight %>% fivenum
+
+
+#ggplot(get_image_polygons) + 
+#    geom_sf(aes(color = -ntile), alpha = .2)
+    
+get_intersections <-
+    make_lines %>% 
+    #sample_n(1000) %>% 
+    #sample_frac(.1) %>% 
+    st_join(get_image_points, #%>% filter(ntile > 9), 
+            join = st_intersects)
+
+summarize_intersections <-
+    get_intersections %>% #slice(1:1000) %>% 
+    group_by(line_id) %>% 
+    summarise(n_poly = n_distinct(poly_id),
+              n_white = sum(ifelse(ntile == 1, 1, 0)),
+              mean_val = mean(value, na.rm = T),
+              median_val = median(value, na.rm = T),
+              sum_val = sum(value, na.rm = T)) %>% 
+    ungroup()
+
+hist(summarize_intersections$n_poly)
+hist(summarize_intersections$n_white)
+hist(summarize_intersections$sum_val)
+hist(summarize_intersections$mean_val)
+hist(summarize_intersections$median_val)
+
+filter_lines <-
+    summarize_intersections #%>% 
+    #filter(n_poly > 1)
+
+final_lines <- #because geom_sf lines don't recognize alpha
+    rbind(expand_lines %>% select(line_id, line_length, ord_1, ord_2, x=x1, y=y1),
+          expand_lines %>% select(line_id, line_length, ord_1, ord_2, x=x2, y=y2)) %>% 
+    #filter(line_id %in% filter_lines$line_id) %>% 
+    inner_join(summarize_intersections) %>%
+    #filter(n_poly > 1) %>% 
+    mutate(rank_sum = dense_rank(-sum_val),
+           rank_mean = dense_rank(-mean_val),
+           rank_median = dense_rank(-median_val)
+           )
+
+fivenum(final_lines$median_val)
+fivenum(final_lines$rank_median)
+
+write.csv(final_lines, "loom_art.csv", row.names = F, na = "")
+
+ggplot() +
+    theme_void() +
+    geom_segment(data = final_lines, 
+                 aes(x = x1, y = y1, xend = x2, yend = y2),
+                 color = "black", alpha = .08, size = .1) +
+    scale_alpha(limits = c(0,1)) +
+    coord_fixed()
+
+plot(get_image_points)
+ 
+
+```
