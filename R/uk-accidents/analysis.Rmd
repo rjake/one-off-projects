@@ -1,0 +1,132 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+The data sets come from [UK Data](https://data.gov.uk/dataset/cb7ae6f0-4be6-4935-9277-47e5ce24a11f/road-safety-data). A demo analysis can be seen [here](http://rstudio-pubs-static.s3.amazonaws.com/366162_8062bafcb04d49719d6e7b1fb0274742.html)
+
+# Inputs 
+### About accidents
+* Road Safety Data - Casualties 2019
+* Road Safety data - Vehicles 2019
+* Road Safety Data - Accidents 2019
+
+### About population
+* [most stats](https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/populationestimatesanalysistool)
+* [home area type](https://www.statista.com/statistics/984702/urban-and-rural-population-of-the-uk/)
+* [police force](https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/116249/population-police-force.csv/preview)
+
+
+```{r workspace}
+library(tidyverse)
+
+
+
+```
+
+```{r prepare}
+solo_accidents <- 
+  raw_data$raw_accidents |> 
+  filter(number_of_vehicles == 1)
+
+
+relavent_casualties <- 
+  raw_data$raw_casualties |> 
+  filter(accident_index %in% solo_accidents$accident_index)
+
+
+relavent_vehicles <- 
+  raw_data$raw_vehicles |> 
+  filter(accident_index %in% solo_accidents$accident_index)
+
+
+casualty_stats <- 
+  raw_data$raw_casualties |> 
+  filter(accident_index %in% solo_accidents$accident_index) |> 
+  group_by(accident_index) |> 
+  summarise(
+    max_casualty_type = case_when(
+      min(casualty_severity) == 1 ~ "fatal",
+      min(casualty_severity) == 2 ~ "serious",
+      min(casualty_severity) == 3 ~ "slight"
+    )
+  )
+```
+
+
+
+
+
+
+
+
+```{r stop-knitting}
+knitr::knit_exit()
+```
+
+# Data prep
+```{r, eval=FALSE}
+# Raw data ----
+library(tidyverse)
+library(data.table)
+
+clean_names <- function(x) {
+  x |>
+    tolower() |>
+    # replace hyphens & spaces with underscores
+    str_replace_all("[- ]", "_") |>
+    # keep underscores but remove other punct
+    str_replace_all("(_)|[[:punct:]]", "\\1") |>
+    # move '1st_...' to end '..._1st'
+    str_replace_all("^(\\d..)_(.*)", "\\2_\\1")
+}
+
+
+load_data <- function(x) {
+  fread(x) |> 
+    as_tibble() |> 
+    rename_all(clean_names)
+}
+
+
+# read in data sets as a list (reduces clutter in env pane)
+raw_data <- list(
+  raw_accidents = load_data("inputs/Road Safety Data - Accidents 2019.csv"),
+  raw_casualties = load_data("inputs/Road Safety Data - Casualties 2019.csv"),
+  raw_vehicles = load_data("inputs/Road Safety Data - Vehicles 2019.csv")
+)
+
+saveRDS(raw_data, "inputs/accidents.Rds")
+```
+
+
+```{r code-list}
+library(tidyverse)
+library(readxl)
+
+excel_wb <- "inputs/ref/variable lookup.xls"
+all_sheets <- excel_sheets(excel_wb)
+keep_sheets <- all_sheets[-c(1:2)]
+
+excel_data <-
+  keep_sheets |>
+  set_names() |>
+  map(read_excel, path = excel_wb)
+
+code_list <- 
+  excel_data |>
+  map2_df(
+    .y = names(excel_data),
+    .f =
+      ~ mutate(.x, name = .y) |>
+      mutate_all(as.character) |>
+      mutate_all(tolower) |> 
+      rename_all(tolower)
+  )
+
+write_csv(code_list, "inputs/ref/code_list.csv")
+```

@@ -1,0 +1,225 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+```{r workspace}
+library(tidyverse)
+library(glue)
+library(googlesheets4)
+library(jsonlite)
+library(lubridate)
+
+setwd("~/../Downloads/takeout-20211013T234231Z-001/Takeout/Fit")
+```
+
+```{r raw-data}
+all_files <- 
+  list.files(
+    path = "Daily activity metrics", 
+    pattern = "2021-(09|10)", 
+    full.names = TRUE
+  )
+
+raw_activity <- 
+  map_dfr(
+    .x = all_files, 
+    .f = 
+      ~ read.csv(.x) |> 
+      as_tibble() |> 
+      select(matches("time|heart.rate|step|sleep")) |> 
+      mutate(date = str_remove(basename(.x), ".csv$")) |> 
+      rename_all(tolower) |> 
+      rename_all(str_remove, "\\.{2}.*") |> 
+      rename_all(str_replace_all, c("\\." = "_"))
+  )
+
+gs_id <- "1XSmb4sK0ZDPF9t1bGUuWed6sR3sToHQd6Af-tFTnWAw"
+raw_pain <- googlesheets4::read_sheet(ss = gs_id, sheet = "pain")
+raw_water <- googlesheets4::read_sheet(ss = gs_id, sheet = "water")
+
+# from https://sleep-cloud.appspot.com/fetchRecords
+# may need to login: https://sleep-cloud.appspot.com/SleepCloud.html
+# see also: https://docs.sleep.urbandroid.org/devs/sleepcloud_api.html#api-description
+# raw_sleep <- 
+#   jsonlite::read_json("~/../Downloads/fetchRecords.json", simplifyVector = TRUE, flatten = TRUE) |> 
+#   pluck(1) |> 
+#   as_tibble() |> 
+#   mutate(
+#     across(
+#       .cols = ends_with("Time"), 
+#       .fns = ~as_datetime(.x/1000, tz = Sys.timezone()) 
+#     )
+#   ) |> 
+#   print()
+
+
+# gs_sleep_id <- "1JmbjrQjrjv3bFwp5V_bQjOWo-9Mu_yqBCl6dsJMbvJM"
+# raw_sleep <- googlesheets4::read_sheet(ss = gs_sleep_id)
+# raw_sleep <- jsonlite::read_json("All Data/derived_com.google.internal.sleep_schedule_com.json")
+```
+
+```{r clean-data}
+# * pain ----
+clean_pain <-
+  raw_pain |>
+  select(-notes) |> 
+  pivot_longer(
+    cols = -date,
+    names_to = "hour",
+    values_drop_na = TRUE
+  ) |> 
+  mutate(
+    date = as.Date(date),
+    hour = as.integer(hour),
+    metric = "pain", #paste0("pain-", metric),
+    label = as.character(value), 
+    color = "red"
+  ) |> 
+  print()
+
+# * sleep ----
+clean_sleep <-
+  raw_activity |>
+  drop_na(deep_sleeping_duration) |> 
+  transmute(
+    date = as.Date(date,), 
+    hour = str_sub(start_time, 1, 2) |> as.integer(), 
+    deep_sleep = deep_sleeping_duration
+  ) |> 
+  filter(!between(hour, 11, 23)) |> 
+  group_by(date, hour) |> 
+  summarise(value = sum(deep_sleep)) |> 
+  ungroup() |> 
+  mutate( # 3.6e6  ms in 1 hour
+    metric = "deep sleep",
+    label = scales::percent(value / 3.6e+6, accuracy = 1),
+    value = value / 1000 / 60,
+    color = "orange"
+  ) |> 
+  print()
+
+# * steps ----
+clean_steps <- 
+  raw_activity |> 
+  group_by(
+    date = as.Date(date), 
+    hour = str_sub(start_time, 1, 2) |>  as.integer(),
+    metric = "steps"
+  ) |> 
+  summarise(value = sum(step_count, na.rm = TRUE)) |> 
+  ungroup() |> 
+  filter(value > 0) |> 
+  mutate(
+    label = 
+      ifelse(
+        value > 1000, 
+        paste0(round(value/1000, 1), "K"),
+        as.character(round(value, -1))
+      ),
+    color = "grey"
+  ) |> 
+  print()
+
+# * water ----
+clean_water <-
+  raw_water |>
+  select(-notes) |> 
+  pivot_longer(
+    cols = -date,
+    names_to = c(".value", "ord"),
+    names_pattern = "(\\w+)_(\\d+)",
+    values_drop_na = TRUE
+  ) |> 
+  group_by(
+    date = as.Date(date), 
+    hour = as.integer(time %/% 100),
+    metric = "water"
+  ) |> 
+  summarise(value = sum(oz, na.rm = TRUE)) |> 
+  group_by(date) |> 
+  mutate(label = scales::percent(cumsum(value) / 66, accuracy = 1)) |> 
+  ungroup() |> 
+  mutate(color = "dodgerblue") |> 
+  print()
+
+
+# * all_metrics ----
+all_metrics <-
+  bind_rows(
+    clean_pain,
+    clean_sleep,
+    clean_steps,
+    clean_water
+  ) |> 
+  group_by(date) |> 
+  #filter(n_distinct(metric) == 4) |>
+  filter(date >= "2021-10-09") |> 
+  group_by(metric) |> 
+  mutate(size = value / max(value)) |> 
+  ungroup()
+```
+
+
+```{r}
+all_metrics |> 
+  mutate(
+    facet = 
+      format(date, "%a %m/%d") |> 
+      fct_reorder(date)
+  ) |> 
+  ggplot(aes(hour, metric)) +
+  #geom_point(aes(size = size, color = color), alpha = 0.5) +
+  geom_tile(aes(fill = color, alpha = size), color = "white") +
+  scale_color_identity() +
+  scale_fill_identity() +
+  scale_alpha_binned(range = c(0.2, 1)) +
+  facet_grid(rows = vars(facet)) +
+  theme_minimal() +
+  theme(
+    aspect.ratio = 1/6,
+    panel.grid = element_blank(),
+    strip.text.y = element_text(angle = 0),
+    axis.title.y = element_blank(),
+    legend.position = "none",
+    panel.background = element_rect(fill = "white", color = "grey85")
+  )
+
+
+all_metrics |> 
+  mutate(date = format(date, "%m - %d")) |> 
+  ggplot(aes(hour, date)) +
+  geom_tile(aes(fill = color, alpha = size), color = "white") +
+  scale_fill_identity() +
+  scale_alpha_binned(range = c(0.2, 1)) +
+  facet_grid(rows = vars(metric)) +
+  theme_minimal() +
+  theme(
+    aspect.ratio = 1/6,
+    panel.grid = element_blank(),
+    legend.position = "none",
+    panel.background = element_rect(fill = "white", color = "grey85")
+  )
+
+all_metrics |> 
+  mutate(date = format(date, "%m - %d")) |> 
+  ggplot(aes(hour, metric)) +
+  geom_point(aes(size = size, color = color), alpha = 0.5) +
+  #geom_text(aes(label = label), size = 2) +
+  scale_color_identity() +
+  facet_grid(rows = vars(date)) +
+  theme_minimal() +
+  theme(
+    panel.grid = element_blank(),
+    legend.position = "none",
+    panel.background = element_rect(fill = "white", color = "grey85")
+  )
+
+
+
+```
+

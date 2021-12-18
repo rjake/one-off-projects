@@ -24,6 +24,32 @@ clean_data <-
   print()
 
 
+
+clean_data |>
+  mutate(
+    prior_21_deaths = lead(new_deaths, 21),
+    expected_cases = prior_21_deaths * 100,
+    moe = expected_cases - new_cases,
+    ci_low = expected_cases - moe,
+    ci_high = expected_cases + moe
+  ) |>
+  drop_na() |>
+  #sample_n(200) |>
+  ggplot(aes(date, expected_cases)) +
+  geom_linerange(
+    aes(
+      ymin = pmax(ci_low, 0),
+      ymax = ci_high
+    ),
+    size = 2,
+    color = "grey80"
+  ) +
+  geom_line()
+
+
+########################################
+
+
 covid_percents <-
   clean_data |>
   mutate(
