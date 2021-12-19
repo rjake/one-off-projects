@@ -1,0 +1,226 @@
+---
+title: "How long would it take to count to 1,000,000"
+author: Jake Riley
+output: 
+  html_document:
+    code_folding: hide
+    df_print: kable
+---
+    
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE, 
+  results = "hide",
+  message = FALSE, 
+  warning = FALSE
+)
+```
+
+```{r base_data}
+library(tidyverse)
+library(glue)
+options(scipen = 999)
+
+df_sound <-
+  tibble(
+    unit = c(
+      1:19,
+      seq(20, 90, by = 10)
+    ),
+    # 1e3, 1e4, 1e5, 1e6),
+    sound = c(
+      "one", "two", "three", "four", "five",
+      "six", "se-ven", "eight", "nine", "ten",
+      "e-le-ven", "twelve", "thir-teen", "four-teen", "fif-teen",
+      "six-teen", "sev-en-teen", "eight-teen", "nine-teen",
+      "twen-ty", "thir-ty", "four-ty", "fif-ty",
+      "six-ty", "seven-ty", "eigh-ty", "nine-ty"
+    )
+  )
+```
+
+# Base data:
+
+I made a small dataset that has syllables for numbers 1:19, then by 10s from 20-90
+```{r results='asis'}
+sample_n(df_sound, 10) |> 
+  arrange(unit)
+```
+
+
+```{r all_nums}
+nth_digit <- function(x, n, end = n) {
+  str_sub(
+    string = x, 
+    start = -n, 
+    end = -end
+  ) |> 
+    as.integer()
+}
+
+nth_digit(7654321, 5)
+nth_digit(7654321, 5, end = 1)
+
+all_nums <-
+  tibble(number = 1:1e6) %>% #1e6
+  #sample_n(8) |>
+  #filter(number %in% c(690263, 512608, 57002)) |> 
+  #arrange(desc(number)) |>
+  # slice(1:100) %>%
+  mutate(
+    d7 = nth_digit(number, 7),
+    d6 = nth_digit(number, 6),
+    d5 = case_when(
+      between(nth_digit(number, 5, 4), 10L, 19L) ~ nth_digit(number, 5, 4),
+      TRUE ~ nth_digit(number, 5) * 10L
+    ),
+    d4 = case_when(
+      nth_digit(number, 4) == 0 ~ NA_integer_,
+      between(nth_digit(number, 5, 4), 10L, 19L) ~ NA_integer_,
+      TRUE ~ nth_digit(number, 4)
+    ),
+    d3 = case_when(
+      nth_digit(number, 3) == 0 ~ NA_integer_,
+      TRUE ~ nth_digit(number, 3)
+    ),
+    d2 = case_when(
+      nth_digit(number, 2) == 0 ~ NA_integer_,
+      between(nth_digit(number, 2, 1), 10L, 19L) ~ nth_digit(number, 2, 1),
+      TRUE ~ nth_digit(number, 2) * 10L
+    ),
+    d1 = case_when(
+      between(nth_digit(number, 2, 1), 10, 19) ~ NA_integer_,
+      TRUE ~ nth_digit(number, 1)
+    )
+  ) %>%
+  mutate_all(as.integer) %>%
+  mutate(d7 = ifelse(is.na(d7), "", "one mill-i-on")) |> 
+  print()
+
+
+get_joins <-
+  all_nums |> 
+#  filter(number == 608035) |> 
+  left_join(transmute(df_sound, d6 = unit, sound_6 = paste0(sound, "-hund-red"))) %>% 
+  left_join(select(df_sound, d5 = unit, sound_5 = sound)) %>%
+  left_join(select(df_sound, d4 = unit, sound_4 = sound)) %>%
+  left_join(transmute(df_sound, d3 = unit, sound_3 = paste0(sound, "-hund-red"))) %>% 
+  left_join(select(df_sound, d2 = unit, sound_2 = sound)) %>%
+  left_join(select(df_sound, d1 = unit, sound_1 = sound)) |>
+  print()
+
+```
+
+I then pull out those same numbers from my data to get a table like this (pivoted):
+```{r combine_text}
+combine_text <-
+  get_joins |> 
+  #filter(number == 608035)
+  mutate(across(where(is.character), replace_na, "")) |> 
+  mutate(
+    c_100k = paste(sound_6, sound_5, sound_4) |>  trimws(),
+    c_100 = paste(sound_3, sound_2, sound_1) |>  trimws()
+  )  |>  
+  mutate(
+    c_100k = ifelse(c_100k == "", "", paste(c_100k, "thous-and")),
+    final = 
+      paste(c_100k, c_100, sep = " ") |>
+      str_replace_all(" {2,}", " ") |> 
+      trimws(),
+    syllables = str_count(final, "\\w+")
+  ) |> 
+  print()
+```
+
+```{r, results='asis'}
+combine_text |> 
+  filter(number %in% c(123456, 1234)) |>
+  mutate_all(as.character) |> 
+  pivot_longer(-number) |> 
+  pivot_wider(
+    names_from = number, 
+    values_from = value
+  )
+```
+
+
+# What I learned
+```{r results='asis'}
+(
+  combine_text |>  
+    select(
+      number:d1, #t_100k, t_100, 
+      final, syllables
+    ) |> 
+    ggplot(aes(syllables)) +
+    geom_histogram(binwidth = 1, color = "black") +
+    #theme(aspect.ratio = 1/1.6) +
+    scale_y_continuous(
+      labels = scales::number_format(scale = 1/1000, suffix = "K")
+    ) +
+    labs(
+      title = "There are 330K numbers between 1 and 1M that have 14 syllables",
+      y = "# of numbers"
+    )
+) |> plotly::ggplotly()
+```
+
+### how long would it take?
+```{r results='asis'}
+# syllables per second, my friend was able to count to 100 in 60 seconds
+sps <- 
+  ceiling(
+    sum(combine_text$syllables[1:100]) / 60
+  )
+
+#totals
+tibble(n = 10^(2:6)) |> 
+  mutate(
+    mins = map_dbl(
+      .x = n, 
+      .f = 
+        ~(sum(combine_text$syllables[1:.x]) / sps / 60) |> 
+        ceiling()
+    ),
+    units = case_when(
+      mins > 60 * 24 ~ "days",
+      mins > 60 ~ "hours",
+      TRUE ~ "mins"
+    ),
+    value =
+      round(
+        mins / case_when(
+          units == "days" ~  60 * 24,
+          units == "hours" ~ 60,
+          TRUE ~ 1
+        ),
+        1
+      ),
+    n = scales::number(n, big.mark = ","),
+ ) |> 
+ transmute(
+   counting = glue("1 to {n} would take {value} {units}")
+ )
+```  
+
+If a person had 1 min rest for every 5 min of speaking for 8 hours a day, it would
+take an even longer time for them to finish
+```{r results='asis'}
+tibble(
+  total_mins = sum(combine_text$syllables) / sps / 60, # total min (43K min)
+  with_breathing = total_mins * 19/17, # 1 breath every 17 syllables (48K min)
+  with_rests = with_breathing * (6/5), # 6 min for every 5 (58K min)
+  n_hours = with_rests / 60, # convert to hours (968 hours)
+  n_8_hour_days = n_hours / 8, # max 8 hours per day (122.8 days)
+  n_business_days = n_8_hour_days * 7/5   # weekends off (170.8 days)
+) |> 
+  gather("metric", "time") |> 
+  mutate(
+    metric = 
+      metric |> 
+      str_replace_all("_", " ") |> 
+      str_replace_all("N ", "# ") |> 
+      str_to_title(),
+    time = scales::number(time, big.mark = ",")
+  )
+```
