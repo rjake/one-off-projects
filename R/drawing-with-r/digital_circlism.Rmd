@@ -9,7 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-#inspiration
+### inspiration
 [circlism](http://cse.iitkgp.ac.in/~pb/research/circlism/)
 [google](https://www.google.com/search?q=digital+circlism)
 [stackoverflow](https://mathematica.stackexchange.com/questions/40334/generating-visually-pleasing-circle-packs)
@@ -19,9 +19,8 @@ knitr::opts_chunk$set(echo = TRUE)
 [inspiration](https://gravyanecdote.com/uncategorized/making-the-kraken-part-1-getting-the-image-and-data/)
 
 
-#workspace
-*to plot ```ggeom_sf()``` the dev version of ```ggplot``` must be used. More detail can be found [here](http://strimas.com/r/tidy-sf/)
-```{r}
+*to plot `ggeom_sf()` the dev version of `ggplot` must be used. More detail can be found [here](http://strimas.com/r/tidy-sf/)
+```{r workspace}
 #library(devtools)
 #devtools::install_github("tidyverse/ggplot2", force = T)
 #devtools::install_github("sjp/grImport2")
@@ -38,16 +37,25 @@ library(tidyverse)
 options(warn = -1)
 options(scipen = 999)
 
-setwd("C:/Users/Public/Pictures")
 #library(svglite)
 #library(grImport2)
 #library(png)
 
-image_file <- "kraken.png"
+image_path <- "input/R_logo.png"
+
+image_name <- 
+  basename(image_path) |> 
+  tools::file_path_sans_ext()
+```
+
+```{r fns}
+round_any <- function(x, accuracy) {
+  round(x / accuracy) * accuracy
+}
 
 ```
 
-```{r}
+```{r prep-image}
 #imager
 #plot(boats)
 #plot(load.image("starrynight.png"))
@@ -56,92 +64,130 @@ image_file <- "kraken.png"
 #plot(load.image("orca.png"))
 #plot(load.image("emma_sm.png"))
 #plot(load.image("kraken.png"))
-#plot(load.image(image_file))
+#plot(load.image(image_path))
 
 modulo <- 2
-blur_amt <- 3000
+blur_amt <- 0 #3000
+min_color_pixels <- 50
 
-plot(blur_anisotropic(load.image(image_file), 
-                      amplitude = blur_amt))
+load.image(image_path) |> 
+  blur_anisotropic(amplitude = blur_amt) |> 
+  plot()
 
-image_initial <-
-  blur_anisotropic(load.image(image_file), amplitude = blur_amt) %>% 
-  #load.image(image_file) %>% 
-  as.data.frame() %>% 
-  #filter(#y < 90, 
-  #       x > 90) %>%
-  tidyr::spread(key = cc, value = value) %>%
-  rename(r = `1`,
-         g = `2`,
-         b = `3`) %>% 
-#  set_names(c("x", "y", "r", "g", "b", "a")) %>% #may need to remove "a" 
-  mutate_all(as.numeric) %>% 
-  filter((x %% modulo == 0 & y %% modulo == 0) |
-         (x %% modulo == (modulo/2) & y %% modulo == (modulo/2))) %>% 
-  mutate(y = -y)
+image <- 
+  load.image(image_path)
+
+image_specs <-
+  list(
+    width = dim(image)[1] / 10,
+    height = dim(image)[2] / 10
+  )
+
+prep_image <-
+  image |> 
+  rm.alpha() |> 
+  RGBtoHSL() |> 
+  as.data.frame() |> 
+  as_tibble() |> 
+  #filter(#y < 90,  x > 90) |>
+  mutate(
+    cc = recode(
+      cc, 
+      "1" = "orig_h", 
+      "2" = "orig_s", 
+      "3" = "orig_l"
+    )
+  ) |> 
+  spread(key = cc, value = value) |> 
+  mutate_all(as.numeric) |> 
+  filter(
+    (x %% modulo == 0 & y %% modulo == 0) |
+    (x %% modulo == (modulo/2) & y %% modulo == (modulo/2))
+  ) |>  
+  mutate(y = max(y) - y) # reverse y axis
+
 
 grid_base <-
-  image_initial %>% 
-  mutate(hex = rgb(r, g, b, maxColorValue = 1)) %>% 
-  rowwise() %>% 
-  mutate(h = rgb2hsv(r, g, b, maxColorValue = 1)[[1]][1],
-         s = rgb2hsv(r, g, b, maxColorValue = 1)[[2]][1],
-         v = rgb2hsv(r, g, b, maxColorValue = 1)[[3]][1]) %>%
-  ungroup() %>% 
-  mutate(h2 = round(h/.1) * .1, #0.05
-         s2 = .5, #round(s/.33)*.33,
-         v2 = round(v/.33)*.33,
-         hex2 = hsv(h2, s2, v2))
+  prep_image |> 
+  mutate(
+    orig_hex = hex(HLS(orig_h, orig_l, orig_s)),
+    h = round_any(orig_h, 30), # 0.05
+    l = round_any(orig_l, 0.25), # round(s/.33)*.33,
+    s = round_any(orig_s, 0.25),
+    hex = hex(HLS(h, l, s))
+  ) |> 
+  add_count(hex) |> 
+  print()
 
-n_distinct(grid_base$hex2)
 
-ggplot(grid_base, aes(x, y, color = hex2)) +
-  geom_point(size = 3) +
+n_distinct(grid_base$hex)
+
+grid_base |> 
+  filter(x > mean(x)) |> 
+  ggplot(aes(x, y, color = hex)) +
+  geom_point(size = 1) +
   #scale_y_reverse() +
-  guides(color = F) +
+  guides(color = FALSE) +
   coord_fixed() +
   scale_color_identity() +
   theme_bw()
 
-ggplot(grid_base, aes(x, y, color = hex2)) +
+grid_base |> 
+  filter(x > mean(x)) |> 
+  ggplot(aes(x, y, color = hex)) +
   geom_point() +
   scale_color_identity() +
-  facet_wrap(~hex2, nrow = 4) +
+  facet_wrap(~hex, nrow = 4) +
   theme_minimal() +
-  theme(panel.grid = element_blank(),
-        axis.text = element_blank(),
-        panel.border = element_rect(color = "grey40", fill = NA))
+  theme(
+    panel.background = element_rect(fill = "grey95"),
+    panel.grid = element_line(color = "grey85"),
+    axis.text = element_blank(),
+    panel.border = element_rect(color = "grey40", fill = NA)
+  )
 ```
 
-### NEW METHOD - concave hulls ######################
-```{r}
+### create concave hulls
+```{r hulls}
 #create convex hulls
 color_points <- 
-  grid_base %>% 
-  st_as_sf(coords = c("x", "y")) %>% 
-  select(hex, h2, s2, v2, hex2) %>% 
-  mutate(area = 1) %>% 
-  st_buffer(dist = modulo * 0.6, nQuadSegs = 4)
+  grid_base |> 
+  st_as_sf(coords = c("x", "y")) |> 
+  select(hex, h, s, l) |> 
+  mutate(
+    area = 1,
+    x = grid_base$x,
+    y = grid_base$y
+  ) |> 
+  relocate(geometry, .after = everything()) |> 
+  st_buffer(dist = modulo * 0.55, nQuadSegs = 4) |> 
+  print()
 
-ggplot(color_points) +
-  geom_sf(aes(fill = hex2), alpha = .8) +
+color_points |> 
+  filter(x < 10, y < 10) |> 
+  ggplot() +
+  geom_sf(aes(fill = hex), alpha = .8) +
   scale_fill_identity()
 
 color_clusters <-
-  color_points %>% 
-  select(hex2) %>% 
-  group_by(hex2) %>% 
-  summarize() %>% 
-  ungroup() %>% 
-  st_cast() %>% 
-  st_cast("POLYGON") %>% 
-  st_simplify(dTolerance = 1)  %>% 
-  mutate(area = st_area(.)) %>% 
-  arrange(area) %>% 
-  st_buffer(0.5)
+  color_points |> 
+  select(hex) |> 
+  group_by(hex) |> 
+  summarize() |> 
+  ungroup() |> 
+  st_cast() |> 
+  st_cast("POLYGON") |> 
+  st_simplify(dTolerance = 1) %>%
+  mutate(area = st_area(.)) |> 
+  arrange(desc(area)) |> 
+  st_buffer(0.5) |> 
+  print()
 
-ggplot(color_clusters) +
-  geom_sf(aes(fill = hex2), alpha = .8) +
+color_clusters |> 
+  #slice_sample(prop = 0.25) |> 
+  ggplot() +
+  geom_sf(aes(fill = hex), alpha = .8) +
+  facet_wrap(~hex) +
   scale_fill_identity()
 ```
 
@@ -149,596 +195,262 @@ ggplot(color_clusters) +
 
 
 # for loop
-```{r}
-  color_circle_all <-
-    color_clusters %>%
-    slice(0)
+```{r fns-needed}
 
-  area_allowed <- floor(min(color_clusters$area))
-  
-  buffer_min <- sqrt(area_allowed)/pi
+```
 
-  get_iteration <- 1   
+```{r find-centroids}
+color_circle_all <-
+  color_clusters |>
+  slice(0)
+
+area_allowed <- floor(min(color_clusters$area))
+buffer_min <- sqrt(area_allowed) / pi
+get_iteration <- 1
 
 
-#LOOP  
+# LOOP
 system.time(
-for(i in 1:NROW(color_clusters)){
-  #plot(color_polygon$geometry, col = color_polygon$hex2, add = F)
-  
-  color_polygon <-
-    color_clusters %>%     
-    slice(i) %>% 
-    st_difference(st_union(color_circle_all)) %>% 
-    filter(area > area_allowed)
+  for (i in 1:NROW(color_clusters)) {
+    color_polygon <-
+      color_clusters |>
+      slice(i) |>
+      # st_difference(st_union(color_circle_all)) |>
+      filter(area > area_allowed)
 
-  #plot(color_clusters$geometry, col = NA, add = F)
-    #plot(color_circle_all$geometry, col = "red", add = T)
-      #plot(color_polygon$geometry, col = color_polygon$hex2, add = F)
+    # plot(color_clusters$geometry, col = NA, add = F)
+    # plot(color_circle_all$geometry, col = "red", add = T)
+    # plot(color_polygon$geometry, col = color_polygon$hex, add = F)
 
-    j = 1
-  
-  area_left = T
-  rows_left = NROW(color_polygon)
+    j <- 1
 
-  while(area_left == T || rows_left == 1){
-    if(area_left != T && rows_left > 1){
-      #drop current row and go to next row
-          color_polygon <-
-              color_polygon %>% 
-              slice(-1)
-          
-          print("try next row")
-          next()
-    } 
-    else {
-      #update variable values    
+    area_left <- T
+    rows_left <- NROW(color_polygon)
+
+    while (area_left == T || rows_left == 1) {
+      if (area_left != T && rows_left > 1) {
+        # drop current row and go to next row
+        color_polygon <-
+          color_polygon |>
+          slice(-1)
+
+        print("try next row")
+        next()
+      }
+      else {
+        # update variable values
         get_area <- color_polygon$area[1]
         rows_left <- nrow(color_polygon)
         area_left <- get_area > area_allowed
-      
-      #take the first row from the data  
-        color_polygon_single <-
-          color_polygon %>% 
-          slice(1)
-        
-      #check to see if the buffer leaves enough space to plot
-        color_buffer <-
-          color_polygon_single %>% 
-          st_buffer(-buffer_min) %>% 
-          mutate(area = st_area(.))
-        
-          #plot(color_buffer$geometry, add = T)
-        
-        color_polygon <-
-          color_polygon %>% 
-          slice(-1)
-        
-    if(NROW(color_buffer) == 0 || color_buffer$area == 0){
-        print("too small")
-        area_left = F
-        next()
-    } 
-    else {
-      #from calc, there is enough space to draw a circle
-      #polygon needs to be a string for distance calc to work
-        color_line <-
-          color_polygon_single %>% 
-          st_cast("LINESTRING")
-        #plot(color_line$geometry, add = F)
-      #find centroid of buffered region        
-        color_centroid <-
-          color_buffer %>%
-          st_point_on_surface()
-  
-        #plot(color_centroid$geometry, add = T)
-      
-      #get the distance of this point    
-        color_dist <-
-          st_distance(color_centroid[1,1], color_line)
-        
-      #create a circle of this size (color_dist)  
-        color_circle <-
-          color_centroid %>% 
-          st_buffer(color_dist + .01)
-        
-        #plot(color_circle$geometry, add = T)
-        
-      #build dataset of circles
-        color_circle_all <-
-          rbind(color_circle, color_circle_all) %>%
-          st_cast("MULTIPOLYGON")
-          
-        color_new <-
-          color_polygon_single %>% 
-          st_difference(st_union(st_buffer(color_circle, 0.8))) %>% 
-          st_cast("POLYGON") %>% 
-          mutate(area = st_area(.))
-  
-        #plot(color_new$geometry, add = F)
-      if(NROW(color_new) == 0){
-        print("nothing left")
-        area_left = F
-      }
-      else {
-        #add new polygon shape/shapes to the color_polygon table
-          color_polygon <-
-            rbind(color_new, color_polygon)  %>% 
-            arrange(desc(area)) %>% 
-            filter(area > area_allowed) %>% 
-            st_difference(st_union(color_circle))
 
-    
-        print("conditions met")
-        print(paste0(i, " - ",
-                     j, " - ",
-                     get_iteration, " - ",
-                     NROW(color_polygon),
-                     " left"))
-  
-    }
+        # take the first row from the data
+        color_polygon_single <-
+          color_polygon |>
+          slice(1)
+
+        # check to see if the buffer leaves enough space to plot
+        color_buffer <-
+          color_polygon_single |>
+          st_buffer(-buffer_min) %>%
+          mutate(area = st_area(.))
+
+        # plot(color_buffer$geometry, add = T)
+
+        color_polygon <-
+          color_polygon |>
+          slice(-1)
+
+        if (NROW(color_buffer) == 0 || color_buffer$area == 0) {
+          print("too small")
+          area_left <- F
+          next()
+        } else {
+          # from calc, there is enough space to draw a circle
+          # polygon needs to be a string for distance calc to work
+          color_line <-
+            color_polygon_single |>
+            st_cast("LINESTRING")
+          # plot(color_line$geometry, add = F)
+          # find centroid of buffered region
+          color_centroid <-
+            color_buffer |>
+            st_point_on_surface()
+
+          # plot(color_centroid$geometry, add = T)
+
+          # get the distance of this point
+          color_dist <-
+            st_distance(color_centroid[1, 1], color_line)
+
+          # create a circle of this size (color_dist)
+          color_circle <-
+            color_centroid |>
+            st_buffer(color_dist + .01)
+
+          # plot(color_circle$geometry, add = T)
+
+          # build dataset of circles
+          color_circle_all <-
+            rbind(color_circle, color_circle_all) |>
+            st_cast("MULTIPOLYGON")
+
+          color_new <-
+            color_polygon_single |>
+            st_difference(st_union(st_buffer(color_circle, 0.8))) |>
+            st_cast("POLYGON") %>%
+            mutate(area = st_area(.))
+
+          # plot(color_new$geometry, add = F)
+          if (NROW(color_new) == 0) {
+            print("nothing left")
+            area_left <- F
+          } else {
+            # add new polygon shape/shapes to the color_polygon table
+            color_polygon <-
+              rbind(color_new, color_polygon)  |>
+              arrange(desc(area)) |>
+              filter(area > area_allowed) |>
+              st_difference(st_union(color_circle))
+
+
+            print("conditions met")
+            print(paste0(
+              i, " - ",
+              j, " - ",
+              get_iteration, " - ",
+              NROW(color_polygon),
+              " left"
+            ))
+          }
+          #
+        }
         #
-    }
-    #
-    j = j+1
-    get_iteration = get_iteration + 1
-    next()
+        j <- j + 1
+        get_iteration <- get_iteration + 1
+        next()
+      }
     }
   }
-}
 )
 
-plot(color_circle_all$geometry, col = color_circle_all$hex2, border = NA, add = F)
+saveRDS(color_circle_all, "color_circle_all.Rds")
+plot(color_circle_all$geometry, col = color_circle_all$hex, border = NA, add = F)
+
+color_circle_all |> 
+  filter(hex != "#FFFFFF") |> 
+  ggplot() +
+  geom_sf(aes(fill = hex), color = NA) +
+  scale_fill_identity(guide = "none") +
+  theme_void()
+
+paste0("output/simple_",  image_name) |> 
+  ggsave(
+    device = "png",
+    height = image_specs$height,
+    width = image_specs$width,
+    units = "mm"
+  )
+
 ```
 
 
-
-# get representative colors
-```{r}
-get_mode <- 
-  function(x) {
-    ux <- unique(x)
-    ux[which.max(tabulate(match(x, ux)))]
+```{r find-colors}
+get_mode <- function(x) {
+  ux <- unique(x)
+  ux[which.max(tabulate(match(x, ux)))]
 }
 
 grid_base_points <- 
-  grid_base %>%
-  select(x, y, h, s, v, hex) %>% 
-  st_as_sf(coords = c("x", "y")) %>% 
+  grid_base |>
+  select(x, y, starts_with("orig_"), hex) |> 
+  st_as_sf(coords = c("x", "y")) |> 
   st_buffer(modulo/2, nQuadSegs = 1)
 
 #plot(grid_base_points$geometry)
 
 color_circle_final <-
-  color_circle_all %>% 
-  mutate(ID = row_number()) %>% 
-  st_join(grid_base_points, join = st_intersects)%>% 
-  group_by(ID) %>% 
-#  summarise(hex3 = get_mode(hex)) %>% 
+  color_circle_all |> 
+  mutate(ID = row_number()) |> 
+  st_join(grid_base_points, join = st_intersects)|> 
+  group_by(ID) |> 
+#  summarise(median_hex = get_mode(hex)) |> 
 #  ungroup()
- summarise(h = median(h),
-            s = median(s),
-            v = median(v)) %>% 
-  ungroup() %>% 
-  filter(!is.na(h)) %>% 
-  mutate(hex3 = hsv(h, s, v))
+ summarise(
+   h = median(orig_h),
+   l = median(orig_l),
+   s = median(orig_s)
+  ) |> 
+  ungroup() |> 
+  mutate(median_hex = hex(HLS(h, l, s)))
 
 color_circle_centroids <-
-  color_circle_final %>%
-  arrange(hex3) %>% 
-  mutate(area = st_area(.),
-         radius = sqrt(area)/pi) %>% 
+  color_circle_final |>
+  arrange(median_hex) %>% 
+  mutate(
+    area = st_area(.),
+    radius = sqrt(area)/pi
+  ) |> 
   st_centroid() %>% 
-  cbind(., st_coordinates(.)) %>% 
+  cbind(., st_coordinates(.)) |> 
   st_set_geometry(NULL)
 
 
 #plot(color_circle_all$geometry[1:20], col = "red", add = T)
 
-plot(color_circle_final$geometry, 
-     col = color_circle_final$hex3, border = NA)
+plot(
+  color_circle_final$geometry, 
+  col = color_circle_final$median_hex, 
+  border = NA
+)
+```
 
-ggplot() +
-  geom_sf(data = color_circle_final, 
-          aes(fill = hex3), 
-          color = NA) +
-  guides(fill = F)
+### write
+```{r final-output}
 
-st_write(color_circle_final, "kraken.shp")
-write.csv(color_circle_centroids, "kraken_centroids.csv", row.names = F)
-
-color_circle_centroids %>% 
-  distinct(hex3) %>% 
-  mutate(hex3 = paste0("<color>", hex3, "</color>"))
-
-
-ggplot() +
-  geom_point(data = color_circle_centroids,
-             aes(x = X, y = Y, 
-                 fill = hex3, 
-                 size = pi*radius^2), 
-             shape = 21, stroke = .5) +
+color_circle_final |> 
+  filter(median_hex != "#FFFFFF") |> 
+  ggplot() +
+  geom_sf(aes(fill = median_hex), color = NA) +
   scale_fill_identity(guide = "none") +
-  scale_size(guide = "none", range = c(.1,70)) +
-  coord_fixed() +
-  theme_minimal()
-
-ggsave(filename="myPlot.pdf")
-
-#get new colors
-#  new_colors <-
-#    color_circle_final %>% 
-#    left_join(select(grid_base_points, -geometry))
-
-#drops points
-  #get coordinates of orig colors
-  
-  #get new colors
-#  new_colors <-
-#    grid_base_points %>% 
-#   select(h, s, v) %>% 
-#    aggregate(color_circle_all, mean) %>% 
-#    mutate(hex3 = hsv(h, s, v))
-  
-#  plot(new_colors$geometry, col = new_colors$hex3)
-```
+  theme_void()
 
 
-
-
-
-
-
-
-
-
-
-
-
-### OLD METHOD -- grid of dots #######################
-#Create 4 grids 
-smallest size - x2 - x4 - x8
-```{r}
-build_box <-
-  function(min_x, min_y, max_x, max_y){
-  st_polygon(
-    list(
-      rbind(c(min_x, min_y),
-            c(max_x, min_y),
-            c(max_x, max_y), 
-            c(min_x, max_y), 
-            c(min_x, min_y))
-      )
+paste0("output/final_", image_name) |> 
+  ggsave(
+    device = "png",
+    height = image_specs$height,
+    width = image_specs$width,
+    units = "mm"
   )
-}
-
-grid_bounding_box <-
-  build_box(min_x = min(grid_base$x), 
-            min_y = min(grid_base$y), 
-            max_x = max(grid_base$x), 
-            max_y = max(grid_base$y))
-  
-grid_start <-
-  grid_base %>% 
-  st_as_sf(coords = c("x", "y")) %>% 
-  select(hex, h2, s2, v2, hex2) %>% 
-  st_buffer(dist = modulo * 0.3, nQuadSegs = 4) %>% 
-  filter(lengths(st_within(., grid_bounding_box)) > 0) %>% 
-  mutate(size = "mod/2",
-         n_colors = 1,
-         order = row_number())
-
-plot(grid_start$geometry[1], col = grid_start$hex, border = NA)
-```
-
-```{r}
-build_grid <-
-  function(buffer_size, color_filter){
-    #buffer_size = 4
-    #create a base table
-      base_table <-
-        grid_start %>% 
-        st_buffer(dist = modulo * buffer_size, nQuadSegs = 4) %>% 
-        filter(lengths(st_within(., grid_bounding_box)) > 0) %>% 
-        mutate(size = paste0("mod", modulo, "x", buffer_size)) #%>% 
-        #mutate(n_points = colSums(st_intersects(grid_sf_1x, ., sparse = F)))
-
-    #get # of colors within
-      n_colors <-
-        aggregate(grid_start["hex2"], base_table, FUN = n_distinct) %>% 
-        rename(n_colors = hex2)
-
-      sd_colors <-
-        aggregate(grid_start["h2"], base_table, FUN = sd) %>% 
-        rename(sd_colors = h2)
-            
-      mean_h <-
-        aggregate(grid_start["h2"], base_table, FUN = mean) %>% 
-        rename(mean_h = h2)
-
-      mean_s <-
-        aggregate(x = grid_start["s2"], base_table, FUN = mean) %>% 
-        rename(mean_s = s2)
-      
-      mean_v <-
-        aggregate(x = grid_start["v2"], base_table, FUN = mean) %>% 
-        rename(mean_v = v2)
 
 
-    #convert to data.frame
-      st_geometry(n_colors) <- NULL
-      st_geometry(sd_colors) <- NULL
-      st_geometry(mean_h) <- NULL
-      st_geometry(mean_s) <- NULL
-      st_geometry(mean_v) <- NULL
 
-    #append
-      base_table$n_colors <- n_colors$n_colors
-      base_table$sd_colors <- sd_colors$sd_colors
-      base_table$mean_h <- mean_h$mean_h
-      base_table$mean_s <- mean_s$mean_s
-      base_table$mean_v <- mean_v$mean_v
-      base_table$hex3 <- hsv(base_table$mean_h, 
-                             base_table$mean_s, 
-                             base_table$mean_v)
-    
-    #filter
-      return(base_table %>% filter(n_colors <= color_filter))
-  }
+st_write(
+  color_circle_final,
+  paste0("output/final_", image_name, ".shp")
+)
+
+
+# see how it would plot in tableau
+color_circle_centroids |> 
+  filter(median_hex != "#FFFFFF") |> 
+  ggplot() +
+  geom_point(
+    aes(X, Y, fill = median_hex, size = pi*radius^2),
+    shape = 21, stroke = 0.5
+  ) +
+  scale_fill_identity(guide = "none") +
+  scale_size(
+    guide = "none", 
+    range = c(0.1, 20) # might need to be tweaked or adjust zoom
+  ) + 
+  coord_fixed() +
+  theme_void()
+
+# if it looks good, write to csv
+write_csv(
+  x = color_circle_centroids, 
+  file = paste0("output/final_", image_name, ".csv")
+)
 
 ```
-
-```{r}
-add_to_grid <-
-  function(sf_data){
-    for(i in 1:nrow(sf_data)){
-        if(lengths(st_intersects(sf_data[i,], new_grid, sparse = T)) == 0){
-            new_grid <<- rbind(new_grid, sf_data[i,])
-        }
-      print(i)
-    }
-  }
-
-plot_new_grid <-
-  function(color_by){
-    plot(new_grid$geometry, col = color_by, border = "grey30")
-  }
-```
-
-
-```{r}  
-#create largest circles
-  grid_xl <- 
-    build_grid(3, 3)
-  
-  plot(grid_xl$geometry[1])
-  
-  new_grid <- grid_xl[1,]
-  add_to_grid(grid_xl) #48
-  
-  plot_new_grid(new_grid$hex)
-
-#plot larges
-  grid_lg <- 
-    build_grid(2, 3) %>% 
-    filter(lengths(st_overlaps(., new_grid)) == 0)
-  
-  add_to_grid(grid_lg)
-  plot_new_grid(new_grid$hex)
-
-#plot modulo
-  grid_modsize <- 
-    build_grid(1.5, 3) %>% 
-    filter(lengths(st_overlaps(., new_grid)) == 0)
-  
-  add_to_grid(grid_modsize)
-  plot_new_grid(new_grid$hex)
-
-#plot mediums
-  grid_med <- 
-    build_grid(1.25, 3) %>% 
-    filter(lengths(st_overlaps(., new_grid)) == 0)
-  
-  add_to_grid(grid_med)
-  plot_new_grid(new_grid$hex)
-  
-#plot smalls
-  grid_sm <- 
-    build_grid(1, 3) %>% 
-    filter(lengths(st_overlaps(., new_grid)) == 0)
-
-  add_to_grid(grid_sm)
-  plot_new_grid(new_grid$hex)
-
-#plot x-smalls
-  grid_xs <- 
-    build_grid(1/12, 3) %>% 
-    filter(lengths(st_overlaps(., new_grid)) == 0)
-
-  add_to_grid(grid_sm)
-  plot_new_grid(new_grid$hex)
-  
-  
-  
-final_grid <-
-  rbind(
-    new_grid,
-    grid_start %>% 
-        mutate(mean_h = h2,
-               mean_s = s2,
-               mean_v = v2,
-               hex3 = hex2,
-               sd_colors = 0.0) %>% 
-          st_buffer(dist = 1) %>% 
-          #filter(lengths(st_within(., new_grid)) == 0) #%>% 
-          filter(lengths(st_intersects(., new_grid)) == 0) #%>% 
-          #filter(lengths(st_touches(., new_grid)) == 0)
-  ) #%>% st_buffer(dist = -.25)
-
-plot(final_grid$geometry, 
-     add = F, 
-     #col = final_grid$size,
-     col = final_grid$hex2
-     #border = "grey40"
-     )
-
-left_join(
-  
-  grid_start[1:10,] %>% 
-    select(order, geometry) %>% 
-    unnest(geometry) %>% 
-    st_coordinates()
-  
-  
-  final_grid, st_coordinates(final_grid)) %>% 
-ggplot(aes(X,Y, color = size)) +
-  geom_point() +
-  scale_color_identity()
-
-
-#plot(new_grid$geometry%>% st_buffer(dist = -.25),
-#     add = T, 
-#     col = new_grid$hex3, border = NA)
-
-table(final_grid$size)
-```
-
-
-#Crop each grid to image
-```{r}
-
-```
-
-#place large circles first then remove points contained within large circles
-
-*for x8 find first placement then skip every 8
-  +check to see if color is representative of image: max out SL in HSL, get range of middle 75 H values 
-  +check for overlap with any currently placed circles
-```{r}
-
-```
-
-
-
-
-#From vignette
-```{r}
-nc <- st_read(system.file("shape/nc.shp", package="sf"))
-plot(nc[1])
-plot(nc[1,1], col = 'grey', add = TRUE)
-
-
-```
-
-
-
-
-########### not using #######################
-  
-```{r}  
- aggregate(x = grid_sf_1x["hex2"],
-           by = grid_sf_8x,
-           FUN = n_distinct)
-
-
-colSums(st_intersects(grid_sf_1x, 
-                      grid_sf_8x,
-                      sparse = FALSE))
-
-aggregate(x = grid_sf_1x["hex2"], 
-          by = grid_sf_8x, 
-          FUN = n_distinct)
-[,1]
-
-
-  st_within(grid_sf_1x[1:100,], grid_sf_8x[1,], sparse =  F)
-  
-  a <- 
-    
-  
-  aggregate(nc[,"frac74"], 
-          list(Ashe_nb = lengths(st_intersects(nc, Ashe)) > 0), mean))  
-
-  aggregate(grid_sf_1x[,"hex2"], 
-          list(new = lengths(st_intersects(grid_sf_1x, grid_sf_8x)) > 0), n_distinct)  
-
-
-  sum(st_within(grid_sf_1x[1:100,], grid_sf_8x[1,], sparse = F))
-    
-result_private <- st_within(point_private_sf, world_sf, sparse = FALSE)  
-
-### Calculate the total count of each polygon
-# Store the result as ew columns "Count_all" and "Count_private" in world_sf
-world_sf <- world_sf %>%
-  mutate(Count_all = apply(result_all, 2, sum),
-         Count_private = apply(result_private, 2, sum)) %>%
-  # Calculate the percentage
-  mutate(Percent = ifelse(Count_all == 0, Count_all, Count_private/Count_all * 100))
-
-
-
-  mutate(pct_hue = sd(h))
-
-```
-
-
-
-
-#create shapes (svg layers)
-*the ```polygonizer``` function requires [osgeo4w](https://trac.osgeo.org/osgeo4w/) 64-bit to be installed
-```{r}
-#raster
-#read image
- image_initial <-
-    raster("starrynight.png", band = 3) %>% 
-    aggregate(fact = 17)
-%>% 
-    #rasterToPoints()
-    #readPNG("starrynight.png") %>% 
-    as.raster()
-
-plot(image_initial)
-    
-    %>% 
-    aggregate(image_initial, fact = 17)
-      
-
-plot(image_initial)
-image_ratio <- nrow(image_initial) / ncol(image_initial) # image ratio
-plot(c(0,1), c(0,image_ratio), type = "n", xlab = "", ylab = "", asp=1)
-rasterImage(image_initial, 0, 0, 1, image_ratio) 
-
-#convert to polygons
-
-#get polygonizer function
-  source("https://gist.githubusercontent.com/johnbaums/26e8091f082f2b3dd279/raw/7a8caa444fe63f0705fdb0d31239f1b202b6cb51/polygonizer.R")
-
-  image_polygon <-
-    polygonizer(image_initial, 
-                outshape = "starrynight.shp", 
-                pypath = (cmd = "C:/OSGeo4W64/OSGeo4W.bat"))
-  
-  spplot(image_polygon, col.regions=rainbow(200))
-
-
-  rasterToPolygons(x, fun=NULL, n=4, na.rm=TRUE, digits=12, dissolve=FALSE)
-```
-
-```{r}
-#svglite
-a <- 
-  svglite("starrynight_12.svg")
-```
-
-
-```{r}
-  #filter(lengths(st_intersects(., y = grid_sf_8x[1, ], sparse = T)) == 0) %>% 
-  #filter(lengths(st_within(., y = grid_sf_8x, sparse = T)) == 0) %>% 
-  #filter(lengths(st_within(., y = grid_sf_4x, sparse = T)) == 0)
-
-
-#%>% st_join(grid_bounding_box, join = st_within)
-
-
-```
-
