@@ -427,7 +427,7 @@ paste0("output/final_", image_name) |>
 
 st_write(
   color_circle_final,
-  paste0("output/final_", image_name, ".shp")
+  paste0("output/shp/", image_name, ".shp")
 )
 
 
