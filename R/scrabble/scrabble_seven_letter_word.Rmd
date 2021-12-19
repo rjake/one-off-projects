@@ -1,0 +1,59 @@
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+What 7 letter word allows you to take one letter away and have another word and continue to do so until there is just one letter left?
+```{r}
+library(tidyverse)
+library(stringr)
+```
+
+```{r}
+url <- "https://raw.githubusercontent.com/first20hours/google-10000-english/master/google-10000-english.txt"
+
+words_list <- 
+  read_table(url, col_names = "words") %>% 
+  data.frame() %>% 
+  mutate(words = toupper(words),
+         nchar = nchar(words)) %>% 
+  arrange(words)
+
+str_collapse <-
+  function(df){
+    paste(df$words, collapse = "|")
+  }
+
+find_words <-
+  function(n, get_words){
+    words_list %>% 
+    filter(nchar == n) %>% 
+    filter(str_detect(.$words, str_collapse(get_words)))
+  }
+```
+
+```{r}
+words_2 <-
+  filter(words_list, nchar == 2, 
+         str_detect(words, "[AI]"))
+
+words_3 <- find_words(3, words_2)
+words_4 <- find_words(4, words_3)
+words_5 <- find_words(5, words_4)
+words_6 <- find_words(6, words_5)
+words_7 <- find_words(7, words_6)
+
+nrow(words_2)
+nrow(words_3)
+nrow(words_4)
+nrow(words_5)
+nrow(words_6)
+nrow(words_7)
+```
+
+PLANETS
+PLANET-
+PLANE--
+-LANE--
+-LAN---
+--AN---
+--A----
