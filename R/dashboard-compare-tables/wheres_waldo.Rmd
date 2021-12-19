@@ -79,6 +79,8 @@ radioGroupButtons(
   label = "Distort data?",
   choices = c("Yes", "No")
 )
+
+a("GitHub", href="https://github.com/rjake/one-off-projects/tree/main/R/dashboard-compare-tables")
 ```
 
 Details
