@@ -32,6 +32,7 @@ library(imager)
 library(maptools)
 library(raster)
 library(sf)
+library(colorspace)
 library(tidyverse)
 
 options(warn = -1)
