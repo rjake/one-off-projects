@@ -122,7 +122,7 @@ system.time(
             # conditions met
             cat(
               "cluster (row):", cluster,
-              " ///  polygon:", cluster_part,
+              " ///  cluster_part:", cluster_part,
               " ///  iteration:", get_iteration,
               " ///  remaining:", nrow(color_polygon),
               "pieces left\n"
