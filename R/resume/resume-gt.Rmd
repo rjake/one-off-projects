@@ -1,0 +1,292 @@
+---
+output:
+  html_document: default
+  #word_document: default
+  #pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+```
+
+```{css css-style-sheet}
+.main-container {
+    max-width: 700px;
+}
+
+@media print {
+  a[href]:after {
+    content: none !important;
+  }
+}
+
+
+```
+
+```{r workspace}
+library(gt)
+library(htmltools)
+library(glue)
+library(tidyverse)
+library(shiny)
+library(simplecolors)
+library(fontawesome)
+
+# ---
+# title: "Jake **Riley**"
+# author: 'Data Analyst  |  Philadelphia, PA | `r fa("envelope")` rjake@sas.upenn.edu | `r fa("github")` [rjake](https://github.com/rjake)'
+# ---
+
+```
+
+
+:::: {style="display: grid; grid-template-columns: 1fr 1fr; grid-column-gap: 10px;"}
+
+::: {style='margin: 0px;'}
+<font size="8"> Jake **Riley**</font> 
+:::
+
+
+:::{style='text-align: right; margin: 0px; line-height: 0.5;'}
+<br>
+<br>
+<br>
+Data Analyst  |  Philadelphia, PA
+
+`r fa("envelope")` rjake@sas.upenn.edu | `r fa("github")` [rjake](https://github.com/rjake)
+:::
+
+
+:::: 
+
+
+
+```{r}
+colors <-
+  list(
+    grey = sc("grey4")
+  )
+
+base_gt <- function(x) {
+  gt(x) |> 
+    tab_options(
+      table.border.top.style = "hidden",
+      table.border.bottom.style = "hidden",
+      table.font.size = px(11),
+      table.font.color = colors$grey,
+      column_labels.hidden = TRUE,
+      table_body.hlines.color = "white",
+      data_row.padding = px(1)
+    )
+}
+
+section_table <- function(x) {
+  df <-
+    tibble(
+      left = c(
+        x$title,
+        x$subtitle
+        
+      ),
+      right = c(
+        x$when,
+        x$where
+      )
+    )
+  
+  if (sum(nchar(x$why)) > 0) {
+    df <-
+      bind_rows(
+        df,
+        tibble(
+          left = glue("&nbsp;&nbsp;&nbsp;&nbsp; {x$why}"),
+          right = ""
+        )
+      )
+  }
+  
+  df |> 
+    base_gt() |>
+    tab_style( # title
+      style = list(
+        cell_text(weight = "bold", size = px(14), color = "black")
+      ),
+      locations = cells_body(columns = 1, rows = 1)
+    ) |>
+    tab_style( # subtitle
+      style = list(
+        "font-variant: small-caps;"#,
+        #cell_text(size = "small")
+      ),
+      locations = cells_body(columns = 1, rows = 2)
+    ) |>
+    tab_style( # column 1
+      style = list(cell_text(align = "left")),
+      locations = cells_body(columns = 1)
+    ) |>
+    tab_style( # column 2
+      style = list(cell_text(style = "italic")),
+      locations = cells_body(columns = 2)
+    ) |>
+    tab_style( # row 1 v_align top
+      style = list(cell_text(v_align = "top")),
+      locations = cells_body(rows = 2)
+    ) |>
+    tab_style( # row 2 v_align top
+      style = list(cell_text(v_align = "top")),
+      locations = cells_body(rows = 2)
+    ) |>
+    cols_width(
+      1 ~ px(550),
+      2 ~ px(100)
+    ) |>
+    fmt_markdown(columns = everything())
+}
+
+```
+
+### `r fa("briefcase")` Relevant Work Experience
+
+```{r}
+work <-
+  list(
+    chop = 
+      list(
+        title = "Clinical Data Programmer / Analyst III",
+        subtitle = "Children's Hospital of Philadelphia",
+        when = "2017 - Present",
+        where = "Philadelphia, PA",
+        why = c(
+          "**Mentor** and accelerate technical capital of analytics team while reducing technical debt",
+          "**Innovate** and enhance in-house data solutions (R packages, dashboard templates, trusted data layer)",
+          #"Analytics pipeline from query (SQL) to dashboards and reporting",
+          "**Consult** on analytic strategy, data visualization, and technical solutions", 
+          #"Developed automated query generation methodology for US News (~1000 questions)",
+          "**Build** novel datasets for data warehouse (ex. diagnosis hierarchy, self-generating calendars)",
+          "Tools: *SQL, Qliksense, dbt, R, shiny, VS Code*"
+        )
+      ),
+    comcast = 
+      list(
+        title = "BI Analyst - Human Resources",
+        subtitle = "Comcast",
+        when = "2016 - 2017",
+        where = "Philadelphia, PA",
+        why = c(
+          "Build **dashboards** for employee turnover, diversity, and data dictionary (1,200 users)", 
+          "**Automate** a quarterly report for the senior vice president of human resources",
+          "Help peers use the **right methods** to generate insights and visualize results",
+          "Provide **difficult analyses** such as travelling salesman problems",
+          "Tools: *SAP Business Objects, Tableau, R*"
+        )
+      ),
+  policy_map =
+    list(
+      title = "Data Analyst",
+      subtitle = "PolicyMap",
+      when = "2015 - 2016",
+      where = "Philadelphia, PA",
+      why = c(
+        "Aggregate over 150 **national datasets** across 9 geographies", 
+        "Develop new **automated process** for testing and data validation",
+        "Tools: *SQL, ArcMap, R*"
+      )
+    ),
+  whole_foods =
+    list(
+      title = "Production Analyst",
+      subtitle = "Whole Foods Market",
+      when = "2003 - 2008",
+      where = "Landover, MD",
+      why = c(
+        "**Automate** the production schedule for the Mid-Atlantic commissary", 
+        "Determine ingredient quantity for daily and holiday orders of 32 stores", 
+        "Minimize redundant usage of kitchen equipment",
+        "Determine how many 180-gallon kettles of soup to be made each hour",
+        "Tools: Excel/VBA"
+      )
+    )
+  )
+
+work_list <- map(work, section_table)
+tagList(work_list)
+
+#section_table(work$chop)
+
+```
+
+### `r fa("university")` Education
+
+```{r}
+school <-
+  list(
+    list(
+      title = "University of Pennsylvania",
+      subtitle = "B.A. Sociology - Quantitative Methods  |  summa cum laude  |  phi beta kappa",
+      when = "2012-2015",
+      where = "Philadelphia, PA",
+      why = c(
+        "Non-traditional student. Coursework focused on data analysis, GIS, and data visualization.",
+        "Projects focused on census data and demography."
+      )
+    ),
+    list(
+      title = "Community College of Philadelphia",
+      subtitle = "A.A. Liberal Arts | with highest honors | phi theta kappa",
+      when = "2011-2012",
+      where = "Philadelphia, PA",
+      why = ""
+    )#,
+    # list(
+    #   with = "Montgomery County Community College",
+    #   what = "part-time general studies",
+    #   when = "2003-2005",
+    #   where = "Rockville, MD",
+    #   why = NA_character_
+    # )
+  )
+
+school_list <- map(school, section_table)
+tagList(school_list)
+```
+
+
+### `r fa("cogs")` Skills
+
+```{r}
+list(
+  `highly proficient` = c("R", "data wrangling", "data viz", "package dev", "code review"),
+  proficient = c("SQL", "Tableau", "Qliksense", "shiny", "GitHub", "GIS"),
+  novice = c("JavaScript", "CSS", "DBT", "REST APIs", "sentiment analysis"),
+  interested = c("Python", "Machine Learning", "NLP", "Statistics")
+) |>
+  #map(sort) |>
+  map(glue_collapse, " • ") |>
+  flatten_df() |>
+  base_gt() |>
+  tab_options(
+    column_labels.hidden = FALSE,
+    column_labels.font.weight = "bold",
+    container.overflow.y = FALSE
+  ) |>
+  cols_width(
+    everything() ~ 160
+  )
+
+```
+
+### `r fa("laptop-code")` R Packages
+
+```{r}
+tibble(
+  x = c(
+    "[**headliner**](https://rjake.github.io/headliner) *(author)* generates building blocks for creating dynamic text",
+    "[**shinyobjects**](https://rjake.github.io/shinyobjects/index.html) *(author)* allows the user to debug reactive objects interactively", 
+    "[**simplecolors**](https://rjake.github.io/simplecolors/articles/intro.html) *(author)* a simple color palette that is intuitive and easy to remember",
+    "[**whereiation**](https://rjake.github.io/whereiation/) *(author)* where(is the var)iation - automated exploratory data analytics pacakage"
+  )
+) |>
+  base_gt() |>
+  cols_width(everything() ~ 640) |>
+  fmt_markdown(columns = everything())
+```
