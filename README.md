@@ -1,5 +1,9 @@
-# One-off Projects & Analyses
+# One-off Projects & Analyses 
 
+<a href="https://github.com/rjake/one-off-projects"> <img src="https://img.shields.io/static/v1?style=for-the-badge&message=Code&color=181717&logo=GitHub&logoColor=FFFFFF&label="  alt="Resume"></a>
+
+    
+    
 # GIS
 * [Dorling Cartogram (packed circles)](R/map-cartogram-dorling)
 
