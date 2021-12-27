@@ -1,6 +1,6 @@
 # One-off Projects & Analyses 
 
-<a href="https://github.com/rjake/one-off-projects"> <img src="https://img.shields.io/static/v1?style=for-the-badge&message=Code&color=181717&logo=GitHub&logoColor=FFFFFF&label="  alt="Resume"></a>
+<a href="https://github.com/rjake/one-off-projects"> <img src="https://img.shields.io/static/v1?style=for-the-badge&color=999999&message=Code&logo=GitHub&logoColor=fff&label="  alt="Resume"></a>
 
     
     
