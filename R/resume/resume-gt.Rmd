@@ -24,7 +24,7 @@ linkcolor: #337ab7
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 ```
 
-```{css}
+```{css css}
 /* dont show url on print */
 @media print {
   a[href]:after {
@@ -35,6 +35,7 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 body {
   color: #333333!important;
   line-height: 1.2;
+  font-size: 11px;
 }
 
 .main-container {
@@ -75,6 +76,7 @@ ul {
 .gt_table {
   margin-top: 5px;
 }
+
 ```
 
 ```{r workspace}
@@ -193,6 +195,36 @@ section_table <- function(x) {
 
 ```
 
+
+```{r skills}
+### `r fa("cogs")` Skills
+list(
+  advanced = 
+    c("R", "data wrangling", "data viz", "package dev", "code review"),
+  proficient = 
+    c("SQL", "Tableau", "Qliksense", "shiny", "GitHub", "GIS"),
+  familiar = 
+    c("DBT", "REST APIs", "<br>sentiment analysis"),
+  interested = 
+    c("Python", "Machine Learning", "NLP", "Statistics")
+) |>
+  #map(sort) |>
+  map(glue_collapse, " • ") |>
+  flatten_df() |>
+  base_gt() |>
+  tab_options(
+    column_labels.hidden = FALSE,
+    column_labels.font.weight = "bold",
+    container.overflow.x = FALSE,
+    container.overflow.y = FALSE
+  ) |>
+  cols_align("center") |> 
+  cols_width(everything() ~ 160) |> 
+  fmt_markdown(columns = everything())
+
+```
+
+
 ### `r fa("briefcase")` Relevant Work Experience
 
 ```{r work}
@@ -291,47 +323,50 @@ tagList(school_list)
 ```
 
 
-### `r fa("cogs")` Skills
-
-```{r skills}
-list(
-  advanced = 
-    c("R", "data wrangling", "data viz", "package dev", "code review"),
-  proficient = 
-    c("SQL", "Tableau", "Qliksense", "shiny", "GitHub", "GIS"),
-  familiar = 
-    c("DBT", "REST APIs", "<br>sentiment analysis"),
-  interested = 
-    c("Python", "Machine Learning", "NLP", "Statistics")
-) |>
-  #map(sort) |>
-  map(glue_collapse, " • ") |>
-  flatten_df() |>
-  base_gt() |>
-  tab_options(
-    column_labels.hidden = FALSE,
-    column_labels.font.weight = "bold",
-    container.overflow.x = FALSE,
-    container.overflow.y = FALSE
-  ) |>
-  cols_align("center") |> 
-  cols_width(everything() ~ 165) |> 
-  fmt_markdown(columns = everything())
-
-```
 
 ### `r fa("laptop-code")` R Packages
 
 ```{r}
 tibble(
   x = c(
-    "[**headliner**](https://rjake.github.io/headliner) *(author)* generates building blocks for creating dynamic text",
+    "[**headliner**](https://rjake.github.io/headliner) *(author)* adds dynamic, informative text to dasboards and reports",
     "[**shinyobjects**](https://rjake.github.io/shinyobjects/index.html) *(author)* allows the user to debug reactive objects at the console", 
     "[**simplecolors**](https://rjake.github.io/simplecolors/articles/intro.html) *(author)* a simple color palette that is intuitive and easy to remember",
-    "[**whereiation**](https://rjake.github.io/whereiation/) *(author)* where(is the var)iation - automated exploratory data analytics"
+    "[**whereiation**](https://rjake.github.io/whereiation/) *(author)* where(is the var)iation - automated exploratory data analysis"
   )
 ) |>
   base_gt() |>
-  cols_width(everything() ~ 640) |>
+  cols_width(everything() ~ 640) |> 
+  tab_options(table.margin.left = "7px") |>
   fmt_markdown(columns = everything())
+```
+
+
+### `r fa("users")` Volunteer / Community
+```{r}
+tibble(
+  x = 
+    c(
+      "Code for Philly (contributor)",
+      "Compass (data)",
+      "DC Trans Coalition (advocate)",
+      "Emergence Community Arts Collective (data)",
+      "Iraq Veterans Against the War (data)",
+      "#MakeoverMonday (tableau)",
+      "Men’s Resource Center (facilitator)",
+      "Mill Creek Farm (data)",
+      "Neighborhood Bike Works (facilitator)",
+      "OneDC (data)",
+      "OpenDataPhilly (data)",
+      "Project HOME (data)",
+      "R-Ladies (speaker)",
+      "TechCamp Philly (data)",
+      "TransHealth Conference (data)"
+      ) |> 
+    glue_collapse(" • ")
+  ) |> 
+  base_gt() |>
+  cols_width(everything() ~ 640) |>
+  cols_align("left") |> 
+  tab_options(table.margin.left = "7px")
 ```
