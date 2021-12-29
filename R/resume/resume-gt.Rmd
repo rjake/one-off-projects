@@ -39,8 +39,8 @@ body {
 }
 
 .main-container {
-  max-width: 700px;
-  margin-left: 50px;
+  max-width: 720px;
+  margin-left: 75px;
   margin-right: 50px;
   margin-top: 40px;
 }
@@ -77,9 +77,13 @@ ul {
   margin-top: 5px;
 }
 
+.gt_row {
+  overflow-y: hidden;
+}
+
 ```
 
-```{r workspace}
+```{r workspace,eval=TRUE}
 library(gt)
 library(htmltools)
 library(glue)
@@ -91,23 +95,23 @@ library(fontawesome)
 ```
 
 
-:::: {style="display: grid; grid-template-columns: 1fr 1fr; grid-column-gap: 10px;"}
+<!-- :::: {style="display: grid; grid-template-columns: 1fr 1fr; grid-column-gap: 10px;"} -->
 
-::: {style='margin: 0px;'}
-<font size="8"> Jake **Riley**</font> 
-:::
-
-
-:::{style='text-align: right; margin: 0px; line-height: 0.5;'}
-<br><br><br> 
-Data Analyst  |  Philadelphia, PA
-
-<br><br> 
-`r fa("envelope")` rjake@sas.upenn.edu  | `r fa("github")` [rjake](https://github.com/rjake)
-:::
+<!-- ::: {style='margin: 0px;'} -->
+<!-- <font size="8"> Jake **Riley**</font> -->
+<!-- ::: -->
 
 
-:::: 
+<!-- :::{style='text-align: right; margin: 0px; line-height: 0.5;'} -->
+<!-- <br><br><br> -->
+<!-- Data Analyst  |  Philadelphia, PA -->
+
+<!-- <br><br> -->
+<!-- `r fa("envelope")` rjake@sas.upenn.edu  | `r fa("github")` [rjake](https://github.com/rjake) -->
+<!-- ::: -->
+
+
+<!-- :::: -->
 
 
 
@@ -115,16 +119,21 @@ Data Analyst  |  Philadelphia, PA
 colors <-
   list(
     dark_grey = sc("grey5"),
-    grey = sc("grey4")
+    grey = sc("grey4"),
+    light_grey = "#888888"
   )
 
-base_gt <- function(x) {
-  gt(x) |> 
+base_gt <- function(x, id = NULL) {
+  gt(
+    x, 
+    id = id # used with opt_css()
+  ) |> 
     tab_options(
       table.border.top.style = "hidden",
       table.border.bottom.style = "hidden",
       table.font.size = px(11),
       table.font.color = colors$grey,
+      table.margin.left = "7px",
       column_labels.hidden = TRUE,
       container.overflow.x = FALSE,
       container.overflow.y = FALSE,
@@ -196,8 +205,49 @@ section_table <- function(x) {
 ```
 
 
+```{r header}
+tibble(
+  x = 
+    c(
+      "Jake **Riley**",
+      glue("Data Analyst  |  Philadelphia, PA | \\
+           [rjake@sas.upenn.edu](mailto:rjake@sas.upenn.edu)  | \\
+           {gh} [rjake](https://github.com/rjake)",
+        mail = fa('envelope'),
+        gh = fa("github")
+      )
+    ) |> 
+    md()
+) |> 
+  base_gt(id = "header") |> 
+  tab_style( # title
+      style = list(
+        cell_text(
+          size = px(50), 
+          color = colors$dark_grey,
+          v_align = "bottom"
+        )
+      ),
+      locations = cells_body(rows = 1)
+    ) |>
+    tab_style( # subtitle
+      style = list(
+        #"font-variant: small-caps;",
+        cell_text(size = px(12))
+      ),
+      locations = cells_body(columns = 1, rows = 2)
+    ) |> 
+  #cols_align("center") |> 
+  fmt_markdown(columns = everything()) |> 
+  tab_options(
+    table.margin.left = "auto"
+  )
+```
+
+### `r fa("cogs")`        Skills
+
 ```{r skills}
-### `r fa("cogs")` Skills
+# Skills________________________________________________
 list(
   advanced = 
     c("R", "data wrangling", "data viz", "package dev", "code review"),
@@ -211,23 +261,37 @@ list(
   #map(sort) |>
   map(glue_collapse, " • ") |>
   flatten_df() |>
-  base_gt() |>
+  base_gt(id = "skills") |> 
   tab_options(
+    #column_labels.border.bottom.width = "0px",
+    #table.align = "center",
+    table.margin.left = "12px",
+    column_labels.border.bottom.color = "white",
     column_labels.hidden = FALSE,
     column_labels.font.weight = "bold",
     container.overflow.x = FALSE,
     container.overflow.y = FALSE
   ) |>
   cols_align("center") |> 
-  cols_width(everything() ~ 160) |> 
-  fmt_markdown(columns = everything())
-
+  cols_width(
+    familiar ~ 110,
+    everything() ~ 160
+  ) |> 
+  fmt_markdown(columns = everything()) |> 
+  opt_css(
+    css = 
+      "#skills .gt_col_heading { 
+        padding: 0px;
+        overflow-y: hidden;
+      }"
+  )
 ```
 
 
-### `r fa("briefcase")` Relevant Work Experience
+### `r fa("briefcase")`   Relevant Work Experience
 
 ```{r work}
+# Relevant Work Experience___________________________
 work <- list(
   chop = list( # chop ----
     title = "Clinical Data Programmer / Analyst III",
@@ -291,9 +355,10 @@ tagList(work_list)
 
 ```
 
-### `r fa("university")` Education
+### `r fa("university")`  Education
 
 ```{r education}
+# Education____________________________________________
 school <- list(
   upenn = list( # upenn ----
     title = "University of Pennsylvania",
@@ -327,6 +392,7 @@ tagList(school_list)
 ### `r fa("laptop-code")` R Packages
 
 ```{r}
+# R Packages__________________________________________
 tibble(
   x = c(
     "[**headliner**](https://rjake.github.io/headliner) *(author)* adds dynamic, informative text to dasboards and reports",
@@ -342,8 +408,10 @@ tibble(
 ```
 
 
-### `r fa("users")` Volunteer / Community
+### `r fa("users")`       Volunteer / Community
+
 ```{r}
+# Volunteer / Community_____________________________
 tibble(
   x = 
     c(
@@ -365,8 +433,12 @@ tibble(
       ) |> 
     glue_collapse(" • ")
   ) |> 
-  base_gt() |>
-  cols_width(everything() ~ 640) |>
+  base_gt() |> 
+  #base_gt() |>
+  cols_width(everything() ~ 645) |>
   cols_align("left") |> 
-  tab_options(table.margin.left = "7px")
+  tab_style(
+    style = "line-height: 1.5;",
+    locations = cells_body()
+  )
 ```
