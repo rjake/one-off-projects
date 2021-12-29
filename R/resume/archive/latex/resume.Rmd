@@ -10,7 +10,7 @@ github: rjake
 #linkedin: xyz
 headcolor:  "333333" # "3E7474" # simplecolors::sc("dullteal4")
 date: "`r format(Sys.time(), '%B %Y')`"
-aboutme: "I have been working with data since 2003. I have a deep passion for automation, collaboration, and advancing data literacy. This resume was even compiled with code. My work history is interwoven with school and working for social service organizations; this is resume reflects the most relevant work history in my analytics career."
+#aboutme: "I have been working with data since 2003. I have a deep passion for automation, collaboration, and advancing data literacy. This resume was even compiled with code. My work history is interwoven with school and working for social service organizations; this is resume reflects the most relevant work history in my analytics career."
 
 output: 
     vitae::awesomecv:
@@ -58,24 +58,24 @@ list_to_entry <- function(x) {
 ```{r}
 list(
   list(
-    with = "Children's Hospital of Philadelphia",
-    what = "Clinical Data Programmer/Analyst III",
+    with = "Clinical Data Programmer / Analyst III",
+    what = "Children's Hospital of Philadelphia",
     when = "2017 - Present",
     where = "Philadelphia, PA",
     why = c(
-      "Mentor and accelerate technical capital of analytics team while reducing technical debt",
+      "\textbf{Mentor} and accelerate technical capital of analytics team while reducing technical debt",
       "Innovate and enhance in-house data solutions (R packages, dashboard templates, trusted data layer)",
-      "Analytics pipeline from query (SQL) to dashboards and reporting",
+      #"Analytics pipeline from query (SQL) to dashboards and reporting",
       "Consult on analytic strategy, data visualization, and technical solutions", 
-      "Developed automated query generation methodology for US News (~1000 questions)",
-      "Introduced novel datasets to our data warehouse (diagnosis hierarchy, self-generating hospital calendar, zipcode markets for strategy)",
+      #"Developed automated query generation methodology for US News (~1000 questions)",
+      "Introduce novel datasets to our data warehouse (ex. diagnosis hierarchy, self-generating calendars)",
       "Built data infrastructure that became foundation for enterprise tables",
       "Tools: SQL, Qliksense, dbt, R, shiny, VS Code"
     )
   ),
   list(
-    with = "Comcast",
-    what = "BI Analyst - Human Resources",
+    with = "BI Analyst - Human Resources",
+    what = "Comcast",
     when = "2016 - 2017",
     where = "Philadelphia, PA",
     why = c(
@@ -87,8 +87,8 @@ list(
     )
   ),
   list(
-    with = "PolicyMap",
-    what = "Data Analyst",
+    with = "Data Analyst",
+    what = "PolicyMap",
     when = "2015 - 2016",
     where = "Philadelphia, PA",
     why = c(
@@ -98,8 +98,8 @@ list(
     )
   ),
   list(
-    with = "Whole Foods Market",
-    what = "Production Analyst",
+    with = "Production Analyst",
+    what = "Whole Foods Market",
     when = "2003 - 2008",
     where = "Landover, MD",
     why = c(
@@ -112,6 +112,7 @@ list(
   )
 ) |> 
   list_to_entry()
+
 ```
 
 # \faIcon{university} Education
@@ -145,7 +146,7 @@ list(
 
 # \faIcon{cogs} Skills
 
-```{r eval=FALSE}
+```{r eval=F}
 library(kableExtra)
 
 list(
@@ -163,21 +164,30 @@ list(
   row_spec(0, bold = T, color = "#009acd") |>
   row_spec(1, bold = F, color = "#7f7f7f") |>
   column_spec(column = 1:4, width = "4.75cm")
+
+#knitr::knit_exit()
 ```
 
+
+\footnotesize
 
 * **highly proficient** data manipulation & visualization -- tidyverse -- package development -- code review 
 * **proficient** sql -- tableau -- qliksense -- shiny -- github -- gis -- census data
 * **novice** javascript -- css -- dbt -- api
 * **interested** python -- machine learning -- advanced statistics
 
+
 # \faIcon{laptop-code} R Packages
 
-* **headliner** *(github)* generates building blocks for creating dynamic text
-* **shinyobjects** *(CRAN)* allows the user to debug reactive objects interactively
-* **simplecolors** *(CRAN)* a simple color palette that is intuitive and easy to remember
-* **whereiation** *(github)* where(is the var)iation - an automated exploratory data analytics pacakage
+* **headliner** *(author)* generates building blocks for creating dynamic text \href{https://rjake.github.io/headliner/}{\tiny\color{lightgray}\faLink} 
+* **shinyobjects** *(author)* allows the user to debug reactive objects interactively \href{https://rjake.github.io/shinyobjects/index.html}{\tiny\color{lightgray}\faLink}
+* **simplecolors** *(author)* a simple color palette that is intuitive and easy to remember   \href{https://rjake.github.io/simplecolors/articles/intro.html}{\tiny\color{lightgray}\faLink} 
+* **whereiation** *(author)* where(is the var)iation - an automated exploratory data analytics pacakage \href{https://rjake.github.io/whereiation/}{\tiny\color{lightgray}\faLink} 
 
+
+```{r}
+knitr::knit_exit()
+```
 
 # \faIcon{users} Volunteer/Community
 
@@ -185,9 +195,6 @@ list(
 
 **Washington, DC** DC Trans Coalition (advocate), Emergence Community Arts Collective (data), OneDC (data)
 
-```{r}
-knitr::knit_exit()
-```
 
 # Examples:
 https://github.com/tallguyjenks/CV/blob/master/CV.pdf
