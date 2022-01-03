@@ -184,7 +184,7 @@ section_table <- function(x) {
       locations = cells_body(columns = 1)
     ) |>
     tab_style( # column 2
-      style = list(cell_text(style = "italic")),
+      style = list(cell_text(align = "right", style = "italic")),
       locations = cells_body(columns = 2)
     ) |>
     tab_style( # row 1 v_align bottom
@@ -299,14 +299,13 @@ work <- list(
     when = "2017 - Present",
     where = "Philadelphia, PA",
     why = c(
-      "**Innovate** and enhance in-house data solutions (R packages, dashboard templates, trusted data layer)",
-      "**Consult** on analytic strategy, data visualization, and technical solutions", 
-      "Enhance proficiency of analytics team through **mentorship** and ongoing training series",
-      "Reduce technical debt by leading code review process and **simplifying code** base",
-      "Completion of hundreds of data requests, putting **common metrics** into standardized tables or dashboards",
-      # "**Build** novel datasets for data warehouse (ex. diagnosis hierarchy, self-generating calendars)",
-      # "**???? dashboard patient reported outcomes, hundreds of data requests, robust data infrastructure**",
-      "Tools: *SQL, R, Qliksense, shiny, dbt*"
+      "Innovate and enhance in-house data solutions (R packages, dashboard templates, trusted data layer)",
+      "Consult on analytic strategy, data visualization, and technical solutions", 
+      "Enhance proficiency of analytics team through mentorship and ongoing training series",
+      "Reduce technical debt by leading code review process and simplifying code base",
+      "Completion of hundreds of data requests, putting common metrics into standardized tables or dashboards"
+      # "Build novel datasets for data warehouse (ex. diagnosis hierarchy, self-generating calendars)",
+      # "???? dashboard patient reported outcomes, hundreds of data requests, robust data infrastructure"      
     )
   ),
   comcast = list( # comcast ----
@@ -315,11 +314,10 @@ work <- list(
     when = "2016 - 2017",
     where = "Philadelphia, PA",
     why = c(
-      "Built HR **dashboards** for employee turnover, diversity, and data dictionary (1,200 users)", 
-      "**Automated** a quarterly report for the senior vice president of human resources",
-      #"Helped peers use the **right methods** to generate insights and visualize results",
-      "Used techniques such as travelling salesman algorithms to **optimaize** travel for HR trainings",
-      "Tools: *Tableau, R, SAP Business Objects*"
+      "Built HR dashboards for employee turnover, diversity, and data dictionary (1,200 users)", 
+      "Automated a quarterly report for the senior vice president of human resources",
+      #"Helped peers use the right methods to generate insights and visualize results",
+      "Used techniques such as travelling salesman algorithms to optimaize travel for HR trainings"
     )
   ),
   policy_map = list( # policy map ----
@@ -328,9 +326,8 @@ work <- list(
     when = "2015 - 2016",
     where = "Philadelphia, PA",
     why = c(
-      "Aggregated over 150 **national datasets** across 9 geographies", 
-      "Introduced new **automated process** for testing and data validation",
-      "Tools: *SQL, ArcMap, R*"
+      "Aggregated over 150 national datasets across 9 geographies", 
+      "Introduced new automated process for testing and data validation"
     )
   ),
   whole_foods = list( # whole foods ----
@@ -339,11 +336,10 @@ work <- list(
     when = "2003 - 2008",
     where = "Landover, MD",
     why = c(
-      "**Automated** the production schedule for the Mid-Atlantic commissary, supporting 32 stores", 
+      "Automated the production schedule for the Mid-Atlantic commissary, supporting 32 stores", 
       #"Determined ingredient quantity for daily and holiday orders of 32 stores", 
       "Determined how many 180-gallon kettles of soup to be made each hour",
-      "Minimized **redundant usage** of kitchen equipment in food preparation",
-      "*Tools: Excel/VBA*"
+      "Minimized redundant usage of kitchen equipment in food preparation"
     )
   )
 )
