@@ -317,7 +317,7 @@ work <- list(
       "Built HR dashboards for employee turnover, diversity, and data dictionary (1,200 users)", 
       "Automated a quarterly report for the senior vice president of human resources",
       #"Helped peers use the right methods to generate insights and visualize results",
-      "Used techniques such as travelling salesman algorithms to optimaize travel for HR trainings"
+      "Used techniques such as travelling salesman algorithms to optimize travel for HR trainings"
     )
   ),
   policy_map = list( # policy map ----
