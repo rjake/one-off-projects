@@ -91,8 +91,9 @@ word_stats <-
   arrange(letter) |> 
   summarise(
     n_1_5 = sum(letter %in% letter_stats$letter[1:5]),
-    n_6_13 = sum(letter %in% letter_stats$letter[6:13]),
-    letters = paste(letter, collapse = ""),
+    n_6_15 = sum(letter %in% letter_stats$letter[6:15]),
+    letters_rank = paste(letter, collapse = ""),
+    letter_alpha = paste(sort(as.character(letter)), collapse = ""),
     n_letter = n_distinct(letter),
     mean_letter_rank = mean(letter_ord),
     mean_letter_freq = mean(letter_freq),
@@ -106,17 +107,16 @@ word_stats <-
   print()
 
 
-# best starting words
+# best starting words: raise, arise
 word_stats |> 
   filter(n_letter == 5) |> 
   filter(n_1_5 == 5) |> 
   #filter(mean_letter == 3) |> 
   arrange(mean_letter_rank, desc(mean_pos_freq)) 
 
-
-# best 2nd words
+# best 2nd words: mount, donut, moult, month, count, mound, clout, hound
 word_stats |> 
   filter(n_letter == 5) |> 
-  filter(n_6_13 == 5) |> 
-  arrange(mean_letter_rank, desc(mean_pos_freq)) 
+  filter(n_6_15 >= 5) |> 
+  arrange(mean_letter_rank, desc(mean_pos_freq))
 
