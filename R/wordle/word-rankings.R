@@ -120,3 +120,8 @@ word_stats |>
   filter(n_6_15 >= 5) |> 
   arrange(mean_letter_rank, desc(mean_pos_freq))
 
+# example: floor - has [lor] but not [ais...], [l] is the 2nd letter
+word_stats |> 
+  filter(str_detect(word, "[lor]")) |> 
+  filter(!str_detect(word, "[aisemntudgcv]")) |> 
+  filter(str_detect(word, ".l..."))
