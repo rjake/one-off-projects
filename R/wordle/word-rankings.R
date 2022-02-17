@@ -1,39 +1,49 @@
 library(tidyverse)
 
 # https://en.lexipedia.org/
-# filter [5 to 5] for only 5-letter words
-raw_words <- 
-  read_table(
-    file = "~/Downloads/en_words_1_5-5.txt",
-    col_names = FALSE
-  ) |> 
-  set_names(c("word", "length", "frequency", "n_articles")) |> 
-  as.data.frame() # remove attrs
-  
-  
-prep_word_list <-
-  raw_words |> 
-  as_tibble() |>
-  filter(str_detect(word, "^[a-z]{5}$")) |> 
-  mutate(
-    weight = n_articles + (frequency / 1e6),
-    rank = rank(desc(weight), ties.method = "first")
-  ) |> 
-  arrange(rank) |> 
-  head(10000) |> 
-  print()
-  
+# filter [5 to 5] for only 5-letter words >= 5 times
+local({
+  if (FALSE) {# only run if needed
+    file_location <- "~/../Downloads"
+    download.file(
+      url = "http://www.gwicks.net/textlists/engmix.zip",
+      destfile = file.path(file_location, "words.zip")
+    )
+    unzip(
+      file.path(file_location, "words.zip"),
+      exdir = file_location
+    )
 
-word_letters <- 
+    file.copy(
+      from = file.path(file_location, "engmix.txt"),
+      to = "R/wordle/dictionary.txt"
+    )
+  }
+})
+
+
+raw_words <-
+  read_table(file = "~/../Downloads/engmix.txt") |>
+  set_names("word") |>
+  as.data.frame() # remove attrs
+
+
+prep_word_list <-
+  raw_words |>
+  as_tibble() |>
+  filter(str_detect(word, "^[a-z]{5}$")) |>
+  print()
+
+
+word_letters <-
   prep_word_list |>
   separate(
     col = word,
-    sep = "|",
+    sep = "",
     into = paste0("x", 0:5),
     remove = FALSE
-  ) |> 
-  select(-x0) |> 
-  select(rank, word:x5) |> 
+  ) |>
+  select(-x0) |>
   print()
 
 
