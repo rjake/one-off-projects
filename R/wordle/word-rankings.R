@@ -90,7 +90,7 @@ letter_stats <-
   ) |> 
   arrange(desc(letter_freq)) |> 
   print(n = 15)
-  
+
 
 word_stats <- 
   letter_position_stats |> 
@@ -118,21 +118,51 @@ word_stats <-
   print()
 
 
-# best starting words: raise, arise
+# best starting words: arose, aires, raise, arise, laser, rates
 word_stats |> 
   filter(n_letter == 5) |> 
-  filter(n_1_5 == 5) |> 
-  #filter(mean_letter == 3) |> 
-  arrange(mean_letter_rank, desc(mean_pos_freq)) 
-
-# best 2nd words: mount, donut, moult, month, count, mound, clout, hound
-word_stats |> 
-  filter(n_letter == 5) |> 
-  filter(n_6_15 >= 5) |> 
+  filter(n_1_5 >= 4) |> 
+  #filter(mean_letter == 3) |>
   arrange(mean_letter_rank, desc(mean_pos_freq))
 
-# example: floor - has [lor] but not [ais...], [l] is the 2nd letter
+# best 2nd words: unlit until clint tulip multi lucid tunic input
 word_stats |> 
-  filter(str_detect(word, "[lor]")) |> 
-  filter(!str_detect(word, "[aisemntudgcv]")) |> 
-  filter(str_detect(word, ".l..."))
+  filter(n_letter == 5) |> 
+  filter(n_6_12 >= 5) |> 
+  arrange(mean_letter_rank, desc(mean_pos_freq))
+
+# best 2nd words: campy psych champ chomp chimp chewy lymph picky
+word_stats |> 
+  filter(n_letter == 5) |> 
+  filter(n_12_26 >= 4) |> 
+  arrange(mean_letter_rank, desc(mean_letter_freq))
+
+# last remaining: jumpy gawky whack chivy mucky bumpy glyph
+word_stats |> 
+  filter(n_letter == 5) |> 
+  filter(n_12_26 >= 4) |> 
+  filter(!str_detect(word, "[rsnltchmp]")) |> 
+  arrange(desc(mean_letter_rank))
+
+
+# best series: arose - unlit - champ - gawky
+
+# example: floor - has [lor] but not [ais...], [l] is the 2nd letter
+str_detect_all <- function(x, letters) {
+  pattern <-
+    str_split(letters, "")[[1]] |> 
+    sort() |> 
+    paste(collapse = ".*")
+
+  str_detect(x, pattern)
+}
+
+
+word_stats |> 
+  filter(str_detect(word, "m...e")) |> 
+  filter(str_detect_all(x = letters_alpha, "yam")) |> 
+  # filter(!str_detect(word, "[isemounlinkwvqu]")) |> # none of these letters
+  # filter(!str_detect(x1, "[rt]")) |> # none of these positions
+  # filter(!str_detect(x2, "[a]")) |>
+  # filter(!str_detect(x4, "[r]"))
+  print()
