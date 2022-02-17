@@ -74,7 +74,7 @@ word_letter_stats <-
       pivot_wider(
         names_from = position,
         values_from = position_freq,
-        names_prefix = "freq_"
+        names_prefix = "pos_"
       )
   ) |> 
   print()
