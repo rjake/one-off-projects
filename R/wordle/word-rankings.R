@@ -166,3 +166,6 @@ word_stats |>
   # filter(!str_detect(x2, "[a]")) |>
   # filter(!str_detect(x4, "[r]"))
   print()
+
+
+write_csv(word_stats, "R/wordle/word-stats.csv")
