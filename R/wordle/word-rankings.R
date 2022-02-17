@@ -84,8 +84,9 @@ letter_stats <-
   letter_position_stats |> 
   distinct(letter, letter_freq, position, position_freq) |> 
   pivot_wider(
-    names_from = position, 
-    values_from = position_freq
+    names_from = position,
+    values_from = position_freq,
+    values_fill = 0
   ) |> 
   arrange(desc(letter_freq)) |> 
   print(n = 15)
