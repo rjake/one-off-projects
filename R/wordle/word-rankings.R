@@ -98,19 +98,19 @@ word_stats <-
     letter = factor(letter, levels = letter_stats$letter, ordered = TRUE),
     letter_ord = as.integer(letter)
   ) |> 
-  group_by(word) |>
+  group_by(word) |> 
   arrange(letter) |> 
   summarise(
     n_1_5 = sum(letter %in% letter_stats$letter[1:5]),
-    n_6_15 = sum(letter %in% letter_stats$letter[6:15]),
+    n_6_12 = sum(letter %in% letter_stats$letter[6:12]),
+    n_12_26 = sum(letter %in% letter_stats$letter[12:26]),
     letters_rank = paste(letter, collapse = ""),
-    letter_alpha = paste(sort(as.character(letter)), collapse = ""),
+    letters_alpha = paste(sort(as.character(letter)), collapse = ""),
     n_letter = n_distinct(letter),
     mean_letter_rank = mean(letter_ord),
     mean_letter_freq = mean(letter_freq),
     sum_letter_freq = sum(letter_freq),
-    mean_pos_freq = mean(position_freq),
-    median_pos_freq = median(position_freq)
+    mean_pos_freq = mean(position_freq)
   ) |> 
   ungroup() |> 
   left_join(word_letter_stats) |> 
