@@ -14,29 +14,8 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r}
-library(tidyverse)
 
-# https://en.lexipedia.org/
-# filter [5 to 5] for only 5-letter words >= 5 times
-local({
-  if (FALSE) {# only run if needed
-    file_location <- "~/../Downloads"
-    download.file(
-      url = "http://www.gwicks.net/textlists/engmix.zip",
-      destfile = file.path(file_location, "words.zip")
-    )
-    unzip(
-      file.path(file_location, "words.zip"),
-      exdir = file_location
-    )
 
-    file.copy(
-      from = file.path(file_location, "engmix.txt"),
-      to = "R/wordle/dictionary.txt"
-    )
-  }
-})
 
 
 raw_words <-
