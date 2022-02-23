@@ -155,28 +155,32 @@ best_1st <-
   filter(n_1_5 >= 4) |> 
   print()
 
+# best 2nd words: slice, slain, snail, since, inlay, uncle, scaly, sonic
+best_2nd <-
+  as_patterns |> 
+  filter(n_6_10 >=  4) |> 
+  print()
 
-# best 2nd words: unlit until clint tulip multi lucid tunic input
-word_stats |> 
-  filter(n_letter == 5) |> 
-  filter(n_6_12 >= 5) |> 
-  arrange(mean_letter_rank, desc(mean_pos_freq))
+# best 3rd words: duchy, dutch, pouch, punch, pushy, chump, dumpy, pudgy
+best_3rd <-
+  as_patterns |> 
+  filter(n_10_15 >= 4) |> 
+  arrange(desc(n_10_15), mean_letter_rank) |> 
+  print()
 
-# best 2nd words: campy psych champ chomp chimp chewy lymph picky
-word_stats |> 
-  filter(n_letter == 5) |> 
-  filter(n_12_26 >= 4) |> 
-  arrange(mean_letter_rank, desc(mean_letter_freq))
-
-# last remaining: jumpy gawky whack chivy mucky bumpy glyph
-word_stats |> 
-  filter(n_letter == 5) |> 
-  filter(n_12_26 >= 4) |> 
-  filter(!str_detect(word, "[rsnltchmp]")) |> 
-  arrange(desc(mean_letter_rank))
+# last remaining: gawky, judge, bawdy, fudge, vodka, debug
+best_remaining <-
+  as_patterns |> 
+  filter(n_12_26 >= 3) |> 
+  filter(!str_detect(letters_alpha, "[rtlsncdhp]")) |> 
+  arrange(desc(n_12_26)) |> 
+  print()
 
 
-# best series: arose - unlit - champ - gawky
+
+
+
+
 
 # example: floor - has [lor] but not [ais...], [l] is the 2nd letter
 str_detect_all <- function(x, letters) {
