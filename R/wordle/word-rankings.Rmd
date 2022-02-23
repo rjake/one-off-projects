@@ -106,7 +106,8 @@ word_stats <-
   arrange(letter) |> 
   summarise(
     n_1_5 = sum(letter %in% letter_stats$letter[1:5]),
-    n_6_12 = sum(letter %in% letter_stats$letter[6:12]),
+    n_6_10 = sum(letter %in% letter_stats$letter[6:12]),
+    n_10_15 = sum(letter %in% letter_stats$letter[10:15]),
     n_12_26 = sum(letter %in% letter_stats$letter[12:26]),
     letters_rank = paste(letter, collapse = ""),
     letters_alpha = paste(sort(as.character(letter)), collapse = ""),
