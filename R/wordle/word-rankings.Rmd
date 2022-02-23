@@ -10,32 +10,37 @@ output:
 knitr::opts_chunk$set(
   echo = TRUE,
   warning = FALSE,
-  message = FALSE
+  message = FALSE,
+  comment = ""
 )
+
+
+# limit rows displayed
+options(tibble.print_min = 5)
+#options(crayon.enabled = TRUE)
+
+#old.hooks <- fansi::set_knit_hooks(knitr::knit_hooks)
 ```
 
+#### Data from the NYT
+The word list comes from [this]("https://www.nytimes.com/games/wordle/main.18637ca1.js") JS file. Look for `var Ma=` to see the list. You can see the full code [here](https://github.com/rjake/one-off-projects/blob/main/R/wordle/input/download-data.R)
 
 ```{r workspace}
 library(tidyverse)
+library(glue)
 library(gt)
 library(scales)
 library(simplecolors)
 
-gradient <- c(
-  "white", 
-  sc("mutedteal3")
-)
-
-```
-
-# Data from the NYT
-The word list comes from [this]("https://www.nytimes.com/games/wordle/main.18637ca1.js") JS file. Look for `var Ma=` to see the list. You can see the full code [here](https://github.com/rjake/one-off-projects/blob/main/R/wordle/input/download-data.R)
-```{r}
+# read in NYT data
 raw_words <-
   read_csv("input/nyt_word_list.csv") |>
-  as_tibble() |>
+  as_tibble() |> 
   print()
+```
 
+```{r word-letters}
+# Break out each letter into its own column
 word_letters <-
   raw_words |>
   separate(
@@ -49,7 +54,9 @@ word_letters <-
 
 ```
 
-```{r}
+
+```{r word-letters-long}
+# Pivot the data to long-form and tally up frequencies
 word_letters_long <- 
   word_letters |> 
   pivot_longer(
@@ -57,54 +64,47 @@ word_letters_long <-
     names_to = "position",
     values_to = "letter"
   ) |> 
+   # times letter was used at all 
+  add_count(letter, name = "letter_freq") |> 
+  # times letter was used in position 
+  add_count(letter, position, name = "position_freq") |> 
   print()
-
 ```
 
-```{r}
-letter_position_stats <- 
+```{r word-letter-freq}
+# Pivot wider
+word_letter_freq <-
   word_letters_long |> 
-  group_by(letter) |> 
-  mutate(letter_freq = n()) |> 
-  group_by(letter, position) |> 
-  mutate(position_freq = n()) |> 
-  ungroup() |> 
+  select(word, pos = letter, position, freq = position_freq) |>
+  pivot_wider(
+    names_from = position,
+    values_from = c(pos, freq)
+  ) |>
+  rename_all(str_remove_all, "pos_") |> 
   print()
-
 ```
 
-```{r}
-word_letter_stats <- 
-  word_letters |> 
-  left_join(
-    letter_position_stats |> 
-      select(word, starts_with("position")) |> 
-      pivot_wider(
-        names_from = position,
-        values_from = position_freq,
-        names_prefix = "pos_"
-      )
-  ) |> 
-  print()
-
-```
-
-Letters by total count and frequency in positions 1:5
 ```{r letter-stats}
+# Letters by total count and frequency in positions 1:5
 letter_stats <- 
-  letter_position_stats |> 
+  word_letters_long |> 
   distinct(letter, letter_freq, position, position_freq) |> 
   pivot_wider(
     names_from = position,
     values_from = position_freq,
     values_fill = 0
   ) |> 
-  arrange(desc(letter_freq)) |> 
-  print(n = Inf)
+  arrange(desc(letter_freq))
 
 ```
 
-```{r}
+```{r gt-letter-stats, echo=FALSE}
+# set colors for heatmaps
+gradient <- c(
+  "white", 
+  sc("mutedteal3")
+)
+
 # print ----
 letter_stats |>
   rename(`# words` = letter_freq) |> 
@@ -112,12 +112,12 @@ letter_stats |>
     vars(starts_with("x")), 
     ~str_remove(.x, "x")
   ) |> 
-  gt::gt() |>
-  gt::tab_options(
+  gt() |>
+  tab_options(
     container.overflow.y = TRUE,
     container.height = 300
   ) |> 
-  gt::data_color(
+  data_color(
     columns = -letter,
     colors = scales::col_numeric(
       palette = gradient,
@@ -126,9 +126,10 @@ letter_stats |>
   )
 ```
 
-```{r}
+```{r word-stats}
+# Create metrics for each word. letter_stats$letter is a factor so `letters
 word_stats <- 
-  letter_position_stats |> 
+  word_letters_long |> 
   mutate(
     letter = factor(letter, levels = letter_stats$letter, ordered = TRUE),
     letter_ord = as.integer(letter)
@@ -136,137 +137,159 @@ word_stats <-
   group_by(word) |> 
   arrange(letter) |> 
   summarise(
+    alpha = paste(sort(as.character(letter)), collapse = ""),
+    n_letter = n_distinct(letter),
     n_1_5 = sum(letter %in% letter_stats$letter[1:5]),
-    n_6_10 = sum(letter %in% letter_stats$letter[6:12]),
+    n_6_10 = sum(letter %in% letter_stats$letter[6:10]),
     n_10_15 = sum(letter %in% letter_stats$letter[10:15]),
     n_12_26 = sum(letter %in% letter_stats$letter[12:26]),
-    letters_rank = paste(letter, collapse = ""),
-    letters_alpha = paste(sort(as.character(letter)), collapse = ""),
-    n_letter = n_distinct(letter),
+    # are the letters closest to the top (1:26, lower is better) 
     mean_letter_rank = mean(letter_ord),
-    mean_letter_freq = mean(letter_freq),
-    sum_letter_freq = sum(letter_freq),
-    mean_pos_freq = mean(position_freq)
+    # are the letter closer to their most common positions (higher is better)
+    mean_pos_freq = mean(position_freq) 
+    #,mean_letter_freq = mean(letter_freq),sum_letter_freq = sum(letter_freq)
   ) |> 
   ungroup() |> 
-  left_join(word_letter_stats) |> 
-  arrange(desc(mean_letter_freq)) |> 
+  arrange(mean_letter_rank) |> 
   print()
+```
 
+```{r echo=FALSE}
+# write_csv(word_stats, "R/wordle/output/word-stats.csv")
 ```
 
 ```{r}
+# find words that have 5 distinct values
 distinct_letters <-
   word_stats |> 
   filter(n_letter == 5) |> 
   print()
 
+# roll-up words by patterns (for regex)
 as_patterns <-
   distinct_letters |>
-  # filter(letters_alpha == "aelrt") |> 
-  group_by(letters_alpha) |> 
+  # roll up words by best placement
+  group_by(alpha) |> 
   arrange(desc(mean_pos_freq)) |> 
   summarise(
     words = paste(word, collapse = ","),
-    across(starts_with("n_"), mean),
-    across(starts_with("mean_letter"), mean)
+    mean_letter_rank = mean(mean_letter_rank), # same across all values
+    across(matches("n_\\d"), mean),
   ) |> 
   ungroup() |> 
-  mutate(
-    pattern = str_replace_all(letters_alpha, "(.)(?=.)", "\\1|"),
-    .before = everything()
-  ) |> 
+  # create pattern column, move to front
+  # mutate(
+  #   pattern = str_replace_all(alpha, "(.)(?=.)", "\\1|"),
+  #   .before = everything()
+  # ) |> 
   arrange(mean_letter_rank) |> 
   print()
 
 
-# best starting words: later, alter, alert, arose, irate, stare
-best_1st <-
-  as_patterns |> 
+# best starting words primarily from letters 1-5: later, irate, stare, arose, stare, crate
+as_patterns |> 
   filter(n_1_5 >= 4) |> 
-  print()
+  head(3)
 
-# best 2nd words: slice, slain, snail, since, inlay, uncle, scaly, sonic
-best_2nd <-
-  as_patterns |> 
+# best 2nd word from 6-10: slain, slice, since, sonic, sling, cling, slink, slick
+as_patterns |> 
   filter(n_6_10 >=  4) |> 
-  print()
+  head(3)
 
-# best 3rd words: duchy, dutch, pouch, punch, pushy, chump, dumpy, pudgy
-best_3rd <-
-  as_patterns |> 
+# best 3rd words from letters 10-15: duchy, dutch, pouch, punch, pushy, chump, dumpy, pudgy
+as_patterns |> 
   filter(n_10_15 >= 4) |> 
   arrange(desc(n_10_15), mean_letter_rank) |> 
-  print()
+  head(3)
 
-# last remaining: gawky, judge, bawdy, fudge, vodka, debug
-best_remaining <-
-  as_patterns |> 
+# best remaining words from rest of alphabet: gawky, maybe, foamy, gumbo, buxom, jumbo
+as_patterns |> 
   filter(n_12_26 >= 3) |> 
-  filter(!str_detect(letters_alpha, "[rtlsncdhp]")) |> 
+  filter(!str_detect(alpha, "[rtlsncdhp]")) |> 
   arrange(desc(n_12_26)) |> 
-  print()
+  head(3)
+```
 
-
-find_next <- function(use_pattern, n, goal = 1) {
-  # use_pattern <- "a|e|l|r|t"
+```{r}
+# Look for next best word once existing letters have been used
+find_next <- function(use_pattern, suffix = "") {
+  
   as_patterns |>
-    mutate(found = str_count(letters_alpha, use_pattern)) |> 
-    arrange(found) |> 
+    # see which are used the fewest
+    mutate(found = str_count(alpha, glue("[{use_pattern}]"))) |> 
+    arrange(found, mean_letter_rank) |> 
     slice(1) |> 
-    distinct(pattern, words, rank = mean_letter_rank) |> 
-    rename_all(paste0, "_", n)
+    distinct(alpha, words, rank = mean_letter_rank) |> 
+    rename_all(paste0, suffix)
+
 }
 
+# best starting word
+find_next(use_pattern = ".")
+
+# best word after [aelrt] (later, alter, alert)
+find_next(use_pattern = "aelrt") 
+
+# best word after [aelrt] + [cinos] (sonic, scion)
+find_next(use_pattern = "aelrtcinos")
+```
+
+```{r best-sequences, class.source = 'fold-hide'}
+# Find best sequences
 best_sequences <-
- as_patterns |> 
+  as_patterns |> 
   filter(n_1_5 >= 4) |> 
   distinct(
-    pattern_1 = pattern,
+    alpha_1 = alpha,
     words_1 = words,
     rank_1 = mean_letter_rank
   ) |> 
   mutate(
     second = map(
-      .x = pattern_1, 
+      .x = alpha_1, 
       .f = find_next, 
-      n = 2
+      suffix = "_2"
     )
   ) |> 
   unnest_wider(second) |> 
   mutate(
     third = map(
-      .x = paste(pattern_1, pattern_2, sep = "|"), 
-      .f = find_next, 
-      n = 3
+      .x = paste0(alpha_1, alpha_2),
+      .f = find_next,
+      suffix = "_3"
     )
-  ) |> 
+  ) |>
   unnest_wider(third) |>
   mutate(
     forth = map(
-      .x = paste(pattern_1, pattern_2, pattern_3, sep = "|"), 
-      .f = find_next, 
-      n = 4
+      .x = paste0(alpha_1, alpha_2, alpha_3),
+      .f = find_next,
+      suffix = "_4"
     )
-  ) |> 
-  unnest_wider(forth) |> 
+  ) |>
+  unnest_wider(forth) |>
   mutate(
     n_distinct = map_chr(
-      .x = paste(pattern_1, pattern_2, pattern_3, pattern_4, sep = "|"),
-      .f = 
-        ~ str_split(.x, "\\|") |> 
-        unlist() |> 
-        unique() |> 
+      .x = paste(alpha_1, alpha_2, alpha_3, alpha_4),
+      .f =
+        ~ str_split(.x, "") |>
+        unlist() |>
+        unique() |>
         length()
     ),
     sum_rank = (rank_1 + rank_2 + rank_3)
   ) |> 
-  arrange(desc(n_distinct), sum_rank) |> 
-  print()
+  arrange(desc(n_distinct), sum_rank)
+```
 
+```{r}
+head(best_sequences, 5)
+```
 
+```{r, class.source = 'fold-hide'}
+# Create plot
 best_sequences |> 
-  slice(1:10) |> 
+  head(10) |> 
   select(starts_with(words), starts_with("rank")) |> 
   mutate(order = row_number()) |> 
   mutate_all(as.character) |> 
@@ -284,22 +307,32 @@ best_sequences |>
   geom_tile(aes(fill = rank), alpha = 0.8) +
   geom_text(
     aes(label = str_replace_all(words, ",", "\n")),
-    size = 3
+    size = 2.5
   ) +
   scale_fill_viridis_c(
     option = "D",
     direction = -1
   ) +
-  scale_y_reverse()
-
-
+  scale_x_continuous(expand = expansion()) +
+  scale_y_reverse() +
+  coord_fixed() +
+  theme(
+    panel.background = element_rect(fill = "white", color = "white"),
+    axis.title = element_blank(),
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank()
+  ) +
+  labs(
+    title = "Best Plays",
+    fill = "Letter Rank"
+  )
 
 
 # best series: from nytimes js
 # adore    # arose    # route    # trope
-# until    # unlit    # slain    # tenor
-# chasm    # champ    # champ    # 
-# gawky    # bawdy    # bawdy    # 
+# until    # unlit    # slain    # slain
+# chasm    # champ    # champ    # duchy
+# gawky    # bawdy    # bawdy    # gumbo
 
 # best series: from dictionary
 # arose    # arose 
@@ -312,28 +345,35 @@ best_sequences |>
 
 
 
+```
 
+
+```{r}
+# solving wordle
 # example: floor - has [lor] but not [ais...], [l] is the 2nd letter
-str_detect_all <- function(x, letters) {
+str_detect_each <- function(x, letters) {
   pattern <-
     str_split(letters, "")[[1]] |> 
     sort() |> 
-    paste(collapse = ".*")
+    paste(collapse = "|")
 
-  str_detect(x, pattern)
+  matches <-
+    str_extract_all(x, pattern) |>
+    map(pluck) |> 
+    map(sort) |> 
+    map_chr(paste, collapse = "|")
+  
+  matches == pattern
 }
 
 
-word_stats |> 
-  filter(str_detect(word, "m...e")) |> 
-  filter(str_detect_all(x = letters_alpha, "yam")) |> 
-  # filter(!str_detect(word, "[isemounlinkwvqu]")) |> # none of these letters
-  # filter(!str_detect(x1, "[rt]")) |> # none of these positions
-  # filter(!str_detect(x2, "[a]")) |>
-  # filter(!str_detect(x4, "[r]"))
-  print()
+word_stats |>
+  # green
+  filter(str_detect(word, "s.a..")) |>     # these are filled in
+  # yellow
+  filter(str_detect_each(word, "te")) |>   # has these other letters
+  filter(!str_detect(word, "...[t].")) |>  # t is not in the 3rd position
+  # grey
+  filter(!str_detect(word, "[liopr]"))     # none of these letters
 ```
 
-```{r outputs, eval=FALSE}
-write_csv(word_stats, "R/wordle/output/word-stats.csv")
-```
