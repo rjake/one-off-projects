@@ -177,6 +177,106 @@ best_remaining <-
   print()
 
 
+find_next <- function(use_pattern, n, goal = 1) {
+  # use_pattern <- "a|e|l|r|t"
+  as_patterns |>
+    mutate(found = str_count(letters_alpha, use_pattern)) |> 
+    arrange(found) |> 
+    slice(1) |> 
+    distinct(pattern, words, rank = mean_letter_rank) |> 
+    rename_all(paste0, "_", n)
+}
+
+best_sequences <-
+ as_patterns |> 
+  filter(n_1_5 >= 4) |> 
+  distinct(
+    pattern_1 = pattern,
+    words_1 = words,
+    rank_1 = mean_letter_rank
+  ) |> 
+  mutate(
+    second = map(
+      .x = pattern_1, 
+      .f = find_next, 
+      n = 2
+    )
+  ) |> 
+  unnest_wider(second) |> 
+  mutate(
+    third = map(
+      .x = paste(pattern_1, pattern_2, sep = "|"), 
+      .f = find_next, 
+      n = 3
+    )
+  ) |> 
+  unnest_wider(third) |>
+  mutate(
+    forth = map(
+      .x = paste(pattern_1, pattern_2, pattern_3, sep = "|"), 
+      .f = find_next, 
+      n = 4
+    )
+  ) |> 
+  unnest_wider(forth) |> 
+  mutate(
+    n_distinct = map_chr(
+      .x = paste(pattern_1, pattern_2, pattern_3, pattern_4, sep = "|"),
+      .f = 
+        ~ str_split(.x, "\\|") |> 
+        unlist() |> 
+        unique() |> 
+        length()
+    ),
+    sum_rank = (rank_1 + rank_2 + rank_3)
+  ) |> 
+  arrange(desc(n_distinct), sum_rank) |> 
+  print()
+
+
+best_sequences |> 
+  slice(1:10) |> 
+  select(starts_with(words), starts_with("rank")) |> 
+  mutate(order = row_number()) |> 
+  mutate_all(as.character) |> 
+  pivot_longer(
+    -order,
+    names_to = c("type", "id"),
+    names_sep = "_"
+  ) |> 
+  pivot_wider(
+    names_from = type,
+    values_from = value
+  ) |> 
+  mutate(across(c(order, id, rank), as.numeric)) |> #print()
+  ggplot(aes(order, id)) +
+  geom_tile(aes(fill = rank), alpha = 0.8) +
+  geom_text(
+    aes(label = str_replace_all(words, ",", "\n")),
+    size = 3
+  ) +
+  scale_fill_viridis_c(
+    option = "D",
+    direction = -1
+  ) +
+  scale_y_reverse()
+
+
+
+
+# best series: from nytimes js
+# adore    # arose    # route    # trope
+# until    # unlit    # slain    # tenor
+# chasm    # champ    # champ    # 
+# gawky    # bawdy    # bawdy    # 
+
+# best series: from dictionary
+# arose    # arose 
+# unlit    # clint 
+# champ    # dumpy 
+# gawky    # hawks
+
+
 
 
 
