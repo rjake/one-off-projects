@@ -17,10 +17,19 @@ knitr::opts_chunk$set(
 
 ```{r workspace}
 library(tidyverse)
+library(gt)
+library(scales)
+library(simplecolors)
+
+gradient <- c(
+  "white", 
+  sc("mutedteal3")
+)
 
 ```
 
-
+# Data from the NYT
+The word list comes from [this]("https://www.nytimes.com/games/wordle/main.18637ca1.js") JS file. Look for `var Ma=` to see the list. You can see the full code [here](https://github.com/rjake/one-off-projects/blob/main/R/wordle/input/download-data.R)
 ```{r}
 raw_words <-
   read_csv("input/nyt_word_list.csv") |>
@@ -91,8 +100,30 @@ letter_stats <-
     values_fill = 0
   ) |> 
   arrange(desc(letter_freq)) |> 
-  print(n = 15)
+  print(n = Inf)
 
+```
+
+```{r}
+# print ----
+letter_stats |>
+  rename(`# words` = letter_freq) |> 
+  rename_at(
+    vars(starts_with("x")), 
+    ~str_remove(.x, "x")
+  ) |> 
+  gt::gt() |>
+  gt::tab_options(
+    container.overflow.y = TRUE,
+    container.height = 300
+  ) |> 
+  gt::data_color(
+    columns = -letter,
+    colors = scales::col_numeric(
+      palette = gradient,
+      domain = NULL
+    )
+  )
 ```
 
 ```{r}
