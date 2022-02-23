@@ -15,24 +15,20 @@ knitr::opts_chunk$set(
 ```
 
 
+```{r workspace}
+library(tidyverse)
+
+```
 
 
-
+```{r}
 raw_words <-
-  read_table(file = "~/../Downloads/engmix.txt") |>
-  set_names("word") |>
-  as.data.frame() # remove attrs
-
-
-prep_word_list <-
-  raw_words |>
+  read_csv("input/nyt_word_list.csv") |>
   as_tibble() |>
-  filter(str_detect(word, "^[a-z]{5}$")) |>
   print()
 
-
 word_letters <-
-  prep_word_list |>
+  raw_words |>
   separate(
     col = word,
     sep = "",
@@ -42,7 +38,9 @@ word_letters <-
   select(-x0) |>
   print()
 
+```
 
+```{r}
 word_letters_long <- 
   word_letters |> 
   pivot_longer(
@@ -52,6 +50,9 @@ word_letters_long <-
   ) |> 
   print()
 
+```
+
+```{r}
 letter_position_stats <- 
   word_letters_long |> 
   group_by(letter) |> 
@@ -61,7 +62,9 @@ letter_position_stats <-
   ungroup() |> 
   print()
 
+```
 
+```{r}
 word_letter_stats <- 
   word_letters |> 
   left_join(
@@ -75,7 +78,10 @@ word_letter_stats <-
   ) |> 
   print()
 
+```
 
+Letters by total count and frequency in positions 1:5
+```{r letter-stats}
 letter_stats <- 
   letter_position_stats |> 
   distinct(letter, letter_freq, position, position_freq) |> 
@@ -87,7 +93,9 @@ letter_stats <-
   arrange(desc(letter_freq)) |> 
   print(n = 15)
 
+```
 
+```{r}
 word_stats <- 
   letter_position_stats |> 
   mutate(
@@ -113,13 +121,39 @@ word_stats <-
   arrange(desc(mean_letter_freq)) |> 
   print()
 
+```
 
-# best starting words: arose, aires, raise, arise, laser, rates
-word_stats |> 
+```{r}
+distinct_letters <-
+  word_stats |> 
   filter(n_letter == 5) |> 
+  print()
+
+as_patterns <-
+  distinct_letters |>
+  # filter(letters_alpha == "aelrt") |> 
+  group_by(letters_alpha) |> 
+  arrange(desc(mean_pos_freq)) |> 
+  summarise(
+    words = paste(word, collapse = ","),
+    across(starts_with("n_"), mean),
+    across(starts_with("mean_letter"), mean)
+  ) |> 
+  ungroup() |> 
+  mutate(
+    pattern = str_replace_all(letters_alpha, "(.)(?=.)", "\\1|"),
+    .before = everything()
+  ) |> 
+  arrange(mean_letter_rank) |> 
+  print()
+
+
+# best starting words: later, alter, alert, arose, irate, stare
+best_1st <-
+  as_patterns |> 
   filter(n_1_5 >= 4) |> 
-  #filter(mean_letter == 3) |>
-  arrange(mean_letter_rank, desc(mean_pos_freq))
+  print()
+
 
 # best 2nd words: unlit until clint tulip multi lucid tunic input
 word_stats |> 
@@ -162,7 +196,8 @@ word_stats |>
   # filter(!str_detect(x2, "[a]")) |>
   # filter(!str_detect(x4, "[r]"))
   print()
+```
 
-
-write_csv(word_stats, "R/wordle/word-stats.csv")
+```{r outputs, eval=FALSE}
+write_csv(word_stats, "R/wordle/output/word-stats.csv")
 ```
