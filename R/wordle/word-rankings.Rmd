@@ -1,9 +1,10 @@
 ---
 title: "Wordle Stats"
-output: 
-  html_document:
-    code_folding: show
-    df_print: kable
+output: github_document
+# output: 
+#   html_document:
+#     code_folding: show
+#     df_print: kable
 ---
 
 ```{r setup, include=FALSE}
@@ -307,7 +308,7 @@ best_sequences |>
   geom_tile(aes(fill = rank), alpha = 0.8) +
   geom_text(
     aes(label = str_replace_all(words, ",", "\n")),
-    size = 2.5
+    size = 3
   ) +
   scale_fill_viridis_c(
     option = "D",
