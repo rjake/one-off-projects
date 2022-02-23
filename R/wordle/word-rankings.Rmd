@@ -1,3 +1,20 @@
+---
+title: "Wordle Stats"
+output: 
+  html_document:
+    code_folding: show
+    df_print: kable
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+```{r}
 library(tidyverse)
 
 # https://en.lexipedia.org/
@@ -169,3 +186,4 @@ word_stats |>
 
 
 write_csv(word_stats, "R/wordle/word-stats.csv")
+```
