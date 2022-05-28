@@ -1,0 +1,470 @@
+---
+title: "Find Datasets"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+    source_code: embed
+    theme: lumen
+runtime: shiny
+---
+
+
+```{r input-demo, eval=interactive()}
+library(shiny)
+library(shinyobjects)
+options("shiny.suppressMissingContextError" = TRUE)
+
+input <-
+  list(
+    # from JS
+    arrow_left = TRUE,
+    arrow_right = TRUE,
+    # from widgets
+    back = TRUE,
+    forward = TRUE,
+    pkg = "ggplot2",
+    type = "data.frame",
+    selected = "attenu"
+  )
+
+```
+
+```{css css-style}
+.section.sidebar {
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+.bttn-gradient.bttn-primary, .bttn-simple.bttn-primary {
+  background: #999;
+}
+
+.btn {
+  text-transform: initial;
+}
+```
+
+```{r workspace}
+library(flexdashboard)
+library(datasets)
+library(tidyverse)
+library(shinyWidgets)
+library(DT)
+library(glue)
+
+
+iprint <- function(x, n = 15) {
+  if (interactive()) {
+    print(x, n = n)
+  } else {
+    return(x)
+  }
+}
+```
+
+```{r available-data}
+# * all_data ----
+all_data <- 
+  data()$results |>
+  as_tibble() |> 
+  filter(Package %in% c("datasets", tidyverse::tidyverse_packages())) |> 
+  transmute(
+    pkg = 
+      str_replace(Package, "datasets", "base") |> 
+      fct_infreq() |> 
+      fct_relevel("base", after = 0),
+    name = str_remove(Item, " .*"), 
+    description = Title
+  ) |> 
+  #head(15) |> 
+  arrange(name) |> 
+  iprint()
+
+# ds_env <- asNamespace("datasets")
+# ds_env_list <- as.list(ds_env$.__NAMESPACE__.$lazydata) #|> head(10)
+# ds_obj <- ds_env_list[sort(names(ds_env_list))]
+ 
+# * ds_obj ----
+ds_obj <- 
+  map(
+    .x = all_data$name,
+    ~{
+      df <- rlang::parse_expr(.x) |> eval()
+      if (inherits(df, "data.frame")) df <-head(df, 500)
+      df
+    }
+  ) |>
+  set_names(all_data$name)
+
+
+# * ds_info ----
+ds_info <-
+  tibble(
+    name = names(ds_obj),
+    class = map(ds_obj, class) |> map_chr(pluck, 1),
+    dim = map(ds_obj, dim) |> map_chr(paste, collapse = " x ")
+  ) |> 
+  mutate(
+    category = case_when(
+      str_detect(class, "data.frame|mts|nfnGroupedData|tbl_df") ~ "data.frame",
+      class %in% c("character", "factor", "numeric") ~ "vector",
+      TRUE ~ "other"
+    ),
+    #.keep = "unused",
+    .after = name
+  ) |> 
+  left_join(all_data) |> 
+  iprint()
+
+```
+
+
+```{js js-code}
+// https://stackoverflow.com/questions/56600232/detecting-arrow-key-cursor-key-in-shiny
+
+$(document).on('keydown', function(event){
+    var key = event.which;
+    if(key === 37){
+        Shiny.setInputValue('arrow_left', true, {priority: 'event'});
+    } else if(key === 39){
+      Shiny.setInputValue('arrow_right', true, {priority: 'event'});
+    }
+});
+```
+
+
+```{r custom-fns}
+update_rv <- function(i) {
+  rv$id <- i
+  rv$available <- filtered_df()$name
+  rv$data <- rv$available[rv$id]
+}
+
+log_rv <- function() {
+  cat(
+    "id = ", rv$id,
+    "\n choices = ", head(rv$available),
+    "\n selected = ", rv$data,
+    "\n pkg = ", input$pkg,
+    "\n type = ", input$type,
+    "\n \n"
+  )
+}
+
+# print_and_exit <- function() {
+#   log_rv()
+#   knitr::knit_exit()
+# }
+
+
+vec_to_button <- function(inputId, vec, ...) {
+  x <- table(vec)
+  
+  choices <-
+    set_names(
+      x = names(x),
+      nm = glue("{names(x)} ({x})")
+    )
+  
+  radioGroupButtons( 
+    inputId = inputId,
+    label = NULL,
+    ...,
+    size = "xs",
+    choices = 
+      list(any = "any") |> 
+      append(choices)
+  )
+}
+
+
+arrow <- function(id, dir) {
+  actionBttn(
+    inputId = id,
+    label = NULL,
+    style = "simple",
+    color = "primary",
+    size = "xs",
+    icon = icon(
+      name = paste0("long-arrow-alt-", dir)#, style = "color:black;"
+    )
+  )
+}
+
+
+custom_DT <- function(data) {
+  DT::datatable(
+    data,
+    extensions = c("FixedHeader", "Scroller"),
+    filter = "top",
+    #rownames = FALSE,
+    escape = FALSE,
+    options =
+      list(
+        dom = "Brtip",
+        deferRender = FALSE,
+        scrollY = 350,
+        scroller = TRUE,
+        scrollX = TRUE,
+        fixedHeader = FALSE,
+        pageLength = nrow(data),
+        lengthChange = FALSE
+      )
+  )
+}
+```
+
+Sidebar {.sidebar data-width=470}
+-----------------------------------------------------------------------
+
+### {data-height=40}
+
+```{r input-pkg}
+vec_to_button(
+  inputId = "pkg",
+  vec = all_data$pkg,
+  selected = "base"
+)
+
+observeEvent(input$pkg, {
+  update_rv(1)
+  # rv$id <- 1
+  # rv$data <- rv$available[rv$id]
+  updateRadioGroupButtons(
+    session,
+    inputId = "selected",
+    size = "sm",
+    choices = rv$available,
+    selected = rv$available[rv$id]
+  )
+})
+```
+
+### {data-height=40}
+
+```{r input-type}
+renderUI({
+  req(input$pkg)
+  
+  vec_to_button(
+    inputId = "type",
+    vec = filtered_df()$category,
+    selected = "data.frame"
+  )
+})
+
+
+observeEvent(input$type, {
+  #req(input$type)
+  #df <- filtered_df() 
+  df <- ds_info 
+  
+  if (input$pkg != "any") {
+    df <- df |> filter(pkg == input$pkg)
+  }
+  
+  if (input$type != "any") {
+    df <- df |> filter(category == input$type)
+  }
+
+  rv$available <- df$name
+  
+
+  # res <- map_lgl(ds_obj, is.data.frame)
+  # 
+  # items <-
+  #   switch(
+  #     EXPR = input$type,
+  #     "data.frame" = keep(res, ~.x == TRUE),
+  #     "other" = keep(res, ~.x == FALSE),
+  #     "any" = ds_obj
+  #   ) |>
+  #   names()
+
+  #rv$available <- items
+  # if (rv$data %in% rv$available) {
+  #   rv$id <- which(rv$data %in% rv$available)
+  # } else {
+    rv$id <- 1
+    rv$data <- rv$available[rv$id]
+  #}
+  
+  log_rv()
+  
+  updateRadioGroupButtons(
+    session,
+    inputId = "selected",
+    size = "sm",
+    choices = rv$available,
+    selected = rv$available[rv$id]
+  )
+})
+
+```
+
+
+###
+```{r input-arrows}
+
+
+h5("Browse data sets")
+
+shiny::fluidRow(
+  arrow("back",    "left"),
+  arrow("forward", "right"),
+  a("or use arrow keys", style = "color:#999;"),
+  style = "margin-left: 0px; margin-bottom: 10px"
+)
+
+
+observeEvent(list(input$back, input$arrow_left), {
+  get_id <- which(rv$available == input$selected)
+  new_id <- max(get_id - 1, 1)
+  rv$id <- new_id
+  rv$data <- rv$available[new_id]
+
+  log_rv()
+  updateRadioGroupButtons(
+    session,
+    inputId = "selected",
+    size = "sm",
+    selected = rv$data
+  )
+})
+
+observeEvent(list(input$forward, input$arrow_right), {
+  get_id <- which(rv$available == input$selected)
+  new_id <- min(get_id + 1, length(rv$available))
+  rv$id <- new_id
+  rv$data <- rv$available[new_id]
+
+  log_rv()
+  updateRadioGroupButtons(
+    session,
+    inputId = "selected",
+    size = "sm",
+    selected = rv$data
+  )
+})
+
+
+```
+
+```{r input-selected}
+# TODO: can color be adjusted by data type?
+# https://github.com/dreamRs/shinyWidgets/issues/70
+
+#renderUI({
+  radioGroupButtons(
+    inputId = "selected",
+    label = NULL,
+    #justified = TRUE,
+    #direction = "vertical",
+    size = "xs",
+    choices = ds_info$name,
+    selected = ds_info$name[1]
+  )
+#})
+
+
+observeEvent(input$selected, {
+  #update_rv(which(rv$available == input$selected))
+  # rv$id <- which(rv$available == input$selected)
+  # rv$data <- rv$available[rv$id]
+
+  #log_rv()
+})
+
+
+```
+
+```{r reactive-data}
+# * rv( ) ----
+rv <- reactiveValues(
+  available = 
+    ds_info |> 
+    filter(pkg == "base", category == "data.frame") |> 
+    pull(name),
+  data = "airquality",
+  id = 1
+)
+
+
+# * filtered_df( ) ----
+filtered_df <- reactive({
+  req(input$pkg)
+  print(input$pkg)
+  df <- ds_info 
+  
+  if (input$pkg != "any") {
+    df <- df |> filter(pkg == input$pkg)
+  }
+
+  rv$available <- df$name
+  
+  df
+})
+
+```
+
+Column
+-----------------------------------------------------------------------
+
+### {data-height=50}
+```{r data-info}
+renderUI({
+  ds_info |> 
+    filter(name == input$selected) |>
+    mutate(
+      cat_addl = ifelse(class != category, glue(" ({category})"), ""),
+      dim_addl = ifelse(str_detect(dim, "^500 "), " (truncated to 500)", "")
+    ) |> 
+    glue::glue_data(
+      "{strong(name)} - {description}\\
+      <br/> {{{class}}}{cat_addl} {dim}{dim_addl}"
+    ) |>
+    HTML()
+})
+```
+
+### 
+
+```{r output-table}
+# https://stackoverflow.com/questions/41381466/can-we-either-print-or-plot-in-shiny-in-same-panel
+output$table <- renderDT({
+  x <- ds_obj[[input$selected]]
+  if (is.data.frame(x)) {
+    custom_DT(x)
+  }
+})
+  
+output$print <- renderPrint({
+  ds_obj[[input$selected]]
+})  
+
+output$final_display <- renderUI({
+  x <- ds_obj[[input$selected]]
+  if (is.data.frame(x)) {
+    return(DT::DTOutput("table"))
+  } else {
+    verbatimTextOutput("print")
+  }
+})
+
+uiOutput("final_display")
+ 
+# renderUI({
+#   selected_name <- rv$available[rv$id]
+#   print(selected_name)
+# 
+#   x <- ds_obj[[selected_name]]
+# 
+#   if (is.data.frame(x)) {
+#     as_tibble(x) |> DT::datatable()#print(n = 30)
+# 
+#   } else {
+#     print(x)
+#   }
+# })
+```
