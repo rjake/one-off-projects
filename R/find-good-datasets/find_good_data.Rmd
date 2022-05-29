@@ -56,8 +56,9 @@ library(flexdashboard)
 library(datasets)
 library(tidyverse)
 library(shinyWidgets)
-library(DT)
+library(reactable)
 library(glue)
+
 
 # * ds_obj ----
 ds_obj <- read_rds("ds_list.Rds")
@@ -171,7 +172,7 @@ custom_DT <- function(data, ...) {
     options =
       list(
         ...,
-        dom = "Brtip",
+        dom = "Brti",
         deferRender = FALSE,
         scrollY = 350,
         scrollX = TRUE,
@@ -184,12 +185,10 @@ custom_DT <- function(data, ...) {
 
 ```
 
-Preview
-================================================================================
 
 
 Sidebar {.sidebar data-width=470}
------------------------------------------------------------------------
+================================================================================
 
 ### {data-height=40}
 
@@ -240,8 +239,14 @@ renderUI({
 
 ###
 ```{r input-arrows}
-
-h5("Browse data sets")
+renderUI({
+ glue(
+   "Browse data sets ({n})",
+   n = length(listen_possible())
+  ) |> 
+    h5()
+  
+})
 
 shiny::fluidRow(
   arrow("back",    "left"),
@@ -302,6 +307,10 @@ renderUI({
 
 ```
 
+
+Preview
+================================================================================
+
 Column
 -----------------------------------------------------------------------
 
@@ -318,71 +327,109 @@ renderUI({
     ) |> 
     glue::glue_data(
       "{strong(pkg_data)} - {title}\\
-      <br/> {{{class}}}{cat_addl} {dim}{dim_addl}"
+      <br/> {{{class}}}{cat_addl} {dim}{dim_addl}
+      <br/>"
     ) |>
+    paste(
+      actionLink(
+        inputId = "meta",
+        label = "see metadata",
+        style = "color:dodgerblue;",
+        onclick = "location.href='#section-metadata';"
+      )
+    ) |> 
     HTML()
 })
+
+
 ```
 
 ### 
 
 ```{r output-table}
 # https://stackoverflow.com/questions/41381466/can-we-either-print-or-plot-in-shiny-in-same-panel
-# output$table <- renderDT({
-#   x <- ds_obj[[input$selected]]$data
-#   if (is.data.frame(x)) {
-#     custom_DT(x)
-#   }
-# })
-#   
-# output$print <- renderPrint({
-#   ds_obj[[input$selected]]$data
-# })  
-# 
-# output$final_display <- renderUI({
-#   x <- ds_obj[[input$selected]]$data
-#   if (is.data.frame(x)) {
-#     return(DT::DTOutput("table"))
-#   } else {
-#     verbatimTextOutput("print")
-#   }
-# })
-# 
-# uiOutput("final_display")
-  
-output$final_display <- renderPrint({
-  #log_rv()
-  print(ds_obj[[input$selected]]$data)
+output$table <- renderReactable({
+  x <- ds_obj[[input$selected]]$data
+  reactable(x, filterable = TRUE, pagination = FALSE)
 })
 
-verbatimTextOutput("final_display")
+output$print <- renderPrint({
+  ds_obj[[input$selected]]$data
+})
+
+output$final_display <- renderUI({
+  x <- ds_obj[[input$selected]]$data
+  # print(x)
+  # print(is.data.frame(x))
+  if (is.data.frame(x)) {
+    reactable::reactableOutput("table")
+  } else {
+    verbatimTextOutput("print")
+  }
+})
+
+uiOutput("final_display")
+  
+# output$final_display <- renderPrint({
+#   #log_rv()
+#   print(ds_obj[[input$selected]]$data)
+# })
+# 
+# verbatimTextOutput("final_display")
+
 ```
 
 
-
-
-```{r metadata, eval=FALSE}
 Metadata
-================================================================================
-
+=====================================     
+   
 Column
------------------------------------------------------------------------
+-------------------------------------
+
+### {data-height=30}
+
+```{r back-arrow}
+actionButton(
+  inputId = "back",
+  label = "Back",
+  icon = icon(name = "long-arrow-alt-left"),
+  style = "color:dodgerblue;",
+  onclick = "location.href='#section-preview';"
+)
+
+```
 
 ### 
+```{r metadata, eval=!FALSE}
 
-ds_info |> 
-  select(
-    title,
-    pkg, name, is_df, class,
-    n_discrete, n_numeric, n_date,
-    dim
-  ) |> 
-  mutate(across(where(is.character), as.factor)) |> 
-  custom_DT(
-    autoWidth = TRUE,
-    columnDefs = list(
-        list(targets = c(1), visible = TRUE, width = "200px")
+### 
+renderReactable({
+  ids <- listen_possible()
+  
+  ds_info |> 
+    slice(ids) |> 
+    select(
+      title,
+      name, pkg, class,
+      n_discrete, n_numeric, n_date,
+      #dim,
+      n_row, n_col
+    ) |> 
+    arrange(name) |> 
+    mutate(across(where(is.character), as.factor)) |> 
+    reactable::reactable(
+      filterable = TRUE, pagination = FALSE,
+      columns = list(
+        title = colDef(width = 300, style = list(backgroundColor = "#f7f7f7")),
+        name = colDef(width = 100, style = list(fontWeight = "bold"))
       )
-  )
+    )
+})
+  # custom_DT(
+  #   autoWidth = TRUE,
+  #   columnDefs = list(
+  #       list(targets = c(1), visible = TRUE, width = "200px")
+  #     )
+  # )
 ```
 
