@@ -25,7 +25,7 @@ input <-
     back = TRUE,
     forward = TRUE,
     pkg = "carData",
-    type = "data.frame",
+    category = "data.frame",
     selected = "carData::Arrests"
   )
 
@@ -81,7 +81,6 @@ starting_data <- local({
 ```
 
 
-
 ```{js js-code}
 // https://stackoverflow.com/questions/56600232/detecting-arrow-key-cursor-key-in-shiny
 
@@ -97,12 +96,6 @@ $(document).on('keydown', function(event){
 
 
 ```{r custom-fns}
-update_rv <- function(i) {
-  rv$id <- i
-  rv$available <- filtered_df()$pkg_data
-  rv$data <- rv$available[rv$id]
-}
-
 display <- function(x) {
   set_names(
     x = x,
@@ -112,19 +105,15 @@ display <- function(x) {
 
 log_rv <- function() {
   cat(
-    "id = ", rv$id,
-    "\n choices = ", head(rv$available),
-    "\n selected = ", rv$data,
+    # "id = ", rv$id,
+    # "\n choices = ", head(rv$available),
+    # "\n selected = ", rv$data,
     "\n pkg = ", input$pkg,
     "\n type = ", input$type,
     "\n \n"
   )
 }
 
-# print_and_exit <- function() {
-#   log_rv()
-#   knitr::knit_exit()
-# }
 
 iprint <- function(x, n = 15) {
   if (interactive()) {
@@ -169,19 +158,17 @@ arrow <- function(id, dir) {
 }
 
 
-custom_DT <- function(data) {
+custom_DT <- function(data, ...) {
   DT::datatable(
     data,
-    extensions = c("FixedHeader", "Scroller"),
     filter = "top",
-    #rownames = FALSE,
     escape = FALSE,
     options =
       list(
+        ...,
         dom = "Brtip",
         deferRender = FALSE,
         scrollY = 350,
-        scroller = TRUE,
         scrollX = TRUE,
         fixedHeader = FALSE,
         pageLength = nrow(data),
@@ -189,7 +176,12 @@ custom_DT <- function(data) {
       )
   )
 }
+
 ```
+
+Preview
+================================================================================
+
 
 Sidebar {.sidebar data-width=470}
 -----------------------------------------------------------------------
@@ -197,33 +189,25 @@ Sidebar {.sidebar data-width=470}
 ### {data-height=40}
 
 ```{r reactive-data}
-# * rv( ) ----
-rv <- reactiveValues(
-  available = starting_data$available,
-  data = starting_data$data,
-  id = 1
-)
-
-
-# * filtered_df( ) ----
-filtered_df <- reactive({
-  req(input$pkg)
-  #print(input$pkg)
-  df <- ds_info 
-  
-  if (input$pkg != "any") {
-    df <- df |> filter(pkg == input$pkg)
-  }
-  
-  # if (input$type != "any") {
-  #   df <- df |> filter(category == input$type)
-  # }
-
-  rv$available <- df$pkg_data
-  
-  df
+listen_pkg <- reactive({
+  if (input$pkg == "any") {
+    seq_along(ds_info$pkg)
+  } else {
+    which(ds_info$pkg == input$pkg)
+  } 
 })
 
+listen_category <- reactive({
+  if (input$category == "any") {
+    seq_along(ds_info$category)
+  } else {
+    which(ds_info$category == input$category)
+  } 
+})
+
+listen_possible <- reactive({
+  intersect(listen_pkg(), listen_category())
+})
 ```
 
 
@@ -234,60 +218,16 @@ vec_to_button(
   selected = starting_data$pkg
 ) 
 
-observeEvent(input$pkg, {
-  # update_rv(1)
-  rv$id <- 1
-  rv$available <- 
-    ds_info |> 
-    filter(pkg == input$pkg | input$pkg == "any") |> 
-    pull(pkg_data)
-  
-  rv$data <- rv$available[rv$id]
-  
-  updateRadioGroupButtons(
-    session,
-    inputId = "selected",
-    size = "sm",
-    choices = display(rv$available),
-    selected = rv$available[rv$id]
-  )
-})
 ```
 
 ### {data-height=40}
 
-```{r input-type}
+```{r input-category}
 renderUI({
-  req(input$pkg)
-  
   vec_to_button(
-    inputId = "type",
-    vec = filtered_df()$category,
-    selected = "data.frame"
-  )
-})
-
-
-observeEvent(input$type, {
-  #req(input$type)
-  #df <- filtered_df() 
-  df <- ds_info 
-  
-  if (input$type != "any") {
-    df <- df |> filter(category == input$type)
-  }
-
-  rv$id <- 1
-  rv$available <- df$pkg_data
-  rv$data <- df$pkg_data[1]
-  log_rv()
-  
-  updateRadioGroupButtons(
-    session,
-    inputId = "selected",
-    size = "sm",
-    choices = display(df$pkg_data),
-    selected = df$pkg_data[1]
+    inputId = "category",
+    vec = ds_info$category[listen_pkg()],
+    selected = min(ds_info$category[listen_pkg()])
   )
 })
 
@@ -295,7 +235,6 @@ observeEvent(input$type, {
 
 ###
 ```{r input-arrows}
-
 
 h5("Browse data sets")
 
@@ -308,32 +247,31 @@ shiny::fluidRow(
 
 
 observeEvent(list(input$back, input$arrow_left), {
-  get_id <- which(rv$available == input$selected)
+  req(input$selected)
+  id_names <- ds_info$pkg_data[listen_possible()]
+  get_id <- which(id_names == input$selected)
   new_id <- max(get_id - 1, 1)
-  rv$id <- new_id
-  rv$data <- rv$available[new_id]
 
-  log_rv()
   updateRadioGroupButtons(
     session,
     inputId = "selected",
     size = "sm",
-    selected = rv$data
+    selected = id_names[new_id]
   )
 })
 
 observeEvent(list(input$forward, input$arrow_right), {
-  get_id <- which(rv$available == input$selected)
-  new_id <- min(get_id + 1, length(rv$available))
-  rv$id <- new_id
-  rv$data <- rv$available[new_id]
+  req(input$selected)
 
-  log_rv()
+  id_names <- ds_info$pkg_data[listen_possible()]
+  get_id <- which(id_names == input$selected)
+  new_id <- min(get_id + 1, length(id_names))
+
   updateRadioGroupButtons(
     session,
     inputId = "selected",
     size = "sm",
-    selected = rv$data
+    selected = id_names[new_id]
   )
 })
 
@@ -343,29 +281,19 @@ observeEvent(list(input$forward, input$arrow_right), {
 ```{r input-selected}
 # TODO: can color be adjusted by data type?
 # https://github.com/dreamRs/shinyWidgets/issues/70
-
-#renderUI({
-
+# https://github.com/dreamRs/shinyWidgets/issues/41
+# 
+renderUI({
+  ids <- listen_possible()
+  
   radioGroupButtons(
     inputId = "selected",
     label = NULL,
-    #justified = TRUE,
-    #direction = "vertical",
     size = "xs",
-    choices = starting_data$available, #display(rv$available),
-    selected = starting_data$data #rv$available[1]
+    choices = display(ds_info$pkg_data[ids]),
+    selected = ds_info$pkg_data[ids][1] #rv$available[1]
   )
-#})
-
-
-observeEvent(input$selected, {
-  update_rv(which(rv$available == input$selected))
-   rv$id <- which(rv$available == input$selected)
-   rv$data <- rv$available[rv$id]
-
-  log_rv()
 })
-
 
 ```
 
@@ -425,81 +353,31 @@ output$final_display <- renderPrint({
 verbatimTextOutput("final_display")
 ```
 
-```{r}
-knitr::knit_exit()
+
+
+
+```{r metadata, eval=FALSE}
+Metadata
+================================================================================
+
+Column
+-----------------------------------------------------------------------
+
+### 
+
+ds_info |> 
+  select(
+    title,
+    pkg, name, is_df, class,
+    n_discrete, n_numeric, n_date,
+    dim
+  ) |> 
+  mutate(across(where(is.character), as.factor)) |> 
+  custom_DT(
+    autoWidth = TRUE,
+    columnDefs = list(
+        list(targets = c(1), visible = TRUE, width = "200px")
+      )
+  )
 ```
 
-
-
-
-
-
-
-# PRIOR METHODS ----
-```{r soft-coded-method}
-# # * all_data ----
-# all_data <- 
-#   data(package = .packages(all.available = TRUE))$results |>
-#   as_tibble() |> 
-#   transmute(
-#     pkg = 
-#       str_replace(Package, "datasets", "base") |> 
-#       fct_infreq() |> 
-#       fct_relevel("base", after = 0),
-#     name = str_remove(Item, " .*"), 
-#     description = Title
-#   ) |> 
-#   filter(
-#     Package %in% c(
-#       "datasets", 
-#       "boot",
-#       "Ecdat",
-#       "MASS",
-#       "fds",
-#       "carData",
-#       "survival",
-#       tidyverse::tidyverse_packages()
-#       | name %in% c("acidity")
-#     )
-#   ) |> 
-#   #head(15) |> 
-#   arrange(name) |> 
-#   iprint()
-# 
-# # ds_env <- asNamespace("datasets")
-# # ds_env_list <- as.list(ds_env$.__NAMESPACE__.$lazydata) #|> head(10)
-# # ds_obj <- ds_env_list[sort(names(ds_env_list))]
-#  
-# # * ds_obj ----
-# ds_obj <- 
-#   map(
-#     .x = all_data$name,
-#     ~{
-#       df <- rlang::parse_expr(.x) |> eval()
-#       if (inherits(df, "data.frame")) df <-head(df, 500)
-#       df
-#     }
-#   ) |>
-#   set_names(all_data$name)
-# 
-# 
-# # * ds_info ----
-# ds_info <-
-#   tibble(
-#     name = names(ds_obj),
-#     class = map(ds_obj, class) |> map_chr(pluck, 1),
-#     dim = map(ds_obj, dim) |> map_chr(paste, collapse = " x ")
-#   ) |> 
-#   mutate(
-#     category = case_when(
-#       str_detect(class, "data.frame|mts|nfnGroupedData|tbl_df") ~ "data.frame",
-#       class %in% c("character", "factor", "numeric") ~ "vector",
-#       TRUE ~ "other"
-#     ),
-#     #.keep = "unused",
-#     .after = name
-#   ) |> 
-#   left_join(all_data) |> 
-#   iprint()
-
-```
