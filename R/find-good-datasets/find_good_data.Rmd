@@ -6,6 +6,8 @@ output:
     vertical_layout: fill
     source_code: embed
     theme: lumen
+    navbar:
+        - { icon: "fa-github", href: "https://github.com/rjake/one-off-projects/blob/main/R/find-good-datasets", align: right }
 runtime: shiny
 ---
 
