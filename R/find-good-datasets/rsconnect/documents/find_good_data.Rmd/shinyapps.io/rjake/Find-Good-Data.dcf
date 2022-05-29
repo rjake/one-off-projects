@@ -1,0 +1,13 @@
+name: Find-Good-Data
+title: Find-Good-Data
+username:
+account: rjake
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 6387857
+bundleId: 5954221
+url: https://rjake.shinyapps.io/Find-Good-Data/
+when: 1653721654.13118
+lastSyncTime: 1653721654.1312
+asMultiple: FALSE
+asStatic: FALSE
