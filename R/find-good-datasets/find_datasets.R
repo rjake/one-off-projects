@@ -38,13 +38,24 @@ get_data_info <- function(x) {
     df <- rlang::parse_expr(x) |> eval()
     df_class <- class(df)
     is_df <- inherits(df, "data.frame")
+    dim <- dim(df) |> paste(collapse = " x ")
+    is_trunc <- TRUE
     
-    if (is.vector(df)) {
-      use_data <- head(use_data, max_rows)
+    if (is.list(df) & !is_df) {
+      use_data <- map(df, head, max_rows / 2)
+      
+    } else if (is.vector(df) & !is.list(df)) {
+      use_data <- head(df, max_rows)
+      dim <- length(df)
+      
     } else if (!is_df) {
       use_data <- df
+      is_trunc <- FALSE
+      
     } else if (nrow(df) < max_rows & ncol(df) <= max_cols) {
       use_data <- df
+      is_trunc <- FALSE
+      
     } else {
       use_data <- 
         head(df, max_rows) |> 
@@ -59,17 +70,19 @@ get_data_info <- function(x) {
     list(
       pkg_data = x,
       data = use_data,
-      is_trunc = !identical(df, head(df, max_rows)),
-      dim = dim(df) |> paste(collapse = " x "),
+      is_trunc = is_trunc,
+      dim = as.character(dim),
       n_col = ncol(df),
       n_row = nrow(df),
       class = df_class[1]
     )
 }
 
-a <- get_data_info(x = "ggplot2::diamonds")
-b <- get_data_info(x = "openintro::hfi")
-
+get_data_info(x = "ggplot2::diamonds")
+get_data_info(x = "openintro::hfi")
+get_data_info(x = "stringr::sentences")
+get_data_info(x = "openintro::children_gender_stereo")
+get_data_info("datasets::Seatbelts")
 
 ds_obj <-
   map(
@@ -88,7 +101,7 @@ map(ds_obj, pluck, "data") |>
 list_details <- 
   ds_obj |> 
   map( ~tidyselect:::select(.x, -data)) |> 
-  map_dfr(pluck)
+  map_dfr(flatten)
 
 
 class_test <- function(class) {
@@ -102,8 +115,9 @@ prep_details <-
   list_details |> 
   mutate(
     category = case_when(
-      str_detect(class, "data.frame|mts|nfnGroupedData|tbl_df") ~ "data.frame",
+      str_detect(class, "data.frame|nfnGroupedData|tbl_df") ~ "data.frame",
       class %in% c("character", "factor", "numeric") ~ "vector",
+      str_detect(class, "ts$") ~ "ts",
       TRUE ~ "other"
     ),
     is_df = category == "data.frame",
@@ -136,6 +150,11 @@ data_details <-
 
 data_details |> 
   count(pkg) |> 
+  .print()
+
+data_details |> 
+#  filter(category == "other") |> 
+  count(category, class) |> 
   .print()
 
 write_csv(data_details, "data_details.csv")
