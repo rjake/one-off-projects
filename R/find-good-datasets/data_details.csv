@@ -1,0 +1,437 @@
+pkg,name,title,origin,pkg_data,category,is_df,is_trunc,dim,n_col,n_row,class,n_discrete,n_numeric,n_date,n_other
+carData,Arrests,Arrests for Marijuana Possession,other,carData::Arrests,data.frame,TRUE,TRUE,5226 x 8,8,5226,data.frame,5,3,0,0
+carData,Baumann,Methods of Teaching Reading Comprehension,other,carData::Baumann,data.frame,TRUE,FALSE,66 x 6,6,66,data.frame,1,5,0,0
+carData,BEPS,British Election Panel Study,other,carData::BEPS,data.frame,TRUE,TRUE,1525 x 10,10,1525,data.frame,2,8,0,0
+carData,Bfox,Canadian Women's Labour-Force Participation,other,carData::Bfox,data.frame,TRUE,FALSE,30 x 6,6,30,data.frame,0,6,0,0
+carData,CES11,"2011 Canadian National Election Study, With Attitude Toward Abortion",other,carData::CES11,data.frame,TRUE,TRUE,2231 x 9,9,2231,data.frame,6,3,0,0
+carData,Chile,Voting Intentions in the 1988 Chilean Plebiscite,other,carData::Chile,data.frame,TRUE,TRUE,2700 x 8,8,2700,data.frame,4,4,0,0
+carData,Chirot,The 1907 Romanian Peasant Rebellion,other,carData::Chirot,data.frame,TRUE,FALSE,32 x 5,5,32,data.frame,0,5,0,0
+carData,Davis,Self-Reports of Height and Weight,other,carData::Davis,data.frame,TRUE,TRUE,200 x 5,5,200,data.frame,1,4,0,0
+carData,DavisThin,Davis's Data on Drive for Thinness,other,carData::DavisThin,data.frame,TRUE,TRUE,191 x 7,7,191,data.frame,0,7,0,0
+carData,Depredations,Minnesota Wolf Depredation Data,other,carData::Depredations,data.frame,TRUE,TRUE,434 x 5,5,434,data.frame,0,5,0,0
+carData,Ericksen,The 1980 U.S. Census Undercount,other,carData::Ericksen,data.frame,TRUE,FALSE,66 x 9,9,66,data.frame,1,8,0,0
+carData,Florida,Florida County Voting,other,carData::Florida,data.frame,TRUE,FALSE,67 x 11,11,67,data.frame,0,11,0,0
+carData,Ginzberg,Data on Depression,other,carData::Ginzberg,data.frame,TRUE,FALSE,82 x 6,6,82,data.frame,0,6,0,0
+carData,Greene,Refugee Appeals,other,carData::Greene,data.frame,TRUE,TRUE,384 x 7,7,384,data.frame,6,1,0,0
+carData,GSSvocab,Data from the General Social Survey (GSS) from the National Opinion Research Center of the University of Chicago.,other,carData::GSSvocab,data.frame,TRUE,TRUE,28867 x 8,8,28867,data.frame,5,3,0,0
+carData,Hartnagel,Canadian Crime-Rates Time Series,other,carData::Hartnagel,data.frame,TRUE,FALSE,38 x 8,8,38,data.frame,0,8,0,0
+carData,Highway1,Highway Accidents,other,carData::Highway1,data.frame,TRUE,FALSE,39 x 12,12,39,data.frame,1,11,0,0
+carData,KosteckiDillon,Treatment of Migraine Headaches,other,carData::KosteckiDillon,data.frame,TRUE,TRUE,4152 x 9,9,4152,data.frame,4,5,0,0
+carData,LoBD,Cancer drug data use to provide an example of the use of the skew power distributions.,other,carData::LoBD,data.frame,TRUE,FALSE,84 x 9,9,84,data.frame,1,8,0,0
+carData,Migration,Canadian Interprovincial Migration Data,other,carData::Migration,data.frame,TRUE,FALSE,90 x 8,8,90,data.frame,2,6,0,0
+carData,MplsDemo,"Minneapolis Demographic Data 2015, by Neighborhood",other,carData::MplsDemo,data.frame,TRUE,FALSE,84 x 8,8,84,data.frame,1,7,0,0
+carData,MplsStops,Minneapolis Police Department 2017 Stop Data,other,carData::MplsStops,data.frame,TRUE,TRUE,51920 x 14,14,51920,data.frame,10,3,1,0
+carData,Mroz,U.S. Women's Labor-Force Participation,other,carData::Mroz,data.frame,TRUE,TRUE,753 x 8,8,753,data.frame,3,5,0,0
+carData,OBrienKaiserLong,"O'Brien and Kaiser's Repeated-Measures Data in ""Long"" Format",other,carData::OBrienKaiserLong,data.frame,TRUE,TRUE,240 x 6,6,240,data.frame,4,2,0,0
+carData,Prestige,Prestige of Canadian Occupations,other,carData::Prestige,data.frame,TRUE,TRUE,102 x 6,6,102,data.frame,1,5,0,0
+carData,Rossi,Rossi et al.'s Criminal Recidivism Data,other,carData::Rossi,data.frame,TRUE,TRUE,432 x 62,62,432,data.frame,25,5,0,32
+carData,Salaries,Salaries for Professors,other,carData::Salaries,data.frame,TRUE,TRUE,397 x 6,6,397,data.frame,3,3,0,0
+carData,SLID,Survey of Labour and Income Dynamics,other,carData::SLID,data.frame,TRUE,TRUE,7425 x 5,5,7425,data.frame,2,3,0,0
+carData,Soils,Soil Compositions of Physical and Chemical Characteristics,other,carData::Soils,data.frame,TRUE,FALSE,48 x 14,14,48,data.frame,5,9,0,0
+carData,States,Education and Related Statistics for the U.S. States,other,carData::States,data.frame,TRUE,FALSE,51 x 7,7,51,data.frame,1,6,0,0
+carData,UN,"National Statistics from the United Nations, Mostly From 2009-2011",other,carData::UN,data.frame,TRUE,TRUE,213 x 7,7,213,data.frame,2,5,0,0
+carData,UN98,United Nations Social Indicators Data 1998],other,carData::UN98,data.frame,TRUE,TRUE,207 x 13,13,207,data.frame,1,12,0,0
+carData,WeightLoss,Weight Loss Data,other,carData::WeightLoss,data.frame,TRUE,FALSE,34 x 7,7,34,data.frame,1,6,0,0
+carData,Wells,Well Switching in Bangladesh,other,carData::Wells,data.frame,TRUE,TRUE,3020 x 5,5,3020,data.frame,2,3,0,0
+carData,Wong,Post-Coma Recovery of IQ,other,carData::Wong,data.frame,TRUE,TRUE,331 x 7,7,331,data.frame,1,6,0,0
+carData,WVS,World Values Surveys,other,carData::WVS,data.frame,TRUE,TRUE,5381 x 6,6,5381,data.frame,5,1,0,0
+datasets,ability.cov,Ability and Intelligence Tests,base,datasets::ability.cov,other,FALSE,FALSE,,NA,NA,list,3,27,0,NA
+datasets,airmiles,"Passenger Miles on Commercial US Airlines, 1937-1960",base,datasets::airmiles,other,FALSE,TRUE,,NA,NA,ts,0,0,0,NA
+datasets,AirPassengers,Monthly Airline Passenger Numbers 1949-1960,base,datasets::AirPassengers,other,FALSE,TRUE,,NA,NA,ts,0,0,0,NA
+datasets,airquality,New York Air Quality Measurements,base,datasets::airquality,data.frame,TRUE,TRUE,153 x 6,6,153,data.frame,0,6,0,0
+datasets,attenu,The Joyner-Boore Attenuation Data,base,datasets::attenu,data.frame,TRUE,TRUE,182 x 5,5,182,data.frame,1,4,0,0
+datasets,attitude,The Chatterjee-Price Attitude Data,base,datasets::attitude,data.frame,TRUE,FALSE,30 x 7,7,30,data.frame,0,7,0,0
+datasets,austres,Quarterly Time Series of the Number of Australian Residents,base,datasets::austres,other,FALSE,TRUE,,NA,NA,ts,0,0,0,NA
+datasets,BJsales,Sales Data with Leading Indicator,base,datasets::BJsales,other,FALSE,TRUE,,NA,NA,ts,0,0,0,NA
+datasets,co2,Mauna Loa Atmospheric CO2 Concentration,base,datasets::co2,other,FALSE,TRUE,,NA,NA,ts,0,0,0,NA
+datasets,CO2,Carbon Dioxide Uptake in Grass Plants,base,datasets::CO2,data.frame,TRUE,FALSE,84 x 5,5,84,nfnGroupedData,3,2,0,0
+datasets,crimtab,Student's 3000 Criminals Data,base,datasets::crimtab,other,FALSE,FALSE,42 x 22,22,42,table,0,924,0,-902
+datasets,discoveries,Yearly Numbers of Important Discoveries,base,datasets::discoveries,other,FALSE,TRUE,,NA,NA,ts,0,0,0,NA
+datasets,esoph,"Smoking, Alcohol and (O)esophageal Cancer",base,datasets::esoph,data.frame,TRUE,FALSE,88 x 5,5,88,data.frame,3,2,0,0
+datasets,euro,Conversion Rates of Euro Currencies,base,datasets::euro,vector,FALSE,FALSE,,NA,NA,numeric,3,27,0,NA
+datasets,eurodist,Distances Between European Cities and Between US Cities,base,datasets::eurodist,other,FALSE,TRUE,,NA,NA,dist,0,210,0,NA
+datasets,freeny,Freeny's Revenue Data,base,datasets::freeny,data.frame,TRUE,TRUE,39 x 5,5,39,data.frame,0,4,0,1
+datasets,HairEyeColor,Hair and Eye Color of Statistics Students,base,datasets::HairEyeColor,other,FALSE,FALSE,4 x 4 x 2,4,4,table,0,32,0,-28
+datasets,Harman23.cor,Harman Example 2.3,base,datasets::Harman23.cor,other,FALSE,FALSE,,NA,NA,list,3,27,0,NA
+datasets,Harman74.cor,Harman Example 7.4,base,datasets::Harman74.cor,other,FALSE,FALSE,,NA,NA,list,3,27,0,NA
+datasets,infert,Infertility after Spontaneous and Induced Abortion,base,datasets::infert,data.frame,TRUE,TRUE,248 x 8,8,248,data.frame,1,7,0,0
+datasets,iris,Edgar Anderson's Iris Data,base,datasets::iris,data.frame,TRUE,TRUE,150 x 5,5,150,data.frame,1,4,0,0
+datasets,iris3,Edgar Anderson's Iris Data,base,datasets::iris3,other,FALSE,FALSE,50 x 4 x 3,4,50,array,0,600,0,-596
+datasets,islands,Areas of the World's Major Landmasses,base,datasets::islands,vector,FALSE,FALSE,,NA,NA,numeric,3,27,0,NA
+datasets,JohnsonJohnson,Quarterly Earnings per Johnson & Johnson Share,base,datasets::JohnsonJohnson,other,FALSE,TRUE,,NA,NA,ts,0,0,0,NA
+datasets,LakeHuron,Level of Lake Huron 1875-1972,base,datasets::LakeHuron,other,FALSE,TRUE,,NA,NA,ts,0,0,0,NA
+datasets,lh,Luteinizing Hormone in Blood Samples,base,datasets::lh,other,FALSE,TRUE,,NA,NA,ts,0,0,0,NA
+datasets,LifeCycleSavings,Intercountry Life-Cycle Savings Data,base,datasets::LifeCycleSavings,data.frame,TRUE,FALSE,50 x 5,5,50,data.frame,0,5,0,0
+datasets,lynx,Annual Canadian Lynx trappings 1821-1934,base,datasets::lynx,other,FALSE,TRUE,,NA,NA,ts,0,0,0,NA
+datasets,mtcars,Motor Trend Car Road Tests,base,datasets::mtcars,data.frame,TRUE,FALSE,32 x 11,11,32,data.frame,0,11,0,0
+datasets,nhtemp,Average Yearly Temperatures in New Haven,base,datasets::nhtemp,other,FALSE,TRUE,,NA,NA,ts,0,0,0,NA
+datasets,Nile,Flow of the River Nile,base,datasets::Nile,other,FALSE,TRUE,,NA,NA,ts,0,0,0,NA
+datasets,nottem,"Average Monthly Temperatures at Nottingham, 1920-1939",base,datasets::nottem,other,FALSE,TRUE,,NA,NA,ts,0,0,0,NA
+datasets,occupationalStatus,Occupational Status of Fathers and their Sons,base,datasets::occupationalStatus,other,FALSE,FALSE,8 x 8,8,8,table,0,64,0,-56
+datasets,precip,Annual Precipitation in US Cities,base,datasets::precip,vector,FALSE,FALSE,,NA,NA,numeric,3,27,0,NA
+datasets,presidents,Quarterly Approval Ratings of US Presidents,base,datasets::presidents,other,FALSE,TRUE,,NA,NA,ts,0,0,0,NA
+datasets,quakes,Locations of Earthquakes off Fiji,base,datasets::quakes,data.frame,TRUE,TRUE,1000 x 5,5,1000,data.frame,0,5,0,0
+datasets,rivers,Lengths of Major North American Rivers,base,datasets::rivers,vector,FALSE,TRUE,,NA,NA,numeric,3,27,0,NA
+datasets,Seatbelts,Road Casualties in Great Britain 1969-84,base,datasets::Seatbelts,data.frame,TRUE,TRUE,192 x 8,8,192,mts,0,0,0,8
+datasets,sunspot.month,"Monthly Sunspot Data, from 1749 to ""Present""",base,datasets::sunspot.month,other,FALSE,TRUE,,NA,NA,ts,0,0,0,NA
+datasets,sunspot.year,"Yearly Sunspot Data, 1700-1988",base,datasets::sunspot.year,other,FALSE,TRUE,,NA,NA,ts,0,0,0,NA
+datasets,sunspots,"Monthly Sunspot Numbers, 1749-1983",base,datasets::sunspots,other,FALSE,TRUE,,NA,NA,ts,0,0,0,NA
+datasets,swiss,Swiss Fertility and Socioeconomic Indicators (1888) Data,base,datasets::swiss,data.frame,TRUE,FALSE,47 x 6,6,47,data.frame,0,6,0,0
+datasets,Theoph,Pharmacokinetics of Theophylline,base,datasets::Theoph,data.frame,TRUE,TRUE,132 x 5,5,132,nfnGroupedData,1,4,0,0
+datasets,Titanic,Survival of passengers on the Titanic,base,datasets::Titanic,other,FALSE,FALSE,4 x 2 x 2 x 2,2,4,table,0,32,0,-30
+datasets,UCBAdmissions,Student Admissions at UC Berkeley,base,datasets::UCBAdmissions,other,FALSE,FALSE,2 x 2 x 6,2,2,table,0,24,0,-22
+datasets,UKDriverDeaths,Road Casualties in Great Britain 1969-84,base,datasets::UKDriverDeaths,other,FALSE,TRUE,,NA,NA,ts,0,0,0,NA
+datasets,UKgas,UK Quarterly Gas Consumption,base,datasets::UKgas,other,FALSE,TRUE,,NA,NA,ts,0,0,0,NA
+datasets,USAccDeaths,Accidental Deaths in the US 1973-1978,base,datasets::USAccDeaths,other,FALSE,TRUE,,NA,NA,ts,0,0,0,NA
+datasets,UScitiesD,Distances Between European Cities and Between US Cities,base,datasets::UScitiesD,other,FALSE,TRUE,,NA,NA,dist,0,45,0,NA
+datasets,USJudgeRatings,Lawyers' Ratings of State Judges in the US Superior Court,base,datasets::USJudgeRatings,data.frame,TRUE,FALSE,43 x 12,12,43,data.frame,0,12,0,0
+datasets,USPersonalExpenditure,Personal Expenditure Data,base,datasets::USPersonalExpenditure,other,FALSE,FALSE,5 x 5,5,5,matrix,0,25,0,-20
+datasets,uspop,Populations Recorded by the US Census,base,datasets::uspop,other,FALSE,TRUE,,NA,NA,ts,0,0,0,NA
+datasets,VADeaths,Death Rates in Virginia (1940),base,datasets::VADeaths,other,FALSE,FALSE,5 x 4,4,5,matrix,0,20,0,-16
+datasets,volcano,Topographic Information on Auckland's Maunga Whau Volcano,base,datasets::volcano,other,FALSE,FALSE,87 x 61,61,87,matrix,0,5307,0,-5246
+datasets,WorldPhones,The World's Telephones,base,datasets::WorldPhones,other,FALSE,FALSE,7 x 7,7,7,matrix,0,49,0,-42
+datasets,WWWusage,Internet Usage per Minute,base,datasets::WWWusage,other,FALSE,TRUE,,NA,NA,ts,0,0,0,NA
+dplyr,starwars,Starwars characters,tidyverse,dplyr::starwars,data.frame,TRUE,FALSE,87 x 14,14,87,tbl_df,8,3,0,3
+dplyr,storms,Storm tracks data,tidyverse,dplyr::storms,data.frame,TRUE,TRUE,11859 x 13,13,11859,tbl_df,3,10,0,0
+forcats,gss_cat,A sample of categorical variables from the General Social survey,tidyverse,forcats::gss_cat,data.frame,TRUE,TRUE,21483 x 9,9,21483,tbl_df,6,3,0,0
+gamclass,airAccs,Aircraft Crash data,other,gamclass::airAccs,data.frame,TRUE,TRUE,5666 x 7,7,5666,data.frame,4,3,0,0
+gamclass,bomregions2018,"Australian and Related Historical Annual Climate Data, by Region",other,gamclass::bomregions2018,data.frame,TRUE,TRUE,119 x 35,35,119,data.frame,0,30,0,5
+gamclass,FARS,"US fatal road accident data for automobiles, 1998 to 2010",other,gamclass::FARS,data.frame,TRUE,TRUE,134332 x 16,16,134332,data.frame,7,9,0,0
+gamclass,fars2007,"US Fatal Road Accident Data, 2007 and 2008",other,gamclass::fars2007,data.frame,TRUE,TRUE,24179 x 19,19,24179,data.frame,0,19,0,0
+gamclass,fars2008,"US Fatal Road Accident Data, 2007 and 2008",other,gamclass::fars2008,data.frame,TRUE,TRUE,22113 x 20,20,22113,data.frame,1,19,0,0
+gamclass,frontDeaths,"Safety Device effectiveness Measures, by Year",other,gamclass::frontDeaths,other,FALSE,FALSE,,NA,NA,list,3,27,0,NA
+gamclass,german,German credit scoring data,other,gamclass::german,data.frame,TRUE,TRUE,1000 x 21,21,1000,data.frame,14,7,0,0
+gamclass,greatLakesM,Monthly Great Lake heights: 1918 - 2019,other,gamclass::greatLakesM,data.frame,TRUE,TRUE,1212 x 7,7,1212,data.frame,1,6,0,0
+gamclass,loti,Global temperature anomalies,other,gamclass::loti,data.frame,TRUE,TRUE,140 x 20,20,140,data.frame,0,20,0,0
+gamclass,otherDeaths,"Safety Device effectiveness Measures, by Year",other,gamclass::otherDeaths,other,FALSE,FALSE,,NA,NA,list,3,27,0,NA
+gamclass,rearDeaths,"Safety Device effectiveness Measures, by Year",other,gamclass::rearDeaths,other,FALSE,FALSE,,NA,NA,list,3,27,0,NA
+gamclass,relDeaths,"Yearly Driver deaths, as Fraction of Deaths for All Years",other,gamclass::relDeaths,other,FALSE,FALSE,,NA,NA,list,3,27,0,NA
+gamclass,sideDeaths,"Safety Device effectiveness Measures, by Year",other,gamclass::sideDeaths,other,FALSE,FALSE,,NA,NA,list,3,27,0,NA
+ggplot2,diamonds,"Prices of over 50,000 round cut diamonds",tidyverse,ggplot2::diamonds,data.frame,TRUE,TRUE,53940 x 10,10,53940,tbl_df,3,7,0,0
+ggplot2,economics,US economic time series,tidyverse,ggplot2::economics,data.frame,TRUE,TRUE,574 x 6,6,574,spec_tbl_df,0,5,1,0
+ggplot2,midwest,Midwest demographics,tidyverse,ggplot2::midwest,data.frame,TRUE,TRUE,437 x 28,28,437,tbl_df,3,25,0,0
+ggplot2,mpg,Fuel economy data from 1999 to 2008 for 38 popular models of cars,tidyverse,ggplot2::mpg,data.frame,TRUE,TRUE,234 x 11,11,234,tbl_df,6,5,0,0
+ggplot2,msleep,An updated and expanded version of the mammals sleep dataset,tidyverse,ggplot2::msleep,data.frame,TRUE,FALSE,83 x 11,11,83,tbl_df,5,6,0,0
+ggplot2,txhousing,Housing sales in TX,tidyverse,ggplot2::txhousing,data.frame,TRUE,TRUE,8602 x 9,9,8602,tbl_df,1,8,0,0
+gt,countrypops,Yearly populations of countries from 1960 to 2017,other,gt::countrypops,data.frame,TRUE,TRUE,12470 x 5,5,12470,tbl_df,3,2,0,0
+gt,gtcars,Deluxe automobiles from the 2014-2017 period,other,gt::gtcars,data.frame,TRUE,TRUE,47 x 15,15,47,spec_tbl_df,7,8,0,0
+gt,pizzaplace,A year of pizza sales from a pizza place,other,gt::pizzaplace,data.frame,TRUE,TRUE,49574 x 7,7,49574,tbl_df,6,1,0,0
+gt,sp500,Daily S&P 500 Index data from 1950 to 2015,other,gt::sp500,data.frame,TRUE,TRUE,16607 x 7,7,16607,spec_tbl_df,0,6,1,0
+ISLR,Auto,Auto Data Set,other,ISLR::Auto,data.frame,TRUE,TRUE,392 x 9,9,392,data.frame,1,8,0,0
+ISLR,Caravan,The Insurance Company (TIC) Benchmark,other,ISLR::Caravan,data.frame,TRUE,TRUE,5822 x 86,86,5822,data.frame,0,30,0,56
+ISLR,Carseats,Sales of Child Car Seats,other,ISLR::Carseats,data.frame,TRUE,TRUE,400 x 11,11,400,data.frame,3,8,0,0
+ISLR,College,U.S. News and World Report's College Data,other,ISLR::College,data.frame,TRUE,TRUE,777 x 18,18,777,data.frame,1,17,0,0
+ISLR,Credit,Credit Card Balance Data,other,ISLR::Credit,data.frame,TRUE,TRUE,400 x 12,12,400,data.frame,4,8,0,0
+ISLR,Hitters,Baseball Data,other,ISLR::Hitters,data.frame,TRUE,TRUE,322 x 20,20,322,data.frame,3,17,0,0
+ISLR,OJ,Orange Juice Data,other,ISLR::OJ,data.frame,TRUE,TRUE,1070 x 18,18,1070,data.frame,2,16,0,0
+ISLR,Smarket,S&P Stock Market Data,other,ISLR::Smarket,data.frame,TRUE,TRUE,1250 x 9,9,1250,data.frame,1,8,0,0
+ISLR,Wage,Mid-Atlantic Wage Data,other,ISLR::Wage,data.frame,TRUE,TRUE,3000 x 11,11,3000,data.frame,7,4,0,0
+ISLR,Weekly,Weekly S&P Stock Market Data,other,ISLR::Weekly,data.frame,TRUE,TRUE,1089 x 9,9,1089,data.frame,1,8,0,0
+lubridate,lakers,Lakers 2008-2009 basketball data set,tidyverse,lubridate::lakers,data.frame,TRUE,TRUE,34624 x 13,13,34624,data.frame,8,5,0,0
+MASS,abbey,Determinations of Nickel Content,other,MASS::abbey,vector,FALSE,FALSE,,NA,NA,numeric,3,27,0,NA
+MASS,accdeaths,Accidental Deaths in the US 1973-1978,other,MASS::accdeaths,other,FALSE,TRUE,,NA,NA,ts,0,0,0,NA
+MASS,Aids2,Australian AIDS Survival Data,other,MASS::Aids2,data.frame,TRUE,TRUE,2843 x 7,7,2843,data.frame,4,3,0,0
+MASS,bacteria,Presence of Bacteria after Drug Treatments,other,MASS::bacteria,data.frame,TRUE,TRUE,220 x 6,6,220,data.frame,5,1,0,0
+MASS,biopsy,Biopsy Data on Breast Cancer Patients,other,MASS::biopsy,data.frame,TRUE,TRUE,699 x 11,11,699,data.frame,2,9,0,0
+MASS,birthwt,Risk Factors Associated with Low Infant Birth Weight,other,MASS::birthwt,data.frame,TRUE,TRUE,189 x 10,10,189,data.frame,0,10,0,0
+MASS,Boston,Housing Values in Suburbs of Boston,other,MASS::Boston,data.frame,TRUE,TRUE,506 x 14,14,506,data.frame,0,14,0,0
+MASS,Cars93,Data from 93 Cars on Sale in the USA in 1993,other,MASS::Cars93,data.frame,TRUE,FALSE,93 x 27,27,93,data.frame,9,18,0,0
+MASS,chem,Copper in Wholemeal Flour,other,MASS::chem,vector,FALSE,FALSE,,NA,NA,numeric,3,27,0,NA
+MASS,cpus,Performance of Computer CPUs,other,MASS::cpus,data.frame,TRUE,TRUE,209 x 9,9,209,data.frame,1,8,0,0
+MASS,crabs,Morphological Measurements on Leptograpsus Crabs,other,MASS::crabs,data.frame,TRUE,TRUE,200 x 8,8,200,data.frame,2,6,0,0
+MASS,DDT,DDT in Kale,other,MASS::DDT,vector,FALSE,FALSE,,NA,NA,numeric,3,27,0,NA
+MASS,deaths,Monthly Deaths from Lung Diseases in the UK,other,MASS::deaths,other,FALSE,TRUE,,NA,NA,ts,0,0,0,NA
+MASS,drivers,Deaths of Car Drivers in Great Britain 1969-84,other,MASS::drivers,other,FALSE,TRUE,,NA,NA,ts,0,0,0,NA
+MASS,epil,Seizure Counts for Epileptics,other,MASS::epil,data.frame,TRUE,TRUE,236 x 9,9,236,data.frame,1,8,0,0
+MASS,fgl,Measurements of Forensic Glass Fragments,other,MASS::fgl,data.frame,TRUE,TRUE,214 x 10,10,214,data.frame,1,9,0,0
+MASS,galaxies,Velocities for 82 Galaxies,other,MASS::galaxies,vector,FALSE,FALSE,,NA,NA,numeric,3,27,0,NA
+MASS,gilgais,Line Transect of Soil in Gilgai Territory,other,MASS::gilgais,data.frame,TRUE,TRUE,365 x 9,9,365,data.frame,0,9,0,0
+MASS,housing,Frequency Table from a Copenhagen Housing Conditions Survey,other,MASS::housing,data.frame,TRUE,FALSE,72 x 5,5,72,data.frame,4,1,0,0
+MASS,Insurance,Numbers of Car Insurance claims,other,MASS::Insurance,data.frame,TRUE,FALSE,64 x 5,5,64,data.frame,3,2,0,0
+MASS,Melanoma,Survival from Malignant Melanoma,other,MASS::Melanoma,data.frame,TRUE,TRUE,205 x 7,7,205,data.frame,0,7,0,0
+MASS,minn38,Minnesota High School Graduates of 1938,other,MASS::minn38,data.frame,TRUE,TRUE,168 x 5,5,168,data.frame,4,1,0,0
+MASS,newcomb,Newcomb's Measurements of the Passage Time of Light,other,MASS::newcomb,vector,FALSE,FALSE,,NA,NA,numeric,3,27,0,NA
+MASS,nlschools,Eighth-Grade Pupils in the Netherlands,other,MASS::nlschools,data.frame,TRUE,TRUE,2287 x 6,6,2287,data.frame,2,4,0,0
+MASS,OME,Tests of Auditory Perception in Children with OME,other,MASS::OME,data.frame,TRUE,TRUE,1097 x 7,7,1097,data.frame,2,5,0,0
+MASS,painters,The Painter's Data of de Piles,other,MASS::painters,data.frame,TRUE,FALSE,54 x 5,5,54,data.frame,1,4,0,0
+MASS,petrol,N. L. Prater's Petrol Refinery Data,other,MASS::petrol,data.frame,TRUE,FALSE,32 x 6,6,32,data.frame,1,5,0,0
+MASS,phones,Belgium Phone Calls 1950-1973,other,MASS::phones,other,FALSE,FALSE,,NA,NA,list,3,27,0,NA
+MASS,Pima.te,Diabetes in Pima Indian Women,other,MASS::Pima.te,data.frame,TRUE,TRUE,332 x 8,8,332,data.frame,1,7,0,0
+MASS,Pima.tr,Diabetes in Pima Indian Women,other,MASS::Pima.tr,data.frame,TRUE,TRUE,200 x 8,8,200,data.frame,1,7,0,0
+MASS,Pima.tr2,Diabetes in Pima Indian Women,other,MASS::Pima.tr2,data.frame,TRUE,TRUE,300 x 8,8,300,data.frame,1,7,0,0
+MASS,quine,Absenteeism from School in Rural New South Wales,other,MASS::quine,data.frame,TRUE,TRUE,146 x 5,5,146,data.frame,4,1,0,0
+MASS,Rabbit,Blood Pressure in Rabbits,other,MASS::Rabbit,data.frame,TRUE,FALSE,60 x 5,5,60,data.frame,3,2,0,0
+MASS,ships,Ships Damage Data,other,MASS::ships,data.frame,TRUE,FALSE,40 x 5,5,40,data.frame,1,4,0,0
+MASS,shoes,"Shoe wear data of Box, Hunter and Hunter",other,MASS::shoes,other,FALSE,FALSE,,NA,NA,list,3,27,0,NA
+MASS,shrimp,Percentage of Shrimp in Shrimp Cocktail,other,MASS::shrimp,vector,FALSE,FALSE,,NA,NA,numeric,3,27,0,NA
+MASS,shuttle,Space Shuttle Autolander Problem,other,MASS::shuttle,data.frame,TRUE,TRUE,256 x 7,7,256,data.frame,7,0,0,0
+MASS,snails,Snail Mortality Data,other,MASS::snails,data.frame,TRUE,FALSE,96 x 6,6,96,data.frame,1,5,0,0
+MASS,SP500,Returns of the Standard and Poors 500,other,MASS::SP500,vector,FALSE,TRUE,,NA,NA,numeric,3,27,0,NA
+MASS,survey,Student Survey Data,other,MASS::survey,data.frame,TRUE,TRUE,237 x 12,12,237,data.frame,7,5,0,0
+MASS,UScereal,Nutritional and Marketing Information on US Cereals,other,MASS::UScereal,data.frame,TRUE,FALSE,65 x 11,11,65,data.frame,2,9,0,0
+MASS,UScrime,The Effect of Punishment Regimes on Crime Rates,other,MASS::UScrime,data.frame,TRUE,FALSE,47 x 16,16,47,data.frame,0,16,0,0
+MASS,VA,Veteran's Administration Lung Cancer Trial,other,MASS::VA,data.frame,TRUE,TRUE,137 x 8,8,137,data.frame,3,5,0,0
+mclust,acidity,Acidity data,other,mclust::acidity,vector,FALSE,TRUE,,NA,NA,numeric,3,27,0,NA
+mclust,banknote,Swiss banknotes data,other,mclust::banknote,data.frame,TRUE,TRUE,200 x 7,7,200,data.frame,1,6,0,0
+mclust,thyroid,UCI Thyroid Gland Data,other,mclust::thyroid,data.frame,TRUE,TRUE,215 x 6,6,215,data.frame,1,5,0,0
+mclust,wdbc,UCI Wisconsin Diagnostic Breast Cancer Data,other,mclust::wdbc,data.frame,TRUE,TRUE,569 x 32,32,569,data.frame,1,29,0,2
+mclust,wreath,Data Simulated from a 14-Component Mixture,other,mclust::wreath,other,FALSE,TRUE,1000 x 2,2,1000,matrix,0,2000,0,-1998
+nlme,Alfalfa,Split-Plot Experiment on Varieties of Alfalfa,other,nlme::Alfalfa,other,FALSE,FALSE,72 x 4,4,72,nmGroupedData,3,1,0,0
+nlme,Assay,Bioassay on Cell Culture Plate,other,nlme::Assay,other,FALSE,FALSE,60 x 4,4,60,nffGroupedData,3,1,0,0
+nlme,bdf,Language scores,other,nlme::bdf,data.frame,TRUE,TRUE,2287 x 28,28,2287,nfnGroupedData,8,20,0,0
+nlme,Dialyzer,High-Flux Hemodialyzer,other,nlme::Dialyzer,data.frame,TRUE,TRUE,140 x 5,5,140,nfnGroupedData,2,3,0,0
+nlme,Earthquake,Earthquake Intensity,other,nlme::Earthquake,data.frame,TRUE,TRUE,182 x 5,5,182,nfnGroupedData,2,3,0,0
+nlme,ergoStool,Ergometrics experiment with stool types,other,nlme::ergoStool,other,FALSE,FALSE,36 x 3,3,36,nffGroupedData,2,1,0,0
+nlme,Gasoline,Refinery yield of gasoline,other,nlme::Gasoline,data.frame,TRUE,FALSE,32 x 6,6,32,nfnGroupedData,1,5,0,0
+nlme,Glucose2,Glucose Levels Following Alcohol Ingestion,other,nlme::Glucose2,other,FALSE,TRUE,196 x 4,4,196,nmGroupedData,2,2,0,0
+nlme,Gun,Methods for firing naval guns,other,nlme::Gun,other,FALSE,FALSE,36 x 4,4,36,nffGroupedData,3,1,0,0
+nlme,Machines,Productivity Scores for Machines and Workers,other,nlme::Machines,other,FALSE,FALSE,54 x 3,3,54,nffGroupedData,2,1,0,0
+nlme,MathAchieve,Mathematics achievement scores,other,nlme::MathAchieve,data.frame,TRUE,TRUE,7185 x 6,6,7185,nfnGroupedData,3,3,0,0
+nlme,MathAchSchool,School demographic data for MathAchieve,other,nlme::MathAchSchool,data.frame,TRUE,TRUE,160 x 7,7,160,data.frame,3,4,0,0
+nlme,Meat,Tenderness of meat,other,nlme::Meat,other,FALSE,FALSE,30 x 4,4,30,nffGroupedData,3,1,0,0
+nlme,Oxide,Variability in Semiconductor Manufacturing,other,nlme::Oxide,other,FALSE,FALSE,72 x 5,5,72,nmGroupedData,4,1,0,0
+nlme,PBG,Effect of Phenylbiguanide on Blood Pressure,other,nlme::PBG,data.frame,TRUE,FALSE,60 x 5,5,60,nfnGroupedData,3,2,0,0
+nlme,Phenobarb,Phenobarbitol Kinetics,other,nlme::Phenobarb,data.frame,TRUE,TRUE,744 x 7,7,744,nfnGroupedData,3,4,0,0
+nlme,Pixel,X-ray pixel intensities over time,other,nlme::Pixel,other,FALSE,TRUE,102 x 4,4,102,nmGroupedData,2,2,0,0
+nlme,Quinidine,Quinidine Kinetics,other,nlme::Quinidine,data.frame,TRUE,TRUE,1471 x 14,14,1471,nfnGroupedData,6,8,0,0
+nlme,Rail,Evaluation of Stress in Railway Rails,other,nlme::Rail,other,FALSE,FALSE,18 x 2,2,18,nffGroupedData,1,1,0,0
+nlme,RatPupWeight,The weight of rat pups,other,nlme::RatPupWeight,other,FALSE,TRUE,322 x 5,5,322,nffGroupedData,3,2,0,0
+nlme,Remifentanil,Pharmacokinetics of Remifentanil,other,nlme::Remifentanil,data.frame,TRUE,TRUE,2107 x 12,12,2107,nfnGroupedData,2,10,0,0
+nlme,Soybean,Growth of soybean plants,other,nlme::Soybean,data.frame,TRUE,TRUE,412 x 5,5,412,nfnGroupedData,3,2,0,0
+nlme,Wafer,Modeling of Analog MOS Circuits,other,nlme::Wafer,other,FALSE,TRUE,400 x 4,4,400,nmGroupedData,2,2,0,0
+nlme,Wheat2,Wheat Yield Trials,other,nlme::Wheat2,other,FALSE,TRUE,224 x 5,5,224,nffGroupedData,2,3,0,0
+nycflights13,airports,Airport metadata,other,nycflights13::airports,data.frame,TRUE,TRUE,1458 x 8,8,1458,tbl_df,4,4,0,0
+nycflights13,flights,Flights data,other,nycflights13::flights,data.frame,TRUE,TRUE,336776 x 19,19,336776,tbl_df,4,14,1,0
+nycflights13,planes,Plane metadata.,other,nycflights13::planes,data.frame,TRUE,TRUE,3322 x 9,9,3322,tbl_df,5,4,0,0
+nycflights13,weather,Hourly weather data,other,nycflights13::weather,data.frame,TRUE,TRUE,26115 x 15,15,26115,tbl_df,1,13,1,0
+openintro,absenteeism,Absenteeism from school in New South Wales,other,openintro::absenteeism,data.frame,TRUE,TRUE,146 x 5,5,146,tbl_df,4,1,0,0
+openintro,acs12,"American Community Survey, 2012",other,openintro::acs12,data.frame,TRUE,TRUE,2000 x 13,13,2000,tbl_df,9,4,0,0
+openintro,ames,"Housing prices in Ames, Iowa",other,openintro::ames,data.frame,TRUE,TRUE,2930 x 82,82,2930,tbl_df,18,12,0,52
+openintro,association,Simulated data for association plots,other,openintro::association,data.frame,TRUE,TRUE,121 x 15,15,121,tbl_df,0,15,0,0
+openintro,babies,The Child Health and Development Studies,other,openintro::babies,data.frame,TRUE,TRUE,1236 x 8,8,1236,tbl_df,0,8,0,0
+openintro,bdims,Body measurements of 507 physically active individuals.,other,openintro::bdims,data.frame,TRUE,TRUE,507 x 25,25,507,tbl_df,0,25,0,0
+openintro,birds,Aircraft-Wildlife Collisions,other,openintro::birds,data.frame,TRUE,TRUE,19302 x 17,17,19302,tbl_df,13,4,0,0
+openintro,births,"North Carolina births, 100 cases",other,openintro::births,data.frame,TRUE,TRUE,150 x 9,9,150,tbl_df,3,6,0,0
+openintro,births14,US births,other,openintro::births14,data.frame,TRUE,TRUE,1000 x 13,13,1000,tbl_df,7,6,0,0
+openintro,blizzard_salary,Blizzard Employee Voluntary Salary Info.,other,openintro::blizzard_salary,data.frame,TRUE,TRUE,466 x 9,9,466,spec_tbl_df,7,2,0,0
+openintro,cars93,cars93,other,openintro::cars93,data.frame,TRUE,FALSE,54 x 6,6,54,tbl_df,2,4,0,0
+openintro,census,Random sample of 2000 U.S. Census Data,other,openintro::census,data.frame,TRUE,TRUE,500 x 8,8,500,tbl_df,4,4,0,0
+openintro,children_gender_stereo,Gender Stereotypes in 5-7 year old Children,other,openintro::children_gender_stereo,other,FALSE,FALSE,,NA,NA,list,3,27,0,NA
+openintro,cia_factbook,CIA Factbook Details on Countries,other,openintro::cia_factbook,data.frame,TRUE,TRUE,259 x 11,11,259,tbl_df,1,10,0,0
+openintro,cle_sac,Cleveland and Sacramento,other,openintro::cle_sac,data.frame,TRUE,TRUE,500 x 8,8,500,tbl_df,5,3,0,0
+openintro,climate70,"Temperature Summary Data, Geography Limited",other,openintro::climate70,data.frame,TRUE,TRUE,197 x 7,7,197,tbl_df,1,6,0,0
+openintro,climber_drugs,Climber Drugs Data.,other,openintro::climber_drugs,data.frame,TRUE,TRUE,211 x 6,6,211,tbl_df,4,2,0,0
+openintro,COL,OpenIntro Statistics colors,other,openintro::COL,other,FALSE,FALSE,7 x 13,13,7,matrix,91,0,0,-78
+openintro,corr_match,Sample data sets for correlation problems,other,openintro::corr_match,data.frame,TRUE,TRUE,121 x 9,9,121,tbl_df,0,9,0,0
+openintro,cpu,CPU's Released between 2010 and 2020.,other,openintro::cpu,data.frame,TRUE,TRUE,875 x 12,12,875,tbl_df,4,7,1,0
+openintro,daycare_fines,Daycare fines,other,openintro::daycare_fines,data.frame,TRUE,TRUE,200 x 7,7,200,tbl_df,3,4,0,0
+openintro,duke_forest,"Sale prices of houses in Duke Forest, Durham, NC",other,openintro::duke_forest,data.frame,TRUE,FALSE,98 x 13,13,98,tbl_df,7,6,0,0
+openintro,earthquakes,Earthquakes,other,openintro::earthquakes,data.frame,TRUE,TRUE,123 x 7,7,123,spec_tbl_df,3,4,0,0
+openintro,email,Data frame representing information about a collection of emails,other,openintro::email,data.frame,TRUE,TRUE,3921 x 21,21,3921,tbl_df,9,11,1,0
+openintro,email_test,Data frame representing information about a collection of emails,other,openintro::email_test,data.frame,TRUE,TRUE,1252 x 21,21,1252,tbl_df,2,18,1,0
+openintro,email50,Sample of 50 emails,other,openintro::email50,data.frame,TRUE,FALSE,50 x 21,21,50,tbl_df,9,11,1,0
+openintro,epa2012,Vehicle info from the EPA for 2012,other,openintro::epa2012,data.frame,TRUE,TRUE,1129 x 28,28,1129,tbl_df,19,8,1,0
+openintro,epa2021,Vehicle info from the EPA for 2021,other,openintro::epa2021,data.frame,TRUE,TRUE,1108 x 28,28,1108,tbl_df,19,8,1,0
+openintro,esi,Environmental Sustainability Index 2005,other,openintro::esi,data.frame,TRUE,TRUE,146 x 29,29,146,tbl_df,2,27,0,0
+openintro,evals,Professor evaluations and beauty,other,openintro::evals,data.frame,TRUE,TRUE,463 x 23,23,463,tbl_df,9,14,0,0
+openintro,exam_grades,Exam and course grades for statistics students,other,openintro::exam_grades,data.frame,TRUE,TRUE,233 x 6,6,233,spec_tbl_df,2,4,0,0
+openintro,fastfood,Nutrition in fast food,other,openintro::fastfood,data.frame,TRUE,TRUE,515 x 17,17,515,tbl_df,3,14,0,0
+openintro,fish_oil_18,Findings on n-3 Fatty Acid Supplement Health Benefits,other,openintro::fish_oil_18,other,FALSE,FALSE,,NA,NA,list,3,27,0,NA
+openintro,friday,Friday the 13th,other,openintro::friday,data.frame,TRUE,FALSE,61 x 6,6,61,tbl_df,3,3,0,0
+openintro,gdp_countries,GDP Countries Data.,other,openintro::gdp_countries,data.frame,TRUE,TRUE,654 x 9,9,654,data.frame,2,7,0,0
+openintro,get_it_dunn_run,"Get it Dunn Run, Race Times",other,openintro::get_it_dunn_run,data.frame,TRUE,TRUE,978 x 10,10,978,tbl_df,7,3,0,0
+openintro,gifted,Analytical skills of young gifted children,other,openintro::gifted,data.frame,TRUE,FALSE,36 x 8,8,36,tbl_df,0,8,0,0
+openintro,goog,Google stock data,other,openintro::goog,data.frame,TRUE,FALSE,98 x 7,7,98,tbl_df,1,6,0,0
+openintro,gpa,"Survey of Duke students on GPA, studying, and more",other,openintro::gpa,data.frame,TRUE,FALSE,55 x 5,5,55,tbl_df,1,4,0,0
+openintro,gpa_iq,Sample of students and their GPA and IQ,other,openintro::gpa_iq,data.frame,TRUE,FALSE,78 x 5,5,78,tbl_df,0,5,0,0
+openintro,gss2010,2010 General Social Survey,other,openintro::gss2010,data.frame,TRUE,TRUE,2044 x 5,5,2044,tbl_df,2,3,0,0
+openintro,heart_transplant,Heart Transplant Data,other,openintro::heart_transplant,data.frame,TRUE,TRUE,103 x 8,8,103,tbl_df,3,5,0,0
+openintro,hfi,Human Freedom Index,other,openintro::hfi,data.frame,TRUE,TRUE,1458 x 123,123,1458,tbl_df,3,27,0,93
+openintro,house,United States House of Representatives historical make-up,other,openintro::house,data.frame,TRUE,TRUE,116 x 12,12,116,tbl_df,2,10,0,0
+openintro,hsb2,High School and Beyond survey,other,openintro::hsb2,data.frame,TRUE,TRUE,200 x 11,11,200,tbl_df,5,6,0,0
+openintro,husbands_wives,Great Britain: husband and wife pairs,other,openintro::husbands_wives,data.frame,TRUE,TRUE,199 x 7,7,199,tbl_df,0,7,0,0
+openintro,IMSCOL,Introduction to Modern Statistics (IMS) Colors,other,openintro::IMSCOL,other,FALSE,FALSE,8 x 13,13,8,matrix,104,0,0,-91
+openintro,kobe_basket,Kobe Bryant basketball performance,other,openintro::kobe_basket,data.frame,TRUE,TRUE,133 x 6,6,133,tbl_df,5,1,0,0
+openintro,labor_market_discrimination,Are Emily and Greg More Employable Than Lakisha and Jamal?,other,openintro::labor_market_discrimination,data.frame,TRUE,TRUE,4870 x 63,63,4870,tbl_df,6,24,0,33
+openintro,loan50,Loan data from Lending Club,other,openintro::loan50,data.frame,TRUE,FALSE,50 x 18,18,50,tbl_df,6,11,0,1
+openintro,loans_full_schema,Loan data from Lending Club,other,openintro::loans_full_schema,data.frame,TRUE,TRUE,10000 x 55,55,10000,tbl_df,5,25,0,25
+openintro,london_murders,"London Murders, 2006-2011",other,openintro::london_murders,data.frame,TRUE,TRUE,838 x 5,5,838,tbl_df,2,2,1,0
+openintro,mammals,Sleep in Mammals,other,openintro::mammals,data.frame,TRUE,FALSE,62 x 11,11,62,tbl_df,1,10,0,0
+openintro,mariokart,Wii Mario Kart auctions from Ebay,other,openintro::mariokart,data.frame,TRUE,TRUE,143 x 12,12,143,tbl_df,4,8,0,0
+openintro,midterms_house,President's party performance and unemployment rate,other,openintro::midterms_house,data.frame,TRUE,FALSE,31 x 5,5,31,tbl_df,2,3,0,0
+openintro,military,US Military Demographics,other,openintro::military,data.frame,TRUE,TRUE,1414593 x 6,6,1414593,tbl_df,4,1,0,1
+openintro,mlb_players_18,Batter Statistics for 2018 Major League Baseball (MLB) Season,other,openintro::mlb_players_18,data.frame,TRUE,TRUE,1270 x 19,19,1270,tbl_df,3,16,0,0
+openintro,mlb_teams,Major League Baseball Teams Data.,other,openintro::mlb_teams,data.frame,TRUE,TRUE,2784 x 41,41,2784,data.frame,6,24,0,11
+openintro,mlbbat10,Major League Baseball Player Hitting Statistics for 2010,other,openintro::mlbbat10,data.frame,TRUE,TRUE,1199 x 19,19,1199,tbl_df,3,16,0,0
+openintro,mn_police_use_of_force,Minneapolis police use of force data.,other,openintro::mn_police_use_of_force,data.frame,TRUE,TRUE,12925 x 13,13,12925,data.frame,12,1,0,0
+openintro,mtl,Medial temporal lobe (MTL) and other data for 26 participants,other,openintro::mtl,data.frame,TRUE,FALSE,35 x 23,23,35,tbl_df,4,19,0,0
+openintro,nba_players_19,NBA Players for the 2018-2019 season,other,openintro::nba_players_19,data.frame,TRUE,TRUE,494 x 7,7,494,tbl_df,6,1,0,0
+openintro,ncbirths,"North Carolina births, 1000 cases",other,openintro::ncbirths,data.frame,TRUE,TRUE,1000 x 13,13,1000,tbl_df,7,6,0,0
+openintro,nyc_marathon,New York City Marathon Times,other,openintro::nyc_marathon,data.frame,TRUE,TRUE,102 x 7,7,102,tbl_df,4,2,0,1
+openintro,nycflights,Flights data,other,openintro::nycflights,data.frame,TRUE,TRUE,32735 x 16,16,32735,tbl_df,4,12,0,0
+openintro,openintro_colors,OpenIntro colors,other,openintro::openintro_colors,vector,FALSE,FALSE,,NA,NA,character,3,27,0,NA
+openintro,openintro_palettes,OpenIntro palettes,other,openintro::openintro_palettes,other,FALSE,FALSE,,NA,NA,list,3,27,0,NA
+openintro,oscars,"Oscar winners, 1929 to 2018",other,openintro::oscars,data.frame,TRUE,TRUE,184 x 11,11,184,tbl_df,4,6,1,0
+openintro,outliers,Simulated data sets for different types of outliers,other,openintro::outliers,data.frame,TRUE,FALSE,50 x 5,5,50,tbl_df,0,5,0,0
+openintro,pew_energy_2018,Pew Survey on Energy Sources in 2018,other,openintro::pew_energy_2018,other,FALSE,FALSE,,NA,NA,list,3,27,0,NA
+openintro,piracy,Piracy and PIPA/SOPA,other,openintro::piracy,data.frame,TRUE,TRUE,534 x 8,8,534,tbl_df,5,3,0,0
+openintro,pm25_2011_durham,"Air quality for Durham, NC",other,openintro::pm25_2011_durham,data.frame,TRUE,TRUE,449 x 20,20,449,tbl_df,8,12,0,0
+openintro,possum,Possums in Australia and New Guinea,other,openintro::possum,data.frame,TRUE,TRUE,104 x 8,8,104,tbl_df,2,6,0,0
+openintro,president,United States Presidental History,other,openintro::president,data.frame,TRUE,FALSE,67 x 5,5,67,tbl_df,3,2,0,0
+openintro,reddit_finance,Reddit Survey on Financial Independence.,other,openintro::reddit_finance,data.frame,TRUE,TRUE,1998 x 65,65,1998,tbl_df,23,7,0,35
+openintro,resume,Which resume attributes drive job callbacks?,other,openintro::resume,data.frame,TRUE,TRUE,4870 x 30,30,4870,tbl_df,10,20,0,0
+openintro,satgpa,SAT and GPA data,other,openintro::satgpa,data.frame,TRUE,TRUE,1000 x 6,6,1000,tbl_df,0,6,0,0
+openintro,seattlepets,Names of pets in Seattle,other,openintro::seattlepets,data.frame,TRUE,TRUE,52519 x 7,7,52519,tbl_df,6,0,1,0
+openintro,simulated_dist,"Simulated data sets, not necessarily drawn from a normal distribution.",other,openintro::simulated_dist,other,FALSE,FALSE,,NA,NA,list,3,27,0,NA
+openintro,simulated_normal,"Simulated data sets, drawn from a normal distribution.",other,openintro::simulated_normal,other,FALSE,FALSE,,NA,NA,list,3,27,0,NA
+openintro,smoking,UK Smoking Data,other,openintro::smoking,data.frame,TRUE,TRUE,1691 x 12,12,1691,tbl_df,9,3,0,0
+openintro,sowc_child_mortality,SOWC Child Mortality Data.,other,openintro::sowc_child_mortality,data.frame,TRUE,TRUE,195 x 18,18,195,data.frame,2,16,0,0
+openintro,sowc_demographics,SOWC Demographics Data.,other,openintro::sowc_demographics,data.frame,TRUE,TRUE,202 x 18,18,202,data.frame,1,17,0,0
+openintro,sowc_maternal_newborn,SOWC Maternal and Newborn Health Data.,other,openintro::sowc_maternal_newborn,data.frame,TRUE,TRUE,202 x 18,18,202,data.frame,1,17,0,0
+openintro,sp500,Financial information for 50 S&P 500 companies,other,openintro::sp500,data.frame,TRUE,FALSE,50 x 12,12,50,tbl_df,1,11,0,0
+openintro,sp500_1950_2018,Daily observations for the S&P 500,other,openintro::sp500_1950_2018,data.frame,TRUE,TRUE,17346 x 7,7,17346,tbl_df,1,6,0,0
+openintro,ssd_speed,SSD read and write speeds,other,openintro::ssd_speed,data.frame,TRUE,TRUE,54 x 7,7,54,spec_tbl_df,3,4,0,0
+openintro,starbucks,Starbucks nutrition,other,openintro::starbucks,data.frame,TRUE,FALSE,77 x 7,7,77,tbl_df,2,5,0,0
+openintro,teacher,"Teacher Salaries in St. Louis, Michigan",other,openintro::teacher,data.frame,TRUE,TRUE,71 x 8,8,71,tbl_df,3,5,0,0
+openintro,textbooks,Textbook data for UCLA Bookstore and Amazon,other,openintro::textbooks,data.frame,TRUE,FALSE,73 x 7,7,73,tbl_df,4,3,0,0
+openintro,tips,Tip data,other,openintro::tips,data.frame,TRUE,FALSE,95 x 5,5,95,tbl_df,1,4,0,0
+openintro,ucla_f18,UCLA courses in Fall 2018,other,openintro::ucla_f18,data.frame,TRUE,TRUE,3950 x 14,14,3950,tbl_df,5,2,0,7
+openintro,ucla_textbooks_f18,Sample of UCLA course textbooks for Fall 2018,other,openintro::ucla_textbooks_f18,data.frame,TRUE,TRUE,201 x 20,20,201,tbl_df,7,6,0,7
+openintro,world_pop,World Population Data.,other,openintro::world_pop,data.frame,TRUE,TRUE,216 x 62,62,216,data.frame,1,29,0,32
+openintro,xom,Exxon Mobile stock data,other,openintro::xom,data.frame,TRUE,FALSE,98 x 7,7,98,tbl_df,1,6,0,0
+openintro,yrbss,Youth Risk Behavior Surveillance System (YRBSS),other,openintro::yrbss,data.frame,TRUE,TRUE,13583 x 13,13,13583,tbl_df,8,5,0,0
+openintro,yrbss_samp,Sample of Youth Risk Behavior Surveillance System (YRBSS),other,openintro::yrbss_samp,data.frame,TRUE,TRUE,100 x 13,13,100,tbl_df,8,5,0,0
+rpart,car.test.frame,Automobile Data from 'Consumer Reports' 1990,other,rpart::car.test.frame,data.frame,TRUE,FALSE,60 x 8,8,60,data.frame,2,6,0,0
+rpart,car90,Automobile Data from 'Consumer Reports' 1990,other,rpart::car90,data.frame,TRUE,TRUE,111 x 34,34,111,data.frame,8,22,0,4
+rpart,cu.summary,Automobile Data from 'Consumer Reports' 1990,other,rpart::cu.summary,data.frame,TRUE,TRUE,117 x 5,5,117,data.frame,3,2,0,0
+rpart,solder,Soldering of Components on Printed-Circuit Boards,other,rpart::solder,data.frame,TRUE,TRUE,900 x 6,6,900,data.frame,5,1,0,0
+rpart,stagec,Stage C Prostate Cancer,other,rpart::stagec,data.frame,TRUE,TRUE,146 x 8,8,146,data.frame,1,7,0,0
+stringr,fruit,Sample character vectors for practicing string manipulations.,tidyverse,stringr::fruit,vector,FALSE,FALSE,,NA,NA,character,3,27,0,NA
+stringr,sentences,Sample character vectors for practicing string manipulations.,tidyverse,stringr::sentences,vector,FALSE,TRUE,,NA,NA,character,3,27,0,NA
+stringr,words,Sample character vectors for practicing string manipulations.,tidyverse,stringr::words,vector,FALSE,TRUE,,NA,NA,character,3,27,0,NA
+survival,cancer,NCCTG Lung Cancer Data,other,survival::cancer,data.frame,TRUE,TRUE,228 x 10,10,228,data.frame,0,10,0,0
+survival,cgd,Chronic Granulotamous Disease data,other,survival::cgd,data.frame,TRUE,TRUE,203 x 16,16,203,data.frame,5,10,1,0
+survival,diabetic,Ddiabetic retinopathy,other,survival::diabetic,data.frame,TRUE,TRUE,394 x 8,8,394,data.frame,2,6,0,0
+survival,flchain,Assay of serum free light chain for 7874 subjects.,other,survival::flchain,data.frame,TRUE,TRUE,7874 x 11,11,7874,data.frame,2,9,0,0
+survival,heart,Stanford Heart Transplant data,other,survival::heart,data.frame,TRUE,TRUE,172 x 8,8,172,data.frame,1,7,0,0
+survival,nwtco,Data from the National Wilm's Tumor Study,other,survival::nwtco,data.frame,TRUE,TRUE,4028 x 9,9,4028,data.frame,0,8,0,1
+survival,pbc,Mayo Clinic Primary Biliary Cholangitis Data,other,survival::pbc,data.frame,TRUE,TRUE,418 x 20,20,418,data.frame,1,19,0,0
+survival,retinopathy,Diabetic Retinopathy,other,survival::retinopathy,data.frame,TRUE,TRUE,394 x 9,9,394,data.frame,3,6,0,0
+survival,rhDNase,rhDNASE data set,other,survival::rhDNase,data.frame,TRUE,TRUE,767 x 8,8,767,data.frame,0,6,2,0
+survival,solder,Data from a soldering experiment,other,survival::solder,data.frame,TRUE,TRUE,900 x 6,6,900,data.frame,5,1,0,0
+survival,transplant,Liver transplant waiting list,other,survival::transplant,data.frame,TRUE,TRUE,815 x 6,6,815,data.frame,3,3,0,0
+survival,udca,Data from a trial of usrodeoxycholic acid,other,survival::udca,data.frame,TRUE,TRUE,170 x 15,15,170,data.frame,0,5,10,0
+tidyr,billboard,Song rankings for Billboard top 100 in the year 2000,tidyverse,tidyr::billboard,data.frame,TRUE,TRUE,317 x 79,79,317,spec_tbl_df,2,27,1,49
+tidyr,us_rent_income,US rent and income data,tidyverse,tidyr::us_rent_income,data.frame,TRUE,TRUE,104 x 5,5,104,tbl_df,3,2,0,0
+tidyr,who,World Health Organization TB data,tidyverse,tidyr::who,data.frame,TRUE,TRUE,7240 x 60,60,7240,tbl_df,3,27,0,30
+tidyr,world_bank_pop,Population data from the world bank,tidyverse,tidyr::world_bank_pop,data.frame,TRUE,TRUE,1056 x 20,20,1056,spec_tbl_df,2,18,0,0
+wooldridge,admnrev,admnrev,other,wooldridge::admnrev,data.frame,TRUE,TRUE,153 x 5,5,153,data.frame,1,4,0,0
+wooldridge,affairs,affairs,other,wooldridge::affairs,data.frame,TRUE,TRUE,601 x 19,19,601,data.frame,0,19,0,0
+wooldridge,airfare,airfare,other,wooldridge::airfare,data.frame,TRUE,TRUE,4596 x 14,14,4596,data.frame,0,14,0,0
+wooldridge,alcohol,alcohol,other,wooldridge::alcohol,data.frame,TRUE,TRUE,9822 x 33,33,9822,data.frame,0,30,0,3
+wooldridge,apple,apple,other,wooldridge::apple,data.frame,TRUE,TRUE,660 x 17,17,660,data.frame,2,15,0,0
+wooldridge,approval,approval,other,wooldridge::approval,data.frame,TRUE,FALSE,78 x 16,16,78,data.frame,0,16,0,0
+wooldridge,athlet1,athlet1,other,wooldridge::athlet1,data.frame,TRUE,TRUE,118 x 23,23,118,data.frame,1,22,0,0
+wooldridge,athlet2,athlet2,other,wooldridge::athlet2,data.frame,TRUE,FALSE,30 x 10,10,30,data.frame,0,10,0,0
+wooldridge,attend,attend,other,wooldridge::attend,data.frame,TRUE,TRUE,680 x 11,11,680,data.frame,0,11,0,0
+wooldridge,barium,barium,other,wooldridge::barium,data.frame,TRUE,TRUE,131 x 31,31,131,data.frame,0,30,0,1
+wooldridge,beauty,beauty,other,wooldridge::beauty,data.frame,TRUE,TRUE,1260 x 17,17,1260,data.frame,0,17,0,0
+wooldridge,benefits,benefits,other,wooldridge::benefits,data.frame,TRUE,TRUE,1848 x 18,18,1848,data.frame,0,18,0,0
+wooldridge,beveridge,beveridge,other,wooldridge::beveridge,data.frame,TRUE,TRUE,135 x 8,8,135,data.frame,0,7,1,0
+wooldridge,big9salary,big9salary,other,wooldridge::big9salary,data.frame,TRUE,TRUE,786 x 30,30,786,data.frame,0,30,0,0
+wooldridge,bwght,bwght,other,wooldridge::bwght,data.frame,TRUE,TRUE,1388 x 14,14,1388,data.frame,0,14,0,0
+wooldridge,bwght2,bwght2,other,wooldridge::bwght2,data.frame,TRUE,TRUE,1832 x 23,23,1832,data.frame,0,23,0,0
+wooldridge,campus,campus,other,wooldridge::campus,data.frame,TRUE,FALSE,97 x 7,7,97,data.frame,0,7,0,0
+wooldridge,card,card,other,wooldridge::card,data.frame,TRUE,TRUE,3010 x 34,34,3010,data.frame,0,30,0,4
+wooldridge,catholic,catholic,other,wooldridge::catholic,data.frame,TRUE,TRUE,7430 x 13,13,7430,data.frame,0,13,0,0
+wooldridge,cement,cement,other,wooldridge::cement,data.frame,TRUE,TRUE,312 x 30,30,312,data.frame,0,30,0,0
+wooldridge,census2000,census2000,other,wooldridge::census2000,data.frame,TRUE,TRUE,29501 x 6,6,29501,data.frame,1,5,0,0
+wooldridge,ceosal1,ceosal1,other,wooldridge::ceosal1,data.frame,TRUE,TRUE,209 x 12,12,209,data.frame,0,12,0,0
+wooldridge,ceosal2,ceosal2,other,wooldridge::ceosal2,data.frame,TRUE,TRUE,177 x 15,15,177,data.frame,0,15,0,0
+wooldridge,charity,charity,other,wooldridge::charity,data.frame,TRUE,TRUE,4268 x 8,8,4268,data.frame,0,8,0,0
+wooldridge,consump,consump,other,wooldridge::consump,data.frame,TRUE,FALSE,37 x 24,24,37,data.frame,0,24,0,0
+wooldridge,corn,corn,other,wooldridge::corn,data.frame,TRUE,FALSE,37 x 5,5,37,data.frame,0,5,0,0
+wooldridge,countymurders,countymurders,other,wooldridge::countymurders,data.frame,TRUE,TRUE,37349 x 20,20,37349,data.frame,0,20,0,0
+wooldridge,cps78_85,cps78_85,other,wooldridge::cps78_85,data.frame,TRUE,TRUE,1084 x 15,15,1084,data.frame,0,15,0,0
+wooldridge,cps91,cps91,other,wooldridge::cps91,data.frame,TRUE,TRUE,5634 x 24,24,5634,data.frame,0,24,0,0
+wooldridge,crime1,crime1,other,wooldridge::crime1,data.frame,TRUE,TRUE,2725 x 16,16,2725,data.frame,0,16,0,0
+wooldridge,crime2,crime2,other,wooldridge::crime2,data.frame,TRUE,FALSE,92 x 34,34,92,data.frame,0,30,0,4
+wooldridge,crime3,crime3,other,wooldridge::crime3,data.frame,TRUE,TRUE,106 x 12,12,106,data.frame,0,12,0,0
+wooldridge,crime4,crime4,other,wooldridge::crime4,data.frame,TRUE,TRUE,630 x 59,59,630,data.frame,0,30,0,29
+wooldridge,discrim,discrim,other,wooldridge::discrim,data.frame,TRUE,TRUE,410 x 37,37,410,data.frame,0,30,0,7
+wooldridge,driving,driving,other,wooldridge::driving,data.frame,TRUE,TRUE,1200 x 56,56,1200,data.frame,0,30,0,26
+wooldridge,earns,earns,other,wooldridge::earns,data.frame,TRUE,FALSE,41 x 14,14,41,data.frame,0,14,0,0
+wooldridge,econmath,econmath,other,wooldridge::econmath,data.frame,TRUE,TRUE,856 x 17,17,856,data.frame,0,17,0,0
+wooldridge,elem94_95,elem94_95,other,wooldridge::elem94_95,data.frame,TRUE,TRUE,1848 x 14,14,1848,data.frame,0,14,0,0
+wooldridge,engin,engin,other,wooldridge::engin,data.frame,TRUE,TRUE,403 x 17,17,403,data.frame,0,17,0,0
+wooldridge,expendshares,expendshares,other,wooldridge::expendshares,data.frame,TRUE,TRUE,1519 x 13,13,1519,data.frame,0,13,0,0
+wooldridge,ezanders,ezanders,other,wooldridge::ezanders,data.frame,TRUE,TRUE,108 x 25,25,108,data.frame,1,24,0,0
+wooldridge,ezunem,ezunem,other,wooldridge::ezunem,data.frame,TRUE,TRUE,198 x 37,37,198,data.frame,0,30,0,7
+wooldridge,fertil1,fertil1,other,wooldridge::fertil1,data.frame,TRUE,TRUE,1129 x 27,27,1129,data.frame,0,27,0,0
+wooldridge,fertil2,fertil2,other,wooldridge::fertil2,data.frame,TRUE,TRUE,4361 x 27,27,4361,data.frame,0,27,0,0
+wooldridge,fertil3,fertil3,other,wooldridge::fertil3,data.frame,TRUE,FALSE,72 x 24,24,72,data.frame,0,24,0,0
+wooldridge,fish,fish,other,wooldridge::fish,data.frame,TRUE,FALSE,97 x 20,20,97,data.frame,0,20,0,0
+wooldridge,fringe,fringe,other,wooldridge::fringe,data.frame,TRUE,TRUE,616 x 39,39,616,data.frame,0,30,0,9
+wooldridge,gpa1,gpa1,other,wooldridge::gpa1,data.frame,TRUE,TRUE,141 x 29,29,141,data.frame,0,29,0,0
+wooldridge,gpa2,gpa2,other,wooldridge::gpa2,data.frame,TRUE,TRUE,4137 x 12,12,4137,data.frame,0,12,0,0
+wooldridge,gpa3,gpa3,other,wooldridge::gpa3,data.frame,TRUE,TRUE,732 x 23,23,732,data.frame,0,23,0,0
+wooldridge,happiness,happiness,other,wooldridge::happiness,data.frame,TRUE,TRUE,17137 x 33,33,17137,data.frame,9,21,0,3
+wooldridge,hprice1,hprice1,other,wooldridge::hprice1,data.frame,TRUE,FALSE,88 x 10,10,88,data.frame,0,10,0,0
+wooldridge,hprice2,hprice2,other,wooldridge::hprice2,data.frame,TRUE,TRUE,506 x 12,12,506,data.frame,0,12,0,0
+wooldridge,hprice3,hprice3,other,wooldridge::hprice3,data.frame,TRUE,TRUE,321 x 19,19,321,data.frame,0,19,0,0
+wooldridge,hseinv,hseinv,other,wooldridge::hseinv,data.frame,TRUE,FALSE,42 x 14,14,42,data.frame,0,14,0,0
+wooldridge,htv,htv,other,wooldridge::htv,data.frame,TRUE,TRUE,1230 x 23,23,1230,data.frame,0,23,0,0
+wooldridge,infmrt,infmrt,other,wooldridge::infmrt,data.frame,TRUE,TRUE,102 x 12,12,102,data.frame,0,12,0,0
+wooldridge,injury,injury,other,wooldridge::injury,data.frame,TRUE,TRUE,7150 x 30,30,7150,data.frame,0,30,0,0
+wooldridge,intdef,intdef,other,wooldridge::intdef,data.frame,TRUE,FALSE,56 x 13,13,56,data.frame,0,13,0,0
+wooldridge,intqrt,intqrt,other,wooldridge::intqrt,data.frame,TRUE,TRUE,124 x 23,23,124,data.frame,0,23,0,0
+wooldridge,inven,inven,other,wooldridge::inven,data.frame,TRUE,FALSE,37 x 13,13,37,data.frame,0,13,0,0
+wooldridge,jtrain,jtrain,other,wooldridge::jtrain,data.frame,TRUE,TRUE,471 x 30,30,471,data.frame,0,30,0,0
+wooldridge,jtrain2,jtrain2,other,wooldridge::jtrain2,data.frame,TRUE,TRUE,445 x 19,19,445,data.frame,0,19,0,0
+wooldridge,jtrain3,jtrain3,other,wooldridge::jtrain3,data.frame,TRUE,TRUE,2675 x 20,20,2675,data.frame,0,20,0,0
+wooldridge,jtrain98,jtrain98,other,wooldridge::jtrain98,data.frame,TRUE,TRUE,1130 x 10,10,1130,data.frame,0,10,0,0
+wooldridge,k401k,k401k,other,wooldridge::k401k,data.frame,TRUE,TRUE,1534 x 8,8,1534,data.frame,0,8,0,0
+wooldridge,k401ksubs,k401ksubs,other,wooldridge::k401ksubs,data.frame,TRUE,TRUE,9275 x 11,11,9275,data.frame,0,11,0,0
+wooldridge,kielmc,kielmc,other,wooldridge::kielmc,data.frame,TRUE,TRUE,321 x 25,25,321,data.frame,0,25,0,0
+wooldridge,labsup,labsup,other,wooldridge::labsup,data.frame,TRUE,TRUE,31857 x 20,20,31857,data.frame,0,20,0,0
+wooldridge,lawsch85,lawsch85,other,wooldridge::lawsch85,data.frame,TRUE,TRUE,156 x 21,21,156,data.frame,0,21,0,0
+wooldridge,loanapp,loanapp,other,wooldridge::loanapp,data.frame,TRUE,TRUE,1989 x 59,59,1989,data.frame,0,30,0,29
+wooldridge,lowbrth,lowbrth,other,wooldridge::lowbrth,data.frame,TRUE,FALSE,100 x 36,36,100,data.frame,2,28,0,6
+wooldridge,mathpnl,mathpnl,other,wooldridge::mathpnl,data.frame,TRUE,TRUE,3850 x 52,52,3850,data.frame,0,30,0,22
+wooldridge,meap00_01,meap00_01,other,wooldridge::meap00_01,data.frame,TRUE,TRUE,1692 x 9,9,1692,data.frame,0,9,0,0
+wooldridge,meap01,meap01,other,wooldridge::meap01,data.frame,TRUE,TRUE,1823 x 11,11,1823,data.frame,0,11,0,0
+wooldridge,meap93,meap93,other,wooldridge::meap93,data.frame,TRUE,TRUE,408 x 17,17,408,data.frame,0,17,0,0
+wooldridge,meapsingle,meapsingle,other,wooldridge::meapsingle,data.frame,TRUE,TRUE,229 x 18,18,229,data.frame,0,18,0,0
+wooldridge,minwage,minwage,other,wooldridge::minwage,data.frame,TRUE,TRUE,612 x 58,58,612,data.frame,0,30,0,28
+wooldridge,mlb1,mlb1,other,wooldridge::mlb1,data.frame,TRUE,TRUE,353 x 47,47,353,data.frame,0,30,0,17
+wooldridge,mroz,mroz,other,wooldridge::mroz,data.frame,TRUE,TRUE,753 x 22,22,753,data.frame,0,22,0,0
+wooldridge,murder,murder,other,wooldridge::murder,data.frame,TRUE,TRUE,153 x 13,13,153,data.frame,1,12,0,0
+wooldridge,nbasal,nbasal,other,wooldridge::nbasal,data.frame,TRUE,TRUE,269 x 22,22,269,data.frame,0,22,0,0
+wooldridge,ncaa_rpi,ncaa_rpi,other,wooldridge::ncaa_rpi,data.frame,TRUE,TRUE,336 x 14,14,336,data.frame,3,11,0,0
+wooldridge,nyse,nyse,other,wooldridge::nyse,data.frame,TRUE,TRUE,691 x 8,8,691,data.frame,0,8,0,0
+wooldridge,openness,openness,other,wooldridge::openness,data.frame,TRUE,TRUE,114 x 12,12,114,data.frame,0,12,0,0
+wooldridge,pension,pension,other,wooldridge::pension,data.frame,TRUE,TRUE,194 x 19,19,194,data.frame,0,19,0,0
+wooldridge,phillips,phillips,other,wooldridge::phillips,data.frame,TRUE,FALSE,56 x 7,7,56,data.frame,0,7,0,0
+wooldridge,pntsprd,pntsprd,other,wooldridge::pntsprd,data.frame,TRUE,TRUE,553 x 12,12,553,data.frame,0,12,0,0
+wooldridge,prison,prison,other,wooldridge::prison,data.frame,TRUE,TRUE,714 x 45,45,714,data.frame,0,30,0,15
+wooldridge,prminwge,prminwge,other,wooldridge::prminwge,data.frame,TRUE,FALSE,38 x 25,25,38,data.frame,0,25,0,0
+wooldridge,rdchem,rdchem,other,wooldridge::rdchem,data.frame,TRUE,FALSE,32 x 8,8,32,data.frame,0,8,0,0
+wooldridge,recid,recid,other,wooldridge::recid,data.frame,TRUE,TRUE,1445 x 18,18,1445,data.frame,0,18,0,0
+wooldridge,rental,rental,other,wooldridge::rental,data.frame,TRUE,TRUE,128 x 23,23,128,data.frame,0,23,0,0
+wooldridge,return,return,other,wooldridge::return,data.frame,TRUE,TRUE,142 x 12,12,142,data.frame,0,12,0,0
+wooldridge,saving,saving,other,wooldridge::saving,data.frame,TRUE,FALSE,100 x 7,7,100,data.frame,0,7,0,0
+wooldridge,school93_98,school93_98,other,wooldridge::school93_98,data.frame,TRUE,TRUE,10668 x 18,18,10668,data.frame,0,18,0,0
+wooldridge,sleep75,sleep75,other,wooldridge::sleep75,data.frame,TRUE,TRUE,706 x 34,34,706,data.frame,0,30,0,4
+wooldridge,slp75_81,slp75_81,other,wooldridge::slp75_81,data.frame,TRUE,TRUE,239 x 20,20,239,data.frame,0,20,0,0
+wooldridge,smoke,smoke,other,wooldridge::smoke,data.frame,TRUE,TRUE,807 x 10,10,807,data.frame,0,10,0,0
+wooldridge,traffic1,traffic1,other,wooldridge::traffic1,data.frame,TRUE,FALSE,51 x 13,13,51,data.frame,1,12,0,0
+wooldridge,traffic2,traffic2,other,wooldridge::traffic2,data.frame,TRUE,TRUE,108 x 48,48,108,data.frame,0,30,0,18
+wooldridge,twoyear,twoyear,other,wooldridge::twoyear,data.frame,TRUE,TRUE,6763 x 23,23,6763,data.frame,0,23,0,0
+wooldridge,volat,volat,other,wooldridge::volat,data.frame,TRUE,TRUE,558 x 17,17,558,data.frame,0,17,0,0
+wooldridge,vote1,vote1,other,wooldridge::vote1,data.frame,TRUE,TRUE,173 x 10,10,173,data.frame,1,9,0,0
+wooldridge,vote2,vote2,other,wooldridge::vote2,data.frame,TRUE,TRUE,186 x 26,26,186,data.frame,1,25,0,0
+wooldridge,voucher,voucher,other,wooldridge::voucher,data.frame,TRUE,TRUE,990 x 19,19,990,data.frame,0,19,0,0
+wooldridge,wage1,wage1,other,wooldridge::wage1,data.frame,TRUE,TRUE,526 x 24,24,526,data.frame,0,24,0,0
+wooldridge,wage2,wage2,other,wooldridge::wage2,data.frame,TRUE,TRUE,935 x 17,17,935,data.frame,0,17,0,0
+wooldridge,wagepan,wagepan,other,wooldridge::wagepan,data.frame,TRUE,TRUE,4360 x 44,44,4360,data.frame,0,30,0,14
+wooldridge,wageprc,wageprc,other,wooldridge::wageprc,data.frame,TRUE,TRUE,286 x 20,20,286,data.frame,0,20,0,0
