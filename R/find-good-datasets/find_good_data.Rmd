@@ -1,14 +1,19 @@
 ---
 title: "Find Datasets"
-output: 
+runtime: shiny
+output:
   flexdashboard::flex_dashboard:
     orientation: columns
     vertical_layout: fill
     source_code: embed
     theme: lumen
     navbar:
-        - { icon: "fa-github", href: "https://github.com/rjake/one-off-projects/blob/main/R/find-good-datasets", align: right }
-runtime: shiny
+    - icon: fa-github
+      href: https://github.com/rjake/one-off-projects/blob/main/R/find-good-datasets
+      align: right
+resource_files:
+- ds_list.Rds
+- data_details.csv
 ---
 
 ```{r input-demo, eval=interactive()}
