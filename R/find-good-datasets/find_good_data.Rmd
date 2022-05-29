@@ -66,9 +66,8 @@ iprint <- function(x, n = 15) {
 ```{r available-data}
 # * all_data ----
 all_data <- 
-  data()$results |>
+  data(package = .packages(all.available = TRUE))$results |>
   as_tibble() |> 
-  filter(Package %in% c("datasets", tidyverse::tidyverse_packages())) |> 
   transmute(
     pkg = 
       str_replace(Package, "datasets", "base") |> 
@@ -76,6 +75,19 @@ all_data <-
       fct_relevel("base", after = 0),
     name = str_remove(Item, " .*"), 
     description = Title
+  ) |> 
+  filter(
+    Package %in% c(
+      "datasets", 
+      "boot",
+      "Ecdat",
+      "MASS",
+      "fds",
+      "carData",
+      "survival",
+      tidyverse::tidyverse_packages()
+      | name %in% c("acidity")
+    )
   ) |> 
   #head(15) |> 
   arrange(name) |> 
