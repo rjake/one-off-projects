@@ -149,13 +149,11 @@ data_details <-
 
 
 data_details |> 
-  count(pkg) |> 
-  .print()
+  count(pkg)
 
 data_details |> 
 #  filter(category == "other") |> 
-  count(category, class) |> 
-  .print()
+  count(category, class)
 
 write_csv(data_details, "data_details.csv")
 
