@@ -348,34 +348,10 @@ renderUI({
 
 ```{r output-table}
 # https://stackoverflow.com/questions/41381466/can-we-either-print-or-plot-in-shiny-in-same-panel
-output$table <- renderReactable({
+renderReactable({
   x <- ds_obj[[input$selected]]$data
   reactable(x, filterable = TRUE, pagination = FALSE)
 })
-
-output$print <- renderPrint({
-  ds_obj[[input$selected]]$data
-})
-
-output$final_display <- renderUI({
-  x <- ds_obj[[input$selected]]$data
-  # print(x)
-  # print(is.data.frame(x))
-  if (is.data.frame(x)) {
-    reactable::reactableOutput("table")
-  } else {
-    verbatimTextOutput("print")
-  }
-})
-
-uiOutput("final_display")
-  
-# output$final_display <- renderPrint({
-#   #log_rv()
-#   print(ds_obj[[input$selected]]$data)
-# })
-# 
-# verbatimTextOutput("final_display")
 
 ```
 
