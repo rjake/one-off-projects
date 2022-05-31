@@ -58,6 +58,9 @@ library(tidyverse)
 library(shinyWidgets)
 library(reactable)
 library(glue)
+library(skimr)
+
+options(width = 100) # for renderPrint -> verbatimTextOutput
 
 
 # * ds_obj ----
@@ -314,7 +317,7 @@ Preview
 Column
 -----------------------------------------------------------------------
 
-### {data-height=50}
+### {data-height=45}
 ```{r data-info}
 renderUI({
   #print(input$selected)
@@ -333,13 +336,39 @@ renderUI({
     paste(
       actionLink(
         inputId = "meta",
-        label = "see metadata",
+        label = "Metadata",
         style = "color:dodgerblue;",
         onclick = "location.href='#section-metadata';"
+      ),
+      "|",
+      actionLink(
+        inputId = "stats",
+        label = "Stats"
       )
     ) |> 
     HTML()
 })
+
+output$skimr_results <- renderPrint(
+  expr = {
+    x <- ds_obj[[input$selected]]$data
+    skimr::skim(x) |> 
+      skimr::partition()
+  }
+)
+
+
+ observeEvent(input$stats, {
+   showModal(
+     modalDialog(
+       title = "Stats",
+       verbatimTextOutput("skimr_results"),
+       easyClose = TRUE,
+       size = "l",
+       footer = NULL
+     )
+    )
+ })
 
 
 ```
