@@ -9,48 +9,59 @@ base_data <-
   as_tibble() |>
   rename_all(tolower) |>
   select(-libpath) |> 
+  mutate(
+    item = str_extract(item, "^[\\w\\.]+"),
+    pkg_data = glue("{package}::{item}")
+  ) |> 
+  distinct() |> 
   filter(
-    str_detect(
-      package, 
-      paste(
-        "dplyr|forcats|ggplot2|lubridate|stringr|tidyr",
-        "carData|datasets|gamclass|^gt$|ISLR|MASS|mclust|nlme|nycflights13|openintro|rpart|survival|wooldridge",
-        sep = "|"
-      )
-    ),
-    !str_detect(item, "^(coralPval|Khan|NCI60|ipo|treering)$")
+    !str_detect(package, "^(headliner|maptools|plyr|simplecolors|sp)$"),
+    !str_detect(item, "^(coralPval|HHSCyberSecurityBreaches|Khan|NCI60|ipo|treering)$")
   ) |> 
   mutate(
     origin = case_when(
       package == "datasets" ~ "base",
       package %in% tidyverse_packages() ~ "tidyverse",
       TRUE ~ "other"
-    ),
-    pkg_data = glue("{package}::{item}")
+    )
   ) |> 
   print()
 
 
-max_rows <- 100
-max_cols <- 30
+
 
 get_data_info <- function(x) {
-    df <- rlang::parse_expr(x) |> eval()
+    max_rows <- 100
+    max_cols <- 30
+    
+    pkg <- str_extract(x, ".*(?=::)")
+    item <- str_extract(x, "(?<=::).*")
+    # if (pkg %in% c("AER", "Stat2Data")) {
+    #   data(list = item)
+    # } else {
+      data(list = item, package = pkg)
+    #}
+    df <- get(item)  #rlang::parse_expr(x) |> eval()
+    rm(list = item, envir = globalenv())
     df_class <- class(df)
-    is_df <- inherits(df, "data.frame")
+    is_df <- inherits(df, "data.frame") & !inherits(df, "sf")
+    
+    
     dim <- dim(df) |> paste(collapse = " x ")
     is_trunc <- TRUE
     
-    if (is.list(df) & !is_df) {
-      use_data <- map(df, head, max_rows / 2)
-      
-    } else if (is.vector(df) & !is.list(df)) {
-      use_data <- head(df, max_rows)
-      dim <- length(df)
-      
-    } else if (!is_df) {
-      use_data <- df
-      is_trunc <- FALSE
+    # if (is.list(df) & !is_df) {
+    #   use_data <- map(df, head, max_rows / 2)
+    #   
+    # } else if (is.vector(df) & !is.list(df)) {
+    #   use_data <- head(df, max_rows)
+    #   dim <- length(df)
+    #   
+    # } else 
+    if (!is_df) {
+      return(NULL)
+      # use_data <- df
+      # is_trunc <- FALSE
       
     } else if (nrow(df) < max_rows & ncol(df) <= max_cols) {
       use_data <- df
@@ -59,12 +70,17 @@ get_data_info <- function(x) {
     } else {
       use_data <- 
         head(df, max_rows) |> 
+        mutate(across(where(is.character), as.factor)) |> 
         mutate(across(where(is.factor), fct_drop)) |> 
         select(1:min(ncol(df), max_cols)) # max of n columns
       
       attr(use_data, "row.names") <- row.names(use_data) |> head(max_rows)
       attr(use_data, "na.action") <- NULL # can cause to be large size ex 
       attr(use_data, "spec") <- NULL # comes in with some tibbles, ex openintro::hfi
+    }
+    
+    class_test <- function(df, class) {
+      sum(sapply(df, \(col) class(col)[1] %in% class))
     }
     
     list(
@@ -74,10 +90,16 @@ get_data_info <- function(x) {
       dim = as.character(dim),
       n_col = ncol(df),
       n_row = nrow(df),
-      class = df_class[1]
+      class = df_class[1],
+      n_discrete = class_test(df, c("character", "factor", "ordered")),
+      n_numeric = class_test(df, c("numeric", "integer")),
+      n_date = class_test(df, c("Date", "POSIXct"))
     )
 }
 
+
+get_data_info(x = "Stat2Data::BeeStings")
+get_data_info(x = "ks::platesf")
 get_data_info(x = "ggplot2::diamonds")
 get_data_info(x = "openintro::hfi")
 get_data_info(x = "stringr::sentences")
@@ -92,6 +114,7 @@ ds_obj <-
   set_names(base_data$pkg_data) |> 
   discard(is.null)
 
+
 # check sizes
 map(ds_obj, pluck, "data") |> 
   map_df(object.size) |> 
@@ -104,12 +127,6 @@ list_details <-
   map_dfr(flatten)
 
 
-class_test <- function(class) {
-  map_int(
-    .x = map(ds_obj, pluck, "data"), # hard coded
-    .f = ~sum(sapply(.x, \(col) class(col)[1] %in% class))
-  )
-}
 
 prep_details <-
   list_details |> 
@@ -124,10 +141,6 @@ prep_details <-
     .after = pkg_data
   ) |> 
   mutate(
-    n_discrete = class_test(c("character", "factor", "ordered")),
-    n_numeric = class_test(c("numeric", "integer")),
-    n_numeric = ifelse(str_detect(class, "ts"), 0, n_numeric),
-    n_date = class_test(c("Date", "POSIXct")),
     n_other = n_col - n_discrete - n_numeric - n_date
   ) |>
   print()
@@ -141,10 +154,10 @@ data_details <-
     name = item
   ) |> 
   filter(
-    (is_df & n_row >= 30 & n_col >= 5)
-    | !is_df
+    (n_row >= 30 & n_col >= 5)
+    | n_discrete > 0
   ) |> 
-  arrange(pkg_data) |> 
+  arrange(name) |> 
   print()
 
 
