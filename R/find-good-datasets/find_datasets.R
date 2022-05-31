@@ -32,7 +32,7 @@ base_data <-
 
 get_data_info <- function(x) {
     max_rows <- 100
-    max_cols <- 30
+    max_cols <- 20
     
     pkg <- str_extract(x, ".*(?=::)")
     item <- str_extract(x, "(?<=::).*")
@@ -80,7 +80,14 @@ get_data_info <- function(x) {
     }
     
     class_test <- function(df, class) {
-      sum(sapply(df, \(col) class(col)[1] %in% class))
+      sum(
+        sapply(
+          df,
+          function(col) {
+            class(col) |> discard(str_detect, "labelled") |> pluck(1) %in% class
+          }
+        )
+      )
     }
     
     list(
@@ -92,13 +99,14 @@ get_data_info <- function(x) {
       n_row = nrow(df),
       class = df_class[1],
       n_discrete = class_test(df, c("character", "factor", "ordered")),
-      n_numeric = class_test(df, c("numeric", "integer")),
-      n_date = class_test(df, c("Date", "POSIXct"))
+      n_numeric = class_test(df, c("numeric", "integer", "labelled")),
+      n_date = class_test(df, c("Date", "POSIXct", "dttm"))
     )
 }
 
 
 get_data_info(x = "Stat2Data::BeeStings")
+get_data_info(x = "COUNT::fishing")
 get_data_info(x = "ks::platesf")
 get_data_info(x = "ggplot2::diamonds")
 get_data_info(x = "openintro::hfi")
