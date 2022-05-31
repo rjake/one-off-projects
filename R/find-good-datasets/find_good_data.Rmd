@@ -17,6 +17,8 @@ resource_files:
 ---
 
 ```{r input-demo, eval=interactive()}
+# https://rjake.shinyapps.io/Find-Good-Data/
+
 library(shiny)
 library(shinyobjects)
 options("shiny.suppressMissingContextError" = TRUE)
@@ -30,7 +32,7 @@ input <-
     back = TRUE,
     forward = TRUE,
     pkg = "carData",
-    category = "data.frame",
+    col_types = c("discrete", "date"),
     selected = "carData::Arrests"
   )
 
@@ -69,24 +71,20 @@ ds_obj <- read_rds("ds_list.Rds")
 # * ds_info ----
 ds_info <- 
   read_csv("data_details.csv") |> 
-  mutate(pkg = ifelse(pkg == "datasets", "base", pkg)) |> 
-  arrange(pkg, name)
+  arrange(
+    desc(pkg == "datasets"),
+    pkg,
+    name
+  )
 
 # * starting_data ----
-starting_data <- local({
-  df <- 
-    ds_info |> 
-    filter(pkg == "base", category == "data.frame")
-  
-  available <- df |> pull(pkg_data)
-  
-  list(
-    pkg = df$pkg[1],
-    available = available,
-    data = available[1]
-  )
-})
-  
+# starting_data <- 
+#   list(
+#     pkg = "datasets",
+#     available = ds_info$pkg_data[ds_info$pkg == "datasets"],
+#     selected = "CO2"
+#   )
+
 ```
 
 
@@ -132,7 +130,7 @@ iprint <- function(x, n = 15) {
   }
 }
 
-vec_to_button <- function(inputId, vec, ...) {
+vec_to_button <- function(inputId, vec, label = NULL, ...) {
   x <- table(vec)
   
   choices <-
@@ -143,7 +141,7 @@ vec_to_button <- function(inputId, vec, ...) {
   
   radioGroupButtons( 
     inputId = inputId,
-    label = NULL,
+    label = label,
     ...,
     size = "xs",
     choices = 
@@ -191,11 +189,43 @@ custom_DT <- function(data, ...) {
 
 
 Sidebar {.sidebar data-width=470}
-================================================================================
+=======================================
 
 ### {data-height=40}
 
 ```{r reactive-data}
+
+# * listen_col_types( ) ----
+listen_col_types <- reactive({
+  if (is.null(input$col_types) | "any" %in% input$col_types) {
+    ids <- seq_along(ds_info$category)
+  } else {
+    
+    # assign default value of all being true
+    has_disc <- has_dt <- has_num <- rep(TRUE, nrow(ds_info))
+    
+    # update if necessary
+    if ("discrete" %in% input$col_types) {
+      has_disc <- (ds_info$n_discrete > 0)  # 860
+    }
+    
+    if ("numeric" %in% input$col_types) {
+      has_num <- (ds_info$n_numeric > 0) # 1031
+    }
+    
+    if ("date" %in% input$col_types) {
+      has_dt <- (ds_info$n_date > 0) # 33
+    }
+    
+    ids <- which(has_disc & has_dt & has_num)
+  }
+  
+  # ds_info[ids, ]
+  ids
+})
+
+
+# * listen_pkg( ) ----
 listen_pkg <- reactive({
   if (input$pkg == "any") {
     seq_along(ds_info$pkg)
@@ -204,41 +234,42 @@ listen_pkg <- reactive({
   } 
 })
 
-listen_category <- reactive({
-  if (input$category == "any") {
-    seq_along(ds_info$category)
-  } else {
-    which(ds_info$category == input$category)
-  } 
-})
 
+# * listen_possible( ) ----
 listen_possible <- reactive({
-  intersect(listen_pkg(), listen_category())
+  intersect(listen_pkg(), listen_col_types())
 })
-```
-
-
-```{r input-pkg}
-vec_to_button(
-  inputId = "pkg",
-  vec = ds_info$pkg,
-  selected = starting_data$pkg
-) 
-
 ```
 
 ### {data-height=40}
 
-```{r input-category}
+```{r input-col_types}
+
+checkboxGroupButtons(
+  inputId = "col_types",
+  label = "Column types include",
+  checkIcon = list(yes = icon("check")),
+  choices = c("any", "discrete", "numeric", "date"),
+  selected = "discrete"
+)
+
+```
+
+
+```{r input-pkg}
 renderUI({
+  pkgs <- ds_info$pkg[listen_col_types()]
+  #selected <- pkgs[1]
+  
   vec_to_button(
-    inputId = "category",
-    vec = ds_info$category[listen_pkg()],
-    selected = min(ds_info$category[listen_pkg()])
-  )
+    inputId = "pkg",
+    label = "Select a package",
+    vec = pkgs#,selected = selected
+  ) 
 })
 
 ```
+
 
 ###
 ```{r input-arrows}
@@ -292,19 +323,25 @@ observeEvent(list(input$forward, input$arrow_right), {
 ```
 
 ```{r input-selected}
-# TODO: can color be adjusted by data type?
-# https://github.com/dreamRs/shinyWidgets/issues/70
-# https://github.com/dreamRs/shinyWidgets/issues/41
-# 
+
 renderUI({
-  ids <- listen_possible()
+  req(input$pkg)
+ # if (input$pkg != starting_data$pkg) {
+    ids <- listen_possible()
+    choices <- ds_info$pkg_data[ids]
+    selected <- choices[1]
+  # } else {
+  #   choices <- starting_data$available
+  #   selected <- starting_data$data
+  # }
+  
   
   radioGroupButtons(
     inputId = "selected",
     label = NULL,
     size = "xs",
-    choices = display(ds_info$pkg_data[ids]),
-    selected = ds_info$pkg_data[ids][1] #rv$available[1]
+    choices = display(choices),
+    selected = selected
   )
 })
 
@@ -312,13 +349,16 @@ renderUI({
 
 
 Preview
-================================================================================
+=======================================
 
 Column
------------------------------------------------------------------------
+---------------------------------------
 
-### {data-height=45}
+### {data-height=60}
 ```{r data-info}
+
+# TODO: add title: packageDescription("beeswarm")$Title
+
 renderUI({
   #print(input$selected)
   ds_info |> 
@@ -386,10 +426,10 @@ renderReactable({
 
 
 Metadata
-=====================================     
+=======================================     
    
 Column
--------------------------------------
+---------------------------------------
 
 ### {data-height=30}
 
@@ -402,17 +442,18 @@ actionButton(
   onclick = "location.href='#section-preview';"
 )
 
+#p("This table is filtered by the selections on the left")
 ```
 
 ### 
 ```{r metadata, eval=!FALSE}
 
 ### 
-renderReactable({
-  ids <- listen_possible()
+#renderReactable({
+  #ids <- listen_possible()
   
   ds_info |> 
-    slice(ids) |> 
+    #slice(ids) |> 
     select(
       title,
       name, pkg, class,
@@ -429,7 +470,7 @@ renderReactable({
         name = colDef(width = 100, style = list(fontWeight = "bold"))
       )
     )
-})
+#})
 ```
 
 About
@@ -447,12 +488,17 @@ I used some criteria to pare down the data sets that are included:
 
 
 ##### Presentation:
+```{r}
+specs <- ds_obj$`tidyr::billboard`$data |> dim()
+```
 
-* to make this a lighter sized app, the data sets are truncated to 100 rows (or 100 in length for vectors) and a max of 30 columns
-* the data listed under `base` really comes from the `datasets` package that is included on installation. You can find installed data from all packages using `data(package = .packages(all.available = TRUE))` (you can add `$results` to view it as a data frame)
+* to make this a lighter sized app, the data sets are truncated to `r specs[1]` rows and a max of `r specs[2]` columns
+* the data listed under `datsets` shows what comes with R on installation. You can find installed data from all packages using `data(package = .packages(all.available = TRUE))` (you can add `$results` to view it as a data frame)
+* the button for `discrete` might seem misleading for factors that are represented as integers. For example the `Diet` column in the `ChickWeight` table is a factor of integers 1-4
 * code for the app can be found via the `</>` icon in the top right and the underlying files are located on [my github](https://github.com/rjake/one-off-projects/blob/main/R/find-good-datasets)
 * if you can think of packages that should be included, [shoot me an email](mailto:rjake@sas.upenn.edu)
 
 ##### Note:
 
 Some packages like `AER` and `Stat2Data` have data that is only accessible via the `data()` function. For example, you won't find `SandwichAnts` via `Stat2Data::SandwichAnts`, you'll have to use `data("SandwichAnts", package = "Stat2Data")` and then it will appear in your global environment. 
+
