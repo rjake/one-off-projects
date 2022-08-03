@@ -1,7 +1,7 @@
-# It looks like  a complex password of length 10 has roughly the same entrophy (log2(94^10) = 65) 
+# It looks like  a complex password of length 10 has roughly the same entropy (log2(94^10) = 65) 
 # as a letter-only password of length 11 (log2(52^12) = 63) 
 # or a lowercase-only password of length 14 (log2(26^14) = 66). 
-# Passphrases are made of words so the true entrophy would be lower and a length of 16 probably makes up the difference
+# Passphrases are made of words so the true entropy would be lower and a length of 16 probably makes up the difference
 
 library(tidyverse)
 
@@ -57,12 +57,12 @@ res |>
     plot.caption.position = "plot"
   ) +
   labs(
-    title = "Password entrophy by type of restriction",
+    title = "Password entropy by type of restriction",
     caption = paste(
-      "entrophy - https://www.omnicalculator.com/other/password-entropy",
+      "entropy - https://www.omnicalculator.com/other/password-entropy",
       sep = "\n"
     ),
     x = 'Password Length',
-    y = "Entrophy as log-2",
+    y = "Entropy as log-2",
     color = NULL
   )
