@@ -1,5 +1,5 @@
 # https://chord.rocks/scales/f-sharp-gypsy-minor
-# 
+# https://www.fretjam.com/borrowed-chords.html
 
 setwd(dirname(.rs.api.getSourceEditorContext()$path))
 library(tidyverse)
@@ -225,15 +225,38 @@ scales_found <-
   ungroup() |> 
   print()
 
+library(simplecolors)
 scales_found |> 
+  mutate(across(c(base_note, notes), toupper)) |> 
+  mutate(
+    color = case_when(
+      implied == "" ~ "full",
+      implied == "(3/5)" ~ "implied",
+      TRUE ~ "1 & 3"
+    ),
+    weight = ifelse(implied != "(3/5)", "bold", "plain")
+  ) |> #print()
   ggplot(aes(x = base_note, y = fct_rev(chord))) +
   facet_grid(rows = vars(type), scales = "free", space = "free") +
   geom_tile(fill = "white", color = "grey40") +
-  geom_text(aes(label = paste(notes, implied)), size = 3) +
-  theme(panel.grid = element_blank()) +
+  geom_text(
+    aes(
+      label = paste(notes, implied),
+      color = color,
+      fontface = weight
+    ), 
+    show.legend = FALSE,
+    size = 2
+  ) +
+  scale_color_manual(values = sc("brightblue3", "grey5", "grey4")) +
+  #scale_alpha(range = c(0.4, 1)) +
+  theme_gray(base_size = 9) +
+  theme(
+    panel.grid = element_blank()
+  ) +
   labs(
     x = "key",
     y = NULL
   )
 
-ggsave("output/available-scales.png", width = 4, height = 5)
+ggsave("output/available-scales.png", width = 3, height = 4)
