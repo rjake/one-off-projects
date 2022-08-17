@@ -1,18 +1,20 @@
-﻿scale,chord,alternative,type,follows,suggests,priority,scale_1,scale_3,scale_5
-major,I,,diatonic,,,a,1,3,5
-major,i,,parallel minor,I,V,c,1,b3,5
-major,I7,V7/IV,secondary dominant,,IV,b,1,3,5
-major,ii,,diatonic,,,a,2,4,6
-major,II,V/V,secondary dominant,,V,b,2,b5,6
-major,iii,,diatonic,,,a,3,5,7
-major,III,V/vi,secondary dominant,,vi,b,3,b6,7
-major,iv,iv/i,parallel minor,IV,I,c,4,b6,1
-major,IV,,diatonic,,,a,4,6,1
-major,v,v/i,parallel minor,,i,c,5,b7,2
-major,V,,diatonic,,,a,5,7,2
-major,vi,,diatonic,,,a,6,1,3
-major,VI,V/ii,secondary dominant,,ii,b,6,b2,3
-major,bVI,,parallel minor,,iv,c,b6,1,b3
-major,viio,,diatonic,,,a,7,2,4
-major,VII,V/iii,secondary dominant,,iii,b,7,b3,4
-major,bVII,,parallel minor,,,c,b7,b2,3
+﻿chord,alternative,type,follows,suggests,note,priority,scale_1,scale_3,scale_5
+I,,diatonic,,,,a,1,3,5
+ii,,diatonic,,,,a,2,4,6
+iii,,diatonic,,,,a,3,5,7
+IV,,diatonic,,,,a,4,6,1
+V,,diatonic,,,,a,5,7,2
+vi,,diatonic,,,,a,6,1,3
+viio,,diatonic,,,,a,7,2,4
+I7,V7/IV,secondary dominant,,IV,I7-IV,b,1,3,5
+II,V/V,secondary dominant,,V,II-V,b,2,b5,6
+III,V/vi,secondary dominant,,vi,III-vi,b,3,b6,7
+VI,V/ii,secondary dominant,,ii,VI-ii,b,6,b2,3
+VII,V/iii,secondary dominant,,iii,VII-iii,b,7,b3,4
+i,,parallel minor,I,V,I-i-V,c,1,b3,5
+iio,,parallel minor,,,,c,2,4,b6
+bIII,,parallel minor,,,,c,b3,5,b7
+iv,iv/i,parallel minor,IV,I,iv-I,c,4,b6,1
+v,v/i,parallel minor,,i,v-i,c,5,b7,2
+bVI,,parallel minor,,iv,,c,b6,1,b3
+bVII,,parallel minor,,,,c,b7,b2,3

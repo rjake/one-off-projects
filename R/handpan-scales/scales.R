@@ -4,6 +4,7 @@
 setwd(dirname(.rs.api.getSourceEditorContext()$path))
 library(tidyverse)
 library(glue)
+library(simplecolors)
 
 notes <- read_csv("input/notes-available.csv")
 
@@ -87,21 +88,14 @@ plot_points <-
 # major & minor ----
 plot_points |> 
   ggplot(aes(x, y)) +
-  facet_grid(
-    rows = vars(scale), 
-    cols = vars(base_note)
-  ) +
+  facet_grid(rows = vars(scale), cols = vars(base_note)) +
   geom_text(
     aes(label = scale_degree),
-    color = "grey80",
-    size = 2
+    color = "grey60", size = 2
   ) +# theme_void()
   geom_polygon(
-    data = 
-      ~drop_na(.x, color) |> 
-      filter(y < 1),
-    fill = NA,
-    color = "grey40"
+    data = ~drop_na(.x, color) |>  filter(y < 1),
+    fill = NA, color = "grey70"
   ) +
   geom_label(
     data = ~drop_na(.x, color),
@@ -112,8 +106,9 @@ plot_points |>
   ) +
   coord_fixed() +
   scale_fill_identity() +
-  scale_x_continuous(expand = expansion(0.1)) +
-  scale_y_continuous(expand = expansion(0.1)) +
+  scale_x_continuous(expand = expansion(0.2)) +
+  scale_y_continuous(expand = expansion(0.2)) +
+  theme_gray(base_size = 6) +
   theme(
     axis.text = element_blank(),
     axis.ticks = element_blank(),
@@ -126,7 +121,7 @@ plot_points |>
     caption = "Hungarian Minor, Gypsy Minor, Hijaz"
   )
 
-ggsave("output/drum-diagram.png", width = 5, height = 2, dpi = 500)
+ggsave("output/drum-diagram.png", width = 5, height = 2.3)
 
  
 # available chords ----
@@ -136,7 +131,8 @@ chord_structure <-
   filter(chord != "I7") |> 
   mutate(
     chord = fct_inorder(chord, ordered = TRUE),
-    type = fct_inorder(type, ordered = TRUE)
+    type = fct_inorder(type, ordered = TRUE),
+    
   )
 
 scale_degrees <- read_csv("input/scale-degrees.csv")
@@ -165,20 +161,25 @@ chord_search <-
   mutate(
     #across(where(is.character), replace_na, ""),
     label = 
-      glue("{chord} ({alternative}) - {follows} __ {suggests}")#, #|> str_remove_all(" \\(\\)| __ $")
-  ) |> 
-  rowwise() |> 
+      glue("[{note}] {chord}") |> 
+      str_remove_all(" \\(\\)|^\\[NA\\]") |> 
+      trimws() |> 
+      fct_inorder(ordered = TRUE)
+  ) |>
+  rowwise() |>
   mutate(
     req = glue("{scale_1} .* {scale_3}"),
     search = glue("\\b(({scale_1}|{scale_5}) .* {scale_3}|{scale_3} .* ({scale_5}|{scale_1}))\\b")
     #search = paste(scale_1, scale_3, scale_5, collapse = " -- ")
-  ) |> 
-  ungroup() |> 
+  ) |>
+  ungroup() |>
   print()
 
 chord_match <-
   chord_search |> 
   select(chord, label, priority, scale_1, scale_3, scale_5, type) |> 
+  arrange(priority, label) |> 
+  mutate(label = fct_inorder(label, ordered = TRUE)) |> 
   full_join(
     scales_list,
     by = character(),
@@ -219,16 +220,18 @@ scales_found <-
     ) |> 
       trimws()
   ) |> 
-  select(base_note, chord, notes, implied, type) |> 
+  select(base_note, chord, notes, implied, type, label) |> 
   group_by(base_note) |> 
-  filter(max(chord == "I") > 0) |> 
+  filter(max(chord %in% c("I", "i")) > 0) |> 
   ungroup() |> 
   print()
 
-library(simplecolors)
 scales_found |> 
   mutate(across(c(base_note, notes), toupper)) |> 
   mutate(
+    base_note = 
+      as.factor(base_note) |> 
+      fct_relevel(!!!toupper(notes$scale_note)),
     color = case_when(
       implied == "" ~ "full",
       implied == "(3/5)" ~ "implied",
@@ -236,7 +239,8 @@ scales_found |>
     ),
     weight = ifelse(implied != "(3/5)", "bold", "plain")
   ) |> #print()
-  ggplot(aes(x = base_note, y = fct_rev(chord))) +
+  #pull(base_note) |> str()
+  ggplot(aes(x = base_note, y = fct_rev(label))) +
   facet_grid(rows = vars(type), scales = "free", space = "free") +
   geom_tile(fill = "white", color = "grey40") +
   geom_text(
@@ -260,4 +264,4 @@ scales_found |>
     y = NULL
   )
 
-ggsave("output/available-scales.png", width = 3, height = 4)
+ggsave("output/available-scales.png", width = 3.3, height = 4)
