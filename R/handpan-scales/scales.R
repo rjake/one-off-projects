@@ -252,6 +252,7 @@ scales_found |>
   #scale_alpha(range = c(0.4, 1)) +
   theme_gray(base_size = 9) +
   theme(
+    strip.text = element_text(size = 6),
     panel.grid = element_blank()
   ) +
   labs(
