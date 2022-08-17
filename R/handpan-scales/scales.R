@@ -265,3 +265,83 @@ scales_found |>
   )
 
 ggsave("output/available-scales.png", width = 3.3, height = 4)
+
+# scales on pan
+scale_points <-
+  union_scales |> 
+  distinct(base_note, scale) |> 
+  full_join(
+    point_coords, 
+    by = character(),
+    copy = TRUE
+  ) |> 
+  left_join(union_scales) |>
+  arrange(order) |> 
+  mutate(
+    base_note = 
+      as_factor(base_note) |> 
+      fct_relevel(notes$scale_note)
+  ) |> 
+  print()
+
+# scale on pan ----
+scale_degree_long <-
+  chord_structure |>
+  select(-c(alternative, follows:note, priority, chord)) |> 
+  mutate(
+    group = ifelse(type == "parallel minor", "minor", "major"),
+    color = ifelse(type != "secondary dominant", "base", "alt"),
+    .keep = "unused"
+  ) |> 
+  pivot_longer(
+    cols = starts_with("scale_"),
+    values_to = "chord_degree"
+  ) |> 
+  #filter(chord_degree == "6") |> 
+  select(-name) |> 
+  distinct() |> 
+  group_by(group, chord_degree) |> 
+  arrange(desc(color)) |> 
+  slice(1) |> 
+  ungroup() |> 
+  print()
+  
+
+scales |>
+  inner_join(scale_degree_long) |> 
+  inner_join(point_coords) |>
+  #filter(base_note == "a") |> 
+  arrange(base_note, group) |> 
+  mutate(
+    base_note = 
+      as_factor(base_note) |> 
+      fct_relevel(notes$scale_note),
+    color = ifelse(chord_degree == 1, "root", color)
+  ) |> 
+  ggplot(aes(x, y)) +
+  facet_grid(rows = vars(group), cols = vars(base_note)) +
+  geom_label(
+    aes(fill = color, label = scale_note),
+    label.padding = unit(0.15, "lines"),
+    size = 2,
+    color = "white"
+  ) +
+  coord_fixed() +
+  scale_fill_manual(values = sc("orange3", "blue2", "blue4")) +
+  scale_x_continuous(expand = expansion(0.2)) +
+  scale_y_continuous(expand = expansion(0.2)) +
+  theme_gray(base_size = 6) +
+  theme(
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    axis.title = element_blank(),
+    legend.position = "none",
+    panel.background = element_rect("white", "grey80")
+  ) +
+  labs(
+    title = "F# Double Harmonic Minor - 1, 2, b3, b5, 5, b6, 7",
+    subtitle = "blue = base notes, orange = borrowed",
+    caption = "Hungarian Minor, Gypsy Minor, Hijaz"
+  )
+
+ggsave("output/scale-note-availability.png", width = 5, height = 2.3)
