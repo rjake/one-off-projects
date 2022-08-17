@@ -94,7 +94,7 @@ plot_points |>
   geom_text(
     aes(label = scale_degree),
     color = "grey80",
-    size = 3
+    size = 2
   ) +# theme_void()
   geom_polygon(
     data = 
@@ -107,7 +107,7 @@ plot_points |>
     data = ~drop_na(.x, color),
     aes(fill = color, label = scale_note),
     label.padding = unit(0.15, "lines"),
-    size = 3,
+    size = 2,
     color = "white"
   ) +
   coord_fixed() +
@@ -126,7 +126,7 @@ plot_points |>
     caption = "Hungarian Minor, Gypsy Minor, Hijaz"
   )
 
-ggsave("output/drum-diagram.png", width = 7, height = 4)
+ggsave("output/drum-diagram.png", width = 5, height = 2, dpi = 500)
 
  
 # available chords ----
