@@ -237,7 +237,7 @@ scales_found |>
       implied == "(3/5)" ~ "implied",
       TRUE ~ "1 & 3"
     ),
-    weight = ifelse(implied != "(3/5)", "bold", "plain")
+    weight = ifelse(implied == "", "bold", "plain")
   ) |> #print()
   #pull(base_note) |> str()
   ggplot(aes(x = base_note, y = fct_rev(label))) +
