@@ -1,20 +1,27 @@
-﻿chord,alternative,type,follows,suggests,note,priority,scale_1,scale_3,scale_5
-I,,diatonic,,,,a,1,3,5
-ii,,diatonic,,,,a,2,4,6
-iii,,diatonic,,,,a,3,5,7
-IV,,diatonic,,,,a,4,6,1
-V,,diatonic,,,,a,5,7,2
-vi,,diatonic,,,,a,6,1,3
-viio,,diatonic,,,,a,7,2,4
-I7,V7/IV,secondary dominant,,IV,I7-IV,b,1,3,5
-II,V/V,secondary dominant,,V,II-V,b,2,b5,6
-III,V/vi,secondary dominant,,vi,III-vi,b,3,b6,7
-VI,V/ii,secondary dominant,,ii,VI-ii,b,6,b2,3
-VII,V/iii,secondary dominant,,iii,VII-iii,b,7,b3,4
-i,,parallel minor,I,V,I-i-V,c,1,b3,5
-iio,,parallel minor,,,,c,2,4,b6
-bIII,,parallel minor,,,,c,b3,5,b7
-iv,iv/i,parallel minor,IV,I,iv-I,c,4,b6,1
-v,v/i,parallel minor,,i,v-i,c,5,b7,2
-bVI,,parallel minor,,iv,,c,b6,1,b3
-bVII,,parallel minor,,,,c,b7,2,4
+﻿degree,chord,alternative,type,follows,suggests,note,priority,scale_1,scale_3,scale_5
+1,I,,major,,,,a,1,3,5
+2,ii,,major,,,,a,2,4,6
+3,iii,,major,,,,a,3,5,7
+4,IV,,major,,,,a,4,6,1
+5,V,,major,,,,a,5,7,2
+6,vi,,major,,,,a,6,1,3
+7,viio,,major,,,,a,7,2,4
+1,I7,V7/IV,secondary dominant,,IV,I7-IV,b,1,3,5
+2,II,V/V,secondary dominant,,V,II-V,b,2,b5,6
+3,III,V/vi,secondary dominant,,vi,III-vi,b,3,b6,7
+4,VI,V/ii,secondary dominant,,ii,VI-ii,b,6,b2,3
+6,VII,V/iii,secondary dominant,,iii,VII-iii,b,7,b3,4
+1,i,,minor,I,V,I-i-V,c,1,b3,5
+2,iio,,minor,,,,c,2,4,b6
+3,bIII,,minor,,,,c,b3,5,b7
+4,iv,iv/i,minor,IV,I,iv-I,c,4,b6,1
+5,v,v/i,minor,,i,v-i,c,5,b7,2
+6,bVI,,minor,,iv,,c,b6,1,b3
+7,bVII,,minor,,,,c,b7,2,4
+1,i,,h. minor,I,V,I-i-V,c,1,b3,5
+2,iio,,h. minor,,,,c,2,4,b6
+3,bIII+,,h. minor,,,,c,b3,5,7
+4,iv,iv/i,h. minor,IV,I,iv-I,c,4,b6,1
+5,V,v/i,h. minor,,i,v-i,c,5,7,2
+6,bVI,,h. minor,,iv,,c,b6,1,b3
+7,viio,,h. minor,,,,c,7,2,4

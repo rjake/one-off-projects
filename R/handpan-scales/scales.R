@@ -127,13 +127,13 @@ ggsave("output/drum-diagram.png", width = 5, height = 2.3)
 # available chords ----
 chord_structure <-
   read_csv("input/chord-patterns.csv") |> 
-  arrange(priority) |> 
+  arrange(degree, priority) |> 
   filter(chord != "I7") |> 
   mutate(
-    chord = fct_inorder(chord, ordered = TRUE),
-    type = fct_inorder(type, ordered = TRUE),
-    
-  )
+    chord = fct_reorder(chord, degree),
+    type = fct_inorder(type, ordered = TRUE)
+  ) |> 
+  print()
 
 scale_degrees <- read_csv("input/scale-degrees.csv")
 
@@ -227,8 +227,10 @@ scales_found <-
   print()
 
 scales_found |> 
+  mutate(type = fct_relevel(type, "major", "minor", "secondary dominant", "h. minor")) |> 
   mutate(across(c(base_note, notes), toupper)) |> 
   mutate(
+    #facet = ifelse(str_detect(type, "minor"), "minor", "major"),
     base_note = 
       as.factor(base_note) |> 
       fct_relevel(!!!toupper(notes$scale_note)),
@@ -240,8 +242,8 @@ scales_found |>
     weight = ifelse(implied == "", "bold", "plain")
   ) |> #print()
   #pull(base_note) |> str()
-  ggplot(aes(x = base_note, y = fct_rev(label))) +
-  facet_grid(rows = vars(type), scales = "free", space = "free") +
+  ggplot(aes(x = base_note, y = fct_rev(chord))) +
+  facet_wrap(~type, scales = "free_y") +
   geom_tile(fill = "white", color = "grey40") +
   geom_text(
     aes(
@@ -264,7 +266,7 @@ scales_found |>
     y = NULL
   )
 
-ggsave("output/available-scales.png", width = 3.3, height = 4)
+ggsave("output/available-scales.png", width = 6, height = 3)
 
 # scales on pan
 scale_points <-
@@ -289,9 +291,8 @@ scale_degree_long <-
   chord_structure |>
   select(-c(alternative, follows:note, priority, chord)) |> 
   mutate(
-    group = ifelse(type == "parallel minor", "minor", "major"),
-    color = ifelse(type != "secondary dominant", "base", "alt"),
-    .keep = "unused"
+    group = ifelse(type == "secondary dominant", "major", as.character(type)),
+    color = ifelse(type != "secondary dominant", "base", "alt")
   ) |> 
   pivot_longer(
     cols = starts_with("scale_"),
@@ -308,26 +309,29 @@ scale_degree_long <-
   
 
 scales |>
+  #filter(base_note == "c#") |> 
   inner_join(scale_degree_long) |> 
   inner_join(point_coords) |>
-  #filter(base_note == "a") |> 
+  #filter(base_note == "c#", group == "minor") |> arrange() |>  print() 
   arrange(base_note, group) |> 
   mutate(
+    group = fct_infreq(group),
     base_note = 
       as_factor(base_note) |> 
       fct_relevel(notes$scale_note),
-    color = ifelse(chord_degree == 1, "root", color)
+    fill = ifelse(chord_degree == 1, "root", color),
+    text_color = (color == "alt")
   ) |> 
   ggplot(aes(x, y)) +
   facet_grid(rows = vars(group), cols = vars(base_note)) +
   geom_label(
-    aes(fill = color, label = scale_note),
+    aes(fill = fill, label = scale_note, color = text_color),
     label.padding = unit(0.15, "lines"),
-    size = 2,
-    color = "white"
+    size = 2
   ) +
   coord_fixed() +
-  scale_fill_manual(values = sc("orange3", "blue2", "blue4")) +
+  scale_fill_manual(values = c("white", sc("blue2", "blue4"))) +
+  scale_color_manual(values = c("white", sc("blue2"))) +
   scale_x_continuous(expand = expansion(0.2)) +
   scale_y_continuous(expand = expansion(0.2)) +
   theme_gray(base_size = 6) +
