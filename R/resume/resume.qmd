@@ -1,89 +1,18 @@
 ---
-output:
-  html_document:
-    theme:
-      version: 4
-  # pdf_document: default
-urlcolor: #337ab7
-linkcolor: #337ab7
+format: html
+execute:
+  echo: false
+  message: false
+  warning: false
 ---
-
-<!-- 
-  to save as PDF: 
-    - knit html 
-    - use this site to convert: https://www.sejda.com/html-to-pdf
-    - choose [more options]: Letter
-    
-  
-  these have some issues:
-    - print > save PDF (include background graphics) - bad margins
-    - print > Microsoft Print to PDF - links don't work
--->
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+```{css}
+table, .table, h3, .h3, h4, .h4 {
+  margin-top: 0.5rem;
+  margin-bottom: 0rem;
+}
 ```
 
-```{css css}
-/* dont show url on print */
-@media print {
-  a[href]:after {
-    content: none !important;
-  }
-}
-
-body {
-  color: #333333!important;
-  line-height: 1.2;
-  font-size: 11px;
-}
-
-.main-container {
-  max-width: 720px;
-  margin-left: 75px;
-  margin-right: 50px;
-  margin-top: 30px;
-}
-
-@page  {
-  margin: 0;
-  size: letter; 
-}
-
-
-p {
-  margin: 0 0 0px;
-}
-
-a { 
-  color: #337ab7!important;  
-}
-
-a:link { 
-  color: #337ab7!important;  
-  text-decoration: none;
-}
-
-.h1, .h2, .h3, h1, h2, h3 {
-  margin-top: 15px;
-  margin-bottom: 3px;
-}
-
-ul {
-  padding-inline-start: 25px;
-}
-
-.gt_table {
-  margin-top: 5px;
-}
-
-.gt_row {
-  overflow-y: hidden;
-}
-
-```
-
-```{r workspace,eval=TRUE}
+```{r workspace}
 library(gt)
 library(htmltools)
 library(glue)
@@ -91,37 +20,16 @@ library(tidyverse)
 library(shiny)
 library(simplecolors)
 library(fontawesome)
-
 ```
 
-
-<!-- :::: {style="display: grid; grid-template-columns: 1fr 1fr; grid-column-gap: 10px;"} -->
-
-<!-- ::: {style='margin: 0px;'} -->
-<!-- <font size="8"> Jake **Riley**</font> -->
-<!-- ::: -->
-
-
-<!-- :::{style='text-align: right; margin: 0px; line-height: 0.5;'} -->
-<!-- <br><br><br> -->
-<!-- Senior Data Analyst  |  Philadelphia, PA -->
-
-<!-- <br><br> -->
-<!-- `r fa("envelope")` rjake@sas.upenn.edu  | `r fa("github")` [rjake](https://github.com/rjake) -->
-<!-- ::: -->
-
-
-<!-- :::: -->
-
-
-
-```{r defaults}
+```{r colors-functions}
 colors <-
   list(
     dark_grey = sc("grey5"),
     grey = sc("grey4"),
     light_grey = "#888888"
   )
+
 
 base_gt <- function(x, id = NULL) {
   gt(
@@ -141,6 +49,7 @@ base_gt <- function(x, id = NULL) {
       data_row.padding = px(1)
     )
 }
+
 
 section_table <- function(x) {
   df <-
@@ -201,11 +110,9 @@ section_table <- function(x) {
     ) |>
     fmt_markdown(columns = everything())
 }
-
 ```
 
-
-```{r header}
+```{r title}
 tibble(
   x = 
     c(
@@ -231,18 +138,15 @@ tibble(
       locations = cells_body(rows = 1)
     ) |>
     tab_style( # subtitle
-      style = list(
-        #"font-variant: small-caps;",
-        cell_text(size = px(12))
-      ),
+      style = list(cell_text(size = px(12))),
       locations = cells_body(columns = 1, rows = 2)
     ) |> 
-  #cols_align("center") |> 
   fmt_markdown(columns = everything()) |> 
   tab_options(
     table.margin.left = "auto"
   )
 ```
+
 
 ### `r fa("cogs")` Skills
 
