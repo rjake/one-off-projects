@@ -104,7 +104,7 @@ library(fontawesome)
 
 <!-- :::{style='text-align: right; margin: 0px; line-height: 0.5;'} -->
 <!-- <br><br><br> -->
-<!-- Data Analyst  |  Philadelphia, PA -->
+<!-- Senior Data Analyst  |  Philadelphia, PA -->
 
 <!-- <br><br> -->
 <!-- `r fa("envelope")` rjake@sas.upenn.edu  | `r fa("github")` [rjake](https://github.com/rjake) -->
@@ -210,7 +210,7 @@ tibble(
   x = 
     c(
       "Jake **Riley**",
-      glue("Data Analyst  |  Philadelphia, PA | \\
+      glue("Senior Data Analyst  |  Philadelphia, PA | \\
            [rjake@sas.upenn.edu](mailto:rjake@sas.upenn.edu)  | \\
            {gh} [rjake](https://github.com/rjake)",
         mail = fa('envelope'),
@@ -244,19 +244,19 @@ tibble(
   )
 ```
 
-### `r fa("cogs")`        Skills
+### `r fa("cogs")` Skills
 
 ```{r skills}
-# Skills________________________________________________
+# R Competencies________________________________________________
 list(
   advanced = 
     c("R", "data wrangling", "data viz", "package dev", "code review"),
   proficient = 
-    c("SQL", "Tableau", "Qliksense", "shiny", "GitHub", "GIS"),
+    c("SQL", "Tableau", "Qlik Sense", "shiny", "GitHub", "GIS"),
   familiar = 
-    c("DBT", "REST APIs", "<br>sentiment analysis"),
+    c("DBT", "REST APIs", "<br>sentiment analysis", "statistics"),
   interested = 
-    c("Python", "Machine Learning", "NLP", "Statistics")
+    c("Python", "Machine Learning", "NLP")
 ) |>
   #map(sort) |>
   map(glue_collapse, " • ") |>
@@ -288,7 +288,7 @@ list(
 ```
 
 
-### `r fa("briefcase")`   Relevant Work Experience
+### `r fa("briefcase")` Relevant Work Experience
 
 ```{r work}
 # Relevant Work Experience___________________________
