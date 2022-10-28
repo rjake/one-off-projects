@@ -5,7 +5,10 @@ account: rjake
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 7448989
-bundleId: 6449922
+bundleId: 6450061
 url: https://rjake.shinyapps.io/shiny-codebase-app/
-when: 1666939801.71414
-lastSyncTime: 1666939801.71416
+when: 1666943327.27591
+lastSyncTime: 1666943327.27593
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: app-example.png|full-codebase.png|README.md
