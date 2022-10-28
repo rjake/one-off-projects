@@ -1,0 +1,11 @@
+name: shiny-codebase-app
+title:
+username:
+account: rjake
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 7448989
+bundleId: 6449922
+url: https://rjake.shinyapps.io/shiny-codebase-app/
+when: 1666939801.71414
+lastSyncTime: 1666939801.71416
