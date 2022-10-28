@@ -56,7 +56,8 @@ confidence intervals?
 
 * [Wordle](R/wordle) 
 
-* Shiny codebase ([code](R/shiny-codebase-app) | [app](https://rjake.shinyapps.io/shiny-codebase-app/)) an overview of the shiny codebase as a network graph
+* Shiny codebase ([code](R/shiny-codebase-app) | [app](https://rjake.shinyapps.io/shiny-codebase-app/)) an overview of the shiny codebase as a network graph. This builds off the package dependency code stored [here](https://github.com/rjake/common-files/blob/99db7b65342041be491cc09e7105a8d8e51e2002/package-dependencies.R)
+
     &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
     <img src="R/shiny-codebase-app/app-example.png" height="200"/>
 
