@@ -11,10 +11,10 @@ if (interactive()) {
   
   dummy_input <- list(
     action = "Filter",
+    build = TRUE,
     export = "Exported only",
     fn_names = c("bootstrapPage", "fluidPage", "shinyApp"),
-    go = TRUE,
-    node_distance = 300
+    node_distance = 3
   )
   input <- dummy_input
 }
@@ -46,15 +46,22 @@ ui <- {
           label = NULL,
           choices = c("Exported only", "All functions")
         ),
-        actionButton(inputId = "go", label = "go"),
+        actionBttn(
+          inputId = "build", 
+          label = "build", 
+          icon = icon("project-diagram"), 
+          color = "primary",
+          style = "simple"
+        ),
         hr(),
         sliderInput(
           inputId = "node_distance",
           label = "Node Distance",
-          min = 0,
-          max = 500,
-          step = 25,
-          value = 200
+          min = 1,
+          max = 6,
+          step = 1,
+          value = 2,
+          ticks = FALSE
         ),
         br(),
         p("Codebase as of 10/28/2022")
@@ -69,9 +76,7 @@ ui <- {
 #
 
 server <- function(input, output, session) {
-  isolate(input$goButton)
-  
-  network_df <- eventReactive(input$go, ignoreNULL = FALSE, {
+  network_df <- eventReactive(input$build, ignoreNULL = FALSE, {
     df <- all_nodes
     #browser()
 
@@ -104,16 +109,23 @@ server <- function(input, output, session) {
   })
   
   
-  reactive({
-    fns <-
-      network_df()$nodes$name |> 
+  observeEvent(input$export, {
+    if (input$export == "Exported only") {
+      use_fns <- export_list
+    } else {
+      use_fns <- pkg_fns
+    }
+    
+    fn_display <- 
+      use_fns |> 
       sort() |> 
       keep(str_detect, "^[[:alpha:]]{2,}")
     
     updateSelectInput(
       inputId = "fn_names",
       label = "select function",
-      choices = fns
+      choices = fn_display,
+      selected = intersect(input$fn_names, fn_display)
     )
   })
   
@@ -146,7 +158,7 @@ server <- function(input, output, session) {
       #height = 1500,
       #width = 2500,
       #bounded = TRUE,
-      charge = -input$node_distance,
+      charge = -c(10, 50, 100, 200, 400, 500)[input$node_distance],
       zoom = TRUE
     )
   })
