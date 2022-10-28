@@ -56,6 +56,9 @@ confidence intervals?
 
 * [Wordle](R/wordle) 
 
+* Shiny codebase ([code](R/shiny-codebase-app) | [app](https://rjake.shinyapps.io/shiny-codebase-app/)) an overview of the shiny codebase as a network graph
+    &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+    <img src="R/shiny-codebase-app/app-example.png" height="200"/>
 
 * [Scrabble](R/scrabble) Two questions, what two-letter words are easiest to work with? 'at' and 'la' are a good start. What seven letter word can have 1 letter removed each time to return a single letter? Not something you'd do in scrabble, but the answer to the riddle is planets > planet > plane > lane > lan > la > a)
 
