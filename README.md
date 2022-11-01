@@ -72,7 +72,7 @@ confidence intervals?
 [script](R/text-sentiment-analysis/diagram-sentences.R)
 )
 
-* [Where's Waldo]() A proof-of-concept dashboard using `waldo::compare()` with
+* [Where's Waldo](R/dashboard-compare-tables) A proof-of-concept dashboard using `waldo::compare()` with
 and the `fansi` package to mimic the colorful display
 R shows in the console.
 
