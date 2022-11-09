@@ -1,0 +1,342 @@
+---
+format: html
+execute:
+  echo: false
+  message: false
+  warning: false
+urlcolor: "#337ab7"
+linkcolor: "#337ab7"
+---
+
+<!-- 
+  to save as PDF: 
+    - knit html 
+    - view > print > save PDF
+      Scale: 85%
+      Margins: custom
+-->
+
+```{css}
+table, .table, h3, .h3, h4, .h4 {
+  margin-top: 0.5rem;
+  margin-bottom: 0rem;
+}
+```
+
+```{r workspace}
+library(gt)
+library(htmltools)
+library(glue)
+library(tidyverse)
+library(simplecolors)
+library(fontawesome)
+```
+
+```{r colors-functions}
+colors <-
+  list(
+    dark_grey = sc("grey5"),
+    grey = sc("grey4")
+  )
+
+
+base_gt <- function(x, id = NULL) {
+  gt(
+    x, 
+    id = id # used with opt_css()
+  ) |> 
+    tab_options(
+      table.border.top.style = "hidden",
+      table.border.bottom.style = "hidden",
+      table.font.size = px(11),
+      table.font.color = colors$grey,
+      table.margin.left = "7px",
+      column_labels.hidden = TRUE,
+      container.overflow.x = FALSE,
+      container.overflow.y = FALSE,
+      table_body.hlines.color = "white",
+      data_row.padding = px(1)
+    )
+}
+
+
+section_table <- function(x) {
+  df <-
+    tibble(
+      left = c(x$title, x$subtitle),
+      right = c(x$when, x$where)
+    )
+
+  if (sum(nchar(x$why)) > 0) {
+    df <-
+      bind_rows(
+        df,
+        tibble(
+          left = glue("* {x$why}"), # &nbsp;&nbsp;&nbsp;&nbsp;
+          right = ""
+        )
+      )
+  }
+
+  df |>
+    base_gt() |>
+    tab_style( # title
+      style = list(
+        cell_text(
+          weight = "bold",
+          size = px(14),
+          color = colors$dark_grey
+        )
+      ),
+      locations = cells_body(columns = 1, rows = 1)
+    ) |>
+    tab_style( # subtitle
+      style = list(
+        "font-variant: small-caps;",
+        cell_text(size = px(12))
+      ),
+      locations = cells_body(columns = 1, rows = 2)
+    ) |>
+    tab_style( # column 1
+      style = list(cell_text(align = "left")),
+      locations = cells_body(columns = 1)
+    ) |>
+    tab_style( # column 2
+      style = list(cell_text(align = "right", style = "italic")),
+      locations = cells_body(columns = 2)
+    ) |>
+    tab_style( # row 1 v_align bottom
+      style = list(cell_text(v_align = "bottom")),
+      locations = cells_body(rows = 1)
+    ) |>
+    tab_style( # row 2 v_align top
+      style = list(cell_text(v_align = "top")),
+      locations = cells_body(rows = 2)
+    ) |>
+    cols_width(
+      1 ~ px(570),
+      2 ~ px(90)
+    ) |>
+    fmt_markdown(columns = everything())
+}
+```
+
+```{r title}
+tibble(
+  x = 
+    c(
+      "Jake **Riley**",
+      glue("Senior Data Analyst  |  Philadelphia, PA | \\
+           [rjake@sas.upenn.edu](mailto:rjake@sas.upenn.edu)  | \\
+           {gh} [rjake](https://github.com/rjake)",
+        mail = fa('envelope'),
+        gh = fa("github")
+      )
+    ) |> 
+    md()
+) |> 
+  base_gt(id = "header") |> 
+  tab_style( # title
+      style = list(
+        cell_text(
+          size = px(50), 
+          color = colors$dark_grey,
+          v_align = "bottom"
+        )
+      ),
+      locations = cells_body(rows = 1)
+    ) |>
+    tab_style( # subtitle
+      style = list(cell_text(size = px(12))),
+      locations = cells_body(columns = 1, rows = 2)
+    ) |> 
+  fmt_markdown(columns = everything()) |> 
+  tab_options(
+    table.margin.left = "auto"
+  )
+```
+
+### `r fa("cogs")` R Competencies
+
+```{r skills}
+list(
+  advanced = 
+    c("package dev", "tidyverse", "<br>flexdashboard", "code review"),
+  proficient = 
+    c("shiny", "testthat", "<br>glue", "GitHub", "GIS"),
+  familiar = 
+    c("mockery", "rlang", "<br>S3", "modules", "CSS"),
+  interested = 
+    c("Python", "R6", "<br>golem")
+) |>
+  #map(sort) |>
+  map(glue_collapse, " • ") |>
+  flatten_df() |>
+  base_gt(id = "skills") |> 
+  tab_options(
+    #column_labels.border.bottom.width = "0px",
+    #table.align = "center",
+    table.margin.left = "20px",
+    column_labels.border.bottom.color = "white",
+    column_labels.hidden = FALSE,
+    column_labels.font.weight = "bold",
+    container.overflow.x = FALSE,
+    container.overflow.y = FALSE
+  ) |>
+  cols_align("center") |> 
+  cols_width(
+    familiar ~ 120,
+    everything() ~ 160
+  ) |>
+  fmt_markdown(columns = everything()) |> 
+  opt_css(
+    css = 
+      "#skills .gt_col_heading { 
+        padding: 0px;
+        overflow-y: hidden;
+      }"
+  )
+```
+
+### `r fa("briefcase")` Relevant Experience
+
+```{r work}
+work <- list(
+  chop = list( # chop ----
+    title = "Clinical Data Programmer / Analyst III",
+    subtitle = "Children's Hospital of Philadelphia",
+    when = "2017 - Present",
+    where = "Philadelphia, PA",
+    why = c(
+      "Support analytics team to find and promote the best methods for building deliverables",
+      "Enhance in-house data solutions via R package development, flexdashboard templates and dbt macros",
+      "Consult on analytic strategy, data visualization, and technical solutions", 
+      'Teach monthly "deep-dive" sessions via quarto site to share best practices',
+      "Reduce technical debt by identifying assets that are computationally expensive or underutilized",
+      "Increase PR utilization and code review. We started at 17% engagement and now at 73% (56 / 76 analysts)"
+    )
+  ),
+  comcast = list( # comcast ----
+    title = "BI Analyst - Human Resources",
+    subtitle = "Comcast",
+    when = "2016 - 2017",
+    where = "Philadelphia, PA",
+    why = c(
+      "Built HR dashboards for employee turnover, diversity, and data dictionary (~1,200 users)", 
+      "Automated quarterly reports for the senior vice president",
+      "Used techniques such as travelling salesman algorithms to optimize travel for HR trainings"
+    )
+  ),
+  policy_map = list( # policy map ----
+    title = "Data Analyst",
+    subtitle = "PolicyMap",
+    when = "2015 - 2016",
+    where = "Philadelphia, PA",
+    why = c(
+      "Aggregated over 150 national datasets across 9 geographies", 
+      "Introduced new automated process for testing and data validation"
+    )
+  ),
+  whole_foods = list( # whole foods ----
+    title = "Production Analyst",
+    subtitle = "Whole Foods Market",
+    when = "2003 - 2008",
+    where = "Landover, MD",
+    why = c(
+      "Automated the production schedule for the Mid-Atlantic commissary, supporting 32 stores", 
+      #"Determined ingredient quantity for daily and holiday orders of 32 stores", 
+      "Determined how many 180-gallon kettles of soup to be made each hour",
+      "Minimized redundant usage of kitchen equipment in food preparation"
+    )
+  )
+)
+
+work_list <- map(work, section_table)
+tagList(work_list)
+
+#section_table(work$chop)
+
+```
+
+### `r fa("university")` Education
+
+```{r education}
+school <- list(
+  upenn = list( # upenn ----
+    title = "University of Pennsylvania",
+    subtitle = "B.A. Sociology - Quantitative Methods  |  summa cum laude  |  phi beta kappa",
+    when = "2012-2015",
+    where = "Philadelphia, PA",
+    why = c(
+      "Non-traditional student. Coursework focused on data analysis, GIS, and data visualization."#, "Projects focused on census data and demography."
+    )
+  ),
+  ccp = list( # ccp ----
+    title = "Community College of Philadelphia",
+    subtitle = "A.A. Liberal Arts | with highest honors | phi theta kappa",
+    when = "2011-2012",
+    where = "Philadelphia, PA",
+    why = ""
+  )#,
+    # mccc = list(
+    #   with = "Montgomery County Community College",
+    #   what = "part-time general studies",
+    #   when = "2003-2005", where = "Rockville, MD", why = ""
+    # )
+)
+
+school_list <- map(school, section_table)
+tagList(school_list)
+```
+
+### `r fa("laptop-code")` R Packages
+
+```{r packages}
+tibble(
+  x = c(
+    "[**headliner**](https://rjake.github.io/headliner) *(author)* adds dynamic, informative text to dasboards and reports",
+    "[**shinyobjects**](https://rjake.github.io/shinyobjects/index.html) *(author)* allows the user to debug reactive objects at the console", 
+    "[**simplecolors**](https://rjake.github.io/simplecolors/articles/intro.html) *(author)* a simple color palette that is intuitive and easy to remember",
+    "[**whereiation**](https://rjake.github.io/whereiation/) *(author)* where(is the var)iation - automated exploratory data analysis"
+  )
+) |>
+  base_gt() |>
+  cols_width(everything() ~ 640) |> 
+  tab_options(table.margin.left = "7px") |>
+  fmt_markdown(columns = everything())
+```
+
+
+### `r fa("users")` Volunteer / Community
+
+```{r communtiy}
+tibble(
+  x = 
+    c(
+      "Code for Philly (contributor)",
+      "Compass (data)",
+      "DC Trans Coalition (advocate)",
+      "Emergence Community Arts Collective (data)",
+      "Iraq Veterans Against the War (data)",
+      "#MakeoverMonday (tableau)",
+      "Men’s Resource Center (facilitator)",
+      "Mill Creek Farm (data)",
+      "Neighborhood Bike Works (facilitator)",
+      "OneDC (data)",
+      "OpenDataPhilly (data)",
+      "Project HOME (data)",
+      "R-Ladies (speaker)",
+      "TechCamp Philly (data)",
+      "TransHealth Conference (data)"
+      ) |> 
+    glue_collapse(" • ")
+  ) |> 
+  base_gt() |> 
+  #base_gt() |>
+  cols_width(everything() ~ 645) |>
+  cols_align("left") |> 
+  tab_style(
+    style = "line-height: 1.5;",
+    locations = cells_body()
+  )
+```
