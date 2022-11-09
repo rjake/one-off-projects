@@ -1,0 +1,221 @@
+---
+format: 
+  html:
+    page-layout: custom
+    fontsize: "12.5px"
+execute:
+  echo: false
+  message: false
+  warning: false
+urlcolor: "#337ab7"
+linkcolor: "#337ab7"
+---
+
+<!-- 
+  to save as PDF: 
+    - knit html
+    - open in Chrome
+    - view > print > save as PDF
+      Scale: 85%
+      Margins: custom
+-->
+
+```{css style}
+table, .table, h3, .h3, h4, .h4 {
+  margin-top: 0.5rem;
+  margin-bottom: 0rem;
+}
+
+h1 {
+  font-size: 3.6rem;
+  color: black;
+  margin-top: 1rem;
+  margin-bottom: 0rem;
+}
+
+h2 {
+  margin-top: 1rem;
+  margin-bottom: 0rem;
+}
+
+p {
+  margin-top: 0rem;
+  margin-bottom: 0rem;
+}
+
+.sidebar {
+  /*color: #555555;*/
+  background-color: #f5f5f5;
+  padding-top: 0px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+```
+
+```{r workspace}
+library(gt)
+library(htmltools)
+library(glue)
+library(tidyverse)
+library(shiny)
+library(simplecolors)
+library(fontawesome)
+```
+
+```{r colors-functions}
+colors <-
+  list(
+    dark_grey = sc("grey5"),
+    grey = sc("grey4"),
+    light_grey = "#888888"
+  )
+
+section_subheader <- function(title, subtitle, when, where) {
+  glue(
+    '<p style = "text-align:left; font-size:1.1em;"> 
+      {left} {right}
+      <br> {bottom_left}{bottom_right}
+    </p>',
+    left = glue("<strong> {title} </strong>"),
+    right = glue('<span style="float:right; font-size:1em;"> <i>{when}</i></span>'),
+    bottom_left = glue('<span style="font-variant:small-caps; font-size:1em;">, {subtitle} </span>'),
+    bottom_right = glue('<span style="float:right; font-size:1em;"> <i>{where}</i></span>')
+  ) |> 
+    HTML()
+}
+```
+
+
+# Jake **Riley**
+Senior Data Analyst  |  Philadelphia, PA |
+[rjake@sas.upenn.edu](mailto:rjake@sas.upenn.edu) | `r fa('github')` [rjake](https://github.com/rjake)
+
+<br>
+
+::: {.grid}
+::: {.g-col-4 .sidebar}
+
+## `r fa(name = "rocket")` Goals
+improving the performance of analytics teams - reducing technical debt - providing mentorship to junior analysts - building robust dashboards and reports
+
+<br>
+
+## `r fa("cogs")` Skills
+**advanced**  
+*data wrangling - data viz - R package development - code review*
+
+**proficient**  
+*SQL - Tableau - Qlik Sense - dbt - GitHub - GIS - Microsoft Office*
+
+**familiar**  
+*REST APIs - sentiment analysis - statistics*
+
+**interested**  
+*Python - Machine Learning - NLP*
+
+<br>
+
+## `r fa("laptop-code")` R Packages
+[**headliner**](https://rjake.github.io/headliner) *(author)*  
+*dynamic text for dasboards and reports*
+
+[**shinyobjects**](https://rjake.github.io/shinyobjects/index.html) *(author)*  
+*debug reactive objects at the console*
+
+[**simplecolors**](https://rjake.github.io/simplecolors/articles/intro.html) *(author)*  
+*intuitive color names*
+
+[**whereiation**](https://rjake.github.io/whereiation/) *(author)*  
+*automated exploratory data analysis*
+
+<br>
+
+## `r fa("users")` Community
+
+*Code for Philly - DC Trans Coalition - Emergence Community Arts Collective - MakeoverMonday - Men’s Resource Center - Neighborhood Bike Works - OneDC - Project HOME - R-Ladies - TransHealth Conference*
+
+:::
+
+::: {.g-col-8}
+## `r fa("briefcase")` Relevant Work Experience
+*Only lists data-related jobs. Other work includes direct service in the field of HIV case management, internships, and retail.*
+
+<br>
+
+```{r CHOP}
+section_subheader(
+  title = "Clinical Data Programmer / Analyst III",
+  subtitle = "Children's Hospital of Philadelphia",
+  when = "2017 - Present",
+  where = "Philadelphia, PA"
+)
+```
+* Centrally support analytics team to identify and promote the best practices
+* Enhance in-house data solutions via R packages, dashboard templates and dbt macros
+* Author of over 30 dashboards, hundreds of data requests, and domain-specific data infrastructure
+* Design novel datasets for the CHOP data warehouse (ex. diagnosis hierarchy)
+* Identify assets that are underutilized or computationally expensive
+* Increase PR utilization and code review. We started at 17% engagement and now at 73% (56 / 76 analysts)
+
+```{r Comcast}
+section_subheader(
+  title = "BI Analyst - Human Resources",
+  subtitle = "Comcast",
+  when = "2016 - 2017",
+  where = "Philadelphia, PA"
+)
+```
+
+* Built HR dashboards for employee turnover, diversity, and data dictionary (~1K users)
+* Automated quarterly reports for the senior vice president
+* Used techniques such as travelling salesman algorithms to optimize travel for HR trainings
+
+```{r Policy-Map}
+section_subheader(
+  title = "Data Analyst",
+  subtitle = "PolicyMap",
+  when = "2015 - 2016",
+  where = "Philadelphia, PA"
+)
+```
+* Aggregated over 150 national datasets across 9 geographies
+* Introduced new automated process for testing and data validation
+
+```{r WFM}
+section_subheader(
+  title = "Production Analyst",
+  subtitle = "Whole Foods Market",
+  when = "2003 - 2008",
+  where = "Landover, MD"
+)
+```
+* Automated the production schedule for the Mid-Atlantic commissary, supporting 32 stores
+* Determined how many 180-gallon kettles of soup to be made each hour
+* Minimized redundant usage of kitchen equipment in food preparation
+
+<br>
+
+## `r fa("university")`  Education
+
+```{r}
+section_subheader(
+  title = "University of Pennsylvania",
+  subtitle = "B.A. Sociology - Quantitative Methods  |  summa cum laude  |  phi beta kappa",
+  when = "2015",
+  where = ""
+)
+```
+Non-traditional student. Coursework focused on GIS and data visualization
+
+```{r}
+section_subheader(
+  title = "Community College of Philadelphia",
+  subtitle = "A.A. Liberal Arts | with highest honors | phi theta kappa",
+  when = "2012",
+  where = ""
+)
+```
+
+:::
+
+:::
