@@ -4,7 +4,18 @@ execute:
   echo: false
   message: false
   warning: false
+urlcolor: "#337ab7"
+linkcolor: "#337ab7"
 ---
+
+<!-- 
+  to save as PDF: 
+    - knit html 
+    - view > print > save PDF
+      Scale: 85%
+      Margins: custom
+-->
+
 ```{css}
 table, .table, h3, .h3, h4, .h4 {
   margin-top: 0.5rem;
@@ -156,9 +167,9 @@ list(
   advanced = 
     c("R", "data wrangling", "data viz", "package dev", "code review"),
   proficient = 
-    c("SQL", "Tableau", "Qlik Sense", "shiny", "GitHub", "GIS"),
+    c("SQL", "Tableau", "dbt", "shiny", "GitHub", "GIS"),
   familiar = 
-    c("DBT", "REST APIs", "<br>sentiment analysis", "statistics"),
+    c("REST APIs", "<br>sentiment analysis", "statistics"),
   interested = 
     c("Python", "Machine Learning", "NLP")
 ) |>
@@ -203,13 +214,13 @@ work <- list(
     when = "2017 - Present",
     where = "Philadelphia, PA",
     why = c(
-      "Innovate and enhance in-house data solutions (R packages, dashboard templates, trusted data layer)",
-      "Consult on analytic strategy, data visualization, and technical solutions", 
-      "Enhance proficiency of analytics team through mentorship and ongoing training series",
-      "Reduce technical debt by leading code review process and simplifying code base",
-      "Completion of hundreds of data requests, putting common metrics into standardized tables or dashboards"
-      # "Build novel datasets for data warehouse (ex. diagnosis hierarchy, self-generating calendars)",
-      # "???? dashboard patient reported outcomes, hundreds of data requests, robust data infrastructure"      
+      "Centrally support analytics team to find and promote the best methods for building deliverables",
+      "Enhance in-house data solutions via R package development, dashboard templates and dbt macros",
+      "Consult on analytic strategy, data visualization, and technical solutions to junior analysts", 
+      "Author of over 30 dashboards, hundreds of data requests, and domain-specific data infrastructure",
+      #"Add novel datasets for data warehouse (ex. diagnosis hierarchy, self-generating calendars)",
+      "Reduce technical debt by identifying assets that are computationally expensive or underutilized",
+      "Increase PR utilization and code review. We started at 17% engagement and now at 73% (56 / 76 analysts)"
     )
   ),
   comcast = list( # comcast ----
@@ -218,9 +229,8 @@ work <- list(
     when = "2016 - 2017",
     where = "Philadelphia, PA",
     why = c(
-      "Built HR dashboards for employee turnover, diversity, and data dictionary (1,200 users)", 
-      "Automated a quarterly report for the senior vice president of human resources",
-      #"Helped peers use the right methods to generate insights and visualize results",
+      "Built HR dashboards for employee turnover, diversity, and data dictionary (~1,200 users)", 
+      "Automated quarterly reports for the senior vice president",
       "Used techniques such as travelling salesman algorithms to optimize travel for HR trainings"
     )
   ),
