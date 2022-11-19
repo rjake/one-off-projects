@@ -124,7 +124,7 @@ grid_base <-
 n_distinct(grid_base$hex)
 
 grid_base |> 
-  filter(x > mean(x)) |> 
+  #filter(x > mean(x)) |> 
   ggplot(aes(x, y, color = hex)) +
   geom_point(size = 1) +
   #scale_y_reverse() +
@@ -134,14 +134,16 @@ grid_base |>
   theme_bw()
 
 grid_base |> 
-  filter(x > mean(x)) |> 
+  filter(hex != "#FFFFFF") |> 
+  #filter(x > mean(x), y < mean(y)) |> 
   ggplot(aes(x, y, color = hex)) +
-  geom_point() +
+  geom_point(size = 0.005) +
   scale_color_identity() +
-  facet_wrap(~hex, nrow = 4) +
+  facet_wrap(~hex, nrow = 2) +
   theme_minimal() +
+  coord_equal() +
   theme(
-    panel.background = element_rect(fill = "grey95"),
+    panel.background = element_rect(fill = "white"),
     panel.grid = element_line(color = "grey85"),
     axis.text = element_blank(),
     panel.border = element_rect(color = "grey40", fill = NA)
