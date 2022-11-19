@@ -6,10 +6,88 @@ library(tidyverse)
 library(glue)
 library(simplecolors)
 
-notes <- read_csv("input/notes-available.csv")
+# all_notes <- 
+#   "ab	a	bb	b	c	db	d	eb	e	f	gb	g" |> 
+#   str_extract_all("\\w+") |> 
+#   pluck(1)
+
+input <- list(
+  name = "F# Double Harmonic Minor - 1, 2, b3, b5, 5, b6, 7",
+  notes = c("f# g# a c c# d f"),
+  caption = "Hungarian Minor, Gypsy Minor, Romanian Hijaz"
+)
+
+chord_structure <-
+  read_csv("input/chord-patterns.csv") |> 
+  arrange(degree, priority) |> 
+  filter(chord != "I7") |> 
+  mutate(
+    chord = fct_reorder(chord, degree),
+    type = fct_inorder(type, ordered = TRUE)
+  ) |> 
+  print()
+
+scale_degrees <- read_csv("input/scale-degrees.csv")
+
+notes_used <- str_split(input$notes, " ")[[1]]
+uses_sharps <- any(str_detect(notes_used, "#"))
+
+replace_enharmonics <- function(x) {
+  if (!uses_sharps) {
+    return(x)
+  }
+  
+  enharmonics <- c(
+    "ab" = "g#",
+    "bb" = "a#",
+    "db" = "c#",
+    "eb" = "d#",
+    "gb" = "f#"
+  )
+  
+  str_replace_all(x, enharmonics)
+}
+
+
+all_notes <-
+  tibble(
+    #scale_note = all_notes,
+    ab = c(0:11),
+    a  = (ab + 11) %% 12,
+    bb = (ab + 10) %% 12,
+    b  = (ab + 9) %% 12,
+    c  = (ab + 8) %% 12,
+    db = (ab + 7) %% 12,
+    d  = (ab + 6) %% 12,
+    eb = (ab + 5) %% 12,
+    e  = (ab + 4) %% 12,
+    f  = (ab + 3) %% 12,
+    gb = (ab + 2) %% 12,
+    g  = (ab + 1) %% 12
+  ) |> 
+  rename_all(replace_enharmonics) %>%
+  mutate(
+    scale_note = names(.),
+    .before = everything()
+  ) |> 
+  print()
+
+semitone_degree <-
+  set_names(
+    scale_degrees$degree,
+    scale_degrees$tone
+  )
+
+notes <- #read_csv("input/notes-available.csv")
+  all_notes |> 
+  select(scale_note, (notes_used)) |> 
+  filter(scale_note %in% (notes_used)) %>% 
+  mutate(scale_note = factor(scale_note, levels = names(.), ordered = TRUE)) |> 
+  arrange(scale_note) |> 
+  print()
 
 scales <-
-  notes |> 
+  notes |>
   mutate(order = row_number()) |> 
   pivot_longer(
     cols = -c(scale_note, order),
@@ -34,23 +112,21 @@ point_coords <- local({
 
 plot(point_coords[,4:5], pch = 16)
 
-find_notes <- function(...) {
-  scale_degrees <- c(...)
-  scale_name = names(match.call()[-1])
-  
+find_notes <- function(scale_name, scale_degrees) {
   scales |> 
     filter(chord_degree %in% scale_degrees) |> 
     group_by(base_note) |> 
     filter(
       n() > 1,
-      max(str_detect(chord_degree, "3")) > 0
+      min(chord_degree) == 0,
+      max(chord_degree %in% 3:4) > 0
     ) |> 
     ungroup() |> 
     mutate(
       scale = scale_name,
       color = case_when(
-        chord_degree == "1" ~ "black",
-        chord_degree == "5" ~ "grey",
+        chord_degree == "0" ~ "black",
+        chord_degree == "7" ~ "grey",
         TRUE ~ "red" 
       )
     ) #|> print()
@@ -59,11 +135,8 @@ find_notes <- function(...) {
   
 union_scales <-
   bind_rows(
-    #find_notes(five = c("1", "5")),
-    # find_notes(sus2 = c("1", "2")),
-    # find_notes(sus4 = c("1", "4")),
-    find_notes(major = c("3", "5", "1")),
-    find_notes(minor = c("b3", "5", "1"))
+    find_notes(scale_name = "major", scale_degrees = c(0, 4, 7)),
+    find_notes(scale_name = "minor", scale_degrees = c(0, 3, 7))
   ) |> 
   print()
 
@@ -79,11 +152,11 @@ plot_points <-
   left_join(union_scales) |>
   arrange(order) |> 
   mutate(
-    base_note = 
-      as_factor(base_note) |> 
-      fct_relevel(notes$scale_note)
+    scale_degree = recode(scale_degree, !!!semitone_degree),
+    base_note = factor(base_note, levels = notes$scale_note, ordered = TRUE)
   ) |> 
   print()
+
 
 # major & minor ----
 plot_points |> 
@@ -116,26 +189,15 @@ plot_points |>
     panel.background = element_rect("white", "grey80")
   ) +
   labs(
-    title = "F# Double Harmonic Minor - 1, 2, b3, b5, 5, b6, 7",
+    title = input$name,
     subtitle = "black = root, red = 3rd, grey = other",
-    caption = "Hungarian Minor, Gypsy Minor, Hijaz"
+    caption = input$caption
   )
 
 ggsave("output/drum-diagram.png", width = 5, height = 2.3)
 
  
 # available chords ----
-chord_structure <-
-  read_csv("input/chord-patterns.csv") |> 
-  arrange(degree, priority) |> 
-  filter(chord != "I7") |> 
-  mutate(
-    chord = fct_reorder(chord, degree),
-    type = fct_inorder(type, ordered = TRUE)
-  ) |> 
-  print()
-
-scale_degrees <- read_csv("input/scale-degrees.csv")
 
 scales_list <-
   scales |> 
