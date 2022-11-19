@@ -28,6 +28,17 @@ overlapping areas shared with other districts. This analysis provides the data f
     &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;;
     <img src="R/gerrymandering/gerrymandering.png" height="200"/>
 
+# Apps
+* Shiny codebase ([code](R/shiny-codebase-app) | [app](https://rjake.shinyapps.io/shiny-codebase-app/)) an overview of the shiny codebase as a network graph. This builds off the package dependency code stored [here](https://github.com/rjake/common-files/blob/99db7b65342041be491cc09e7105a8d8e51e2002/package-dependencies.R)
+
+    &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+    <img src="R/shiny-codebase-app/app-example.png" height="200"/>
+
+* Find good datasets ([code](https://github.com/rjake/one-off-projects/blob/main/R/find-good-datasets/find_good_data.Rmd) | [app](https://rjake.shinyapps.io/Find-Good-Data/
+)) helps identify data that would be useful for reproducible examples
+
+    &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+    <img src="R/find-good-datasets/app-example.png" height="200"/>
 
 # Other
 * [COVID confidence intervals]() While the # of cases is subject to testing or 
@@ -55,11 +66,6 @@ confidence intervals?
     <img src="R/resume/snippet.png" height="200"/>
 
 * [Wordle](R/wordle) 
-
-* Shiny codebase ([code](R/shiny-codebase-app) | [app](https://rjake.shinyapps.io/shiny-codebase-app/)) an overview of the shiny codebase as a network graph. This builds off the package dependency code stored [here](https://github.com/rjake/common-files/blob/99db7b65342041be491cc09e7105a8d8e51e2002/package-dependencies.R)
-
-    &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
-    <img src="R/shiny-codebase-app/app-example.png" height="200"/>
 
 * [Scrabble](R/scrabble) Two questions, what two-letter words are easiest to work with? 'at' and 'la' are a good start. What seven letter word can have 1 letter removed each time to return a single letter? Not something you'd do in scrabble, but the answer to the riddle is planets > planet > plane > lane > lan > la > a)
 
