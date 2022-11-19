@@ -16,13 +16,6 @@ linkcolor: "#337ab7"
       Margins: custom
 -->
 
-```{css}
-table, .table, h3, .h3, h4, .h4 {
-  margin-top: 0.5rem;
-  margin-bottom: 0rem;
-}
-```
-
 ```{r workspace}
 library(gt)
 library(htmltools)
@@ -58,6 +51,16 @@ base_gt <- function(x, id = NULL) {
       container.overflow.y = FALSE,
       table_body.hlines.color = "white",
       data_row.padding = px(1)
+    ) |> 
+     tab_style(
+      style = cell_borders(
+        sides = "all",
+        color = "white"
+      ),
+      locations = cells_body(
+        columns = everything(),
+        rows = everything()
+      )
     )
 }
 
@@ -128,7 +131,7 @@ tibble(
   x = 
     c(
       "Jake **Riley**",
-      glue("Senior Data Analyst  |  Philadelphia, PA | \\
+      glue("Senior Data Analyst  | \\
            [rjake@sas.upenn.edu](mailto:rjake@sas.upenn.edu)  | \\
            {gh} [rjake](https://github.com/rjake)",
         mail = fa('envelope'),
@@ -209,7 +212,7 @@ list(
 # Relevant Work Experience___________________________
 work <- list(
   chop = list( # chop ----
-    title = "Clinical Data Programmer / Analyst III",
+    title = "Clinical Data Programmer Analyst III",
     subtitle = "Children's Hospital of Philadelphia",
     when = "2017 - Present",
     where = "Philadelphia, PA",
@@ -351,4 +354,11 @@ tibble(
     style = "line-height: 1.5;",
     locations = cells_body()
   )
+```
+
+```{css style}
+table, .table, h3, .h3, h4, .h4 {
+  margin-top: 0rem;
+  margin-bottom: 0rem
+}
 ```
