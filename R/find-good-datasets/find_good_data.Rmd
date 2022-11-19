@@ -21,7 +21,7 @@ resource_files:
 
 library(shiny)
 library(shinyobjects)
-options("shiny.suppressMissingContextError" = TRUE)
+shiny::reactiveConsole(TRUE)
 
 input <-
   list(
