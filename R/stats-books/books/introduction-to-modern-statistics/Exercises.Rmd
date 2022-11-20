@@ -1,0 +1,164 @@
+---
+title: "Introduction to Modern Statistics"
+output: html_document
+date: "2022-11-20"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+*Authors - Mine Çetinkaya-Rundel and Johanna Hardin*
+
+* Site - https://openintro-ims.netlify.app/index.html
+* Repo - https://github.com/openintrostat/ims
+
+* Tutorials - https://openintrostat.github.io/ims-tutorials/
+* Labs - http://openintrostat.github.io/oilabs-tidy/
+
+```{r workspace}
+library(openintro)
+library(tidyverse)
+```
+
+## Chapter 1
+
+### Stents
+Does the use of stents reduce the risk of stroke?
+
+```{r}
+stent30
+stent365
+
+```
+
+## Chapter 2
+```{r}
+
+```
+
+## Chapter 3
+```{r}
+
+```
+
+## Chapter 4
+```{r}
+
+```
+
+## Chapter 5
+```{r}
+
+```
+
+## Chapter 6
+```{r}
+
+```
+
+## Chapter 7
+```{r}
+
+```
+
+## Chapter 8
+```{r}
+
+```
+
+## Chapter 9
+```{r}
+
+```
+
+## Chapter 10
+```{r}
+
+```
+
+## Chapter 11
+```{r}
+
+```
+
+## Chapter 12
+```{r}
+
+```
+
+## Chapter 13
+```{r}
+
+```
+
+## Chapter 14
+```{r}
+
+```
+
+## Chapter 15
+```{r}
+
+```
+
+## Chapter 16
+```{r}
+
+```
+
+## Chapter 17
+```{r}
+
+```
+
+## Chapter 18
+```{r}
+
+```
+
+## Chapter 19
+```{r}
+
+```
+
+## Chapter 20
+```{r}
+
+```
+
+## Chapter 21
+```{r}
+
+```
+
+## Chapter 22
+```{r}
+
+```
+
+## Chapter 23
+```{r}
+
+```
+
+## Chapter 24
+```{r}
+
+```
+
+## Chapter 25
+```{r}
+
+```
+
+## Chapter 26
+```{r}
+
+```
+
+## Chapter 27
+```{r}
+
+```
+
