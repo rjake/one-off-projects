@@ -9,14 +9,23 @@ execute:
   echo: false
   warning: false
 ---
+  
+# TODO:
+* see regex filter option in `reactable`
+https://glin.github.io/reactable/articles/custom-filtering.html#regular-expression-pattern-filtering
+* formatting
+https://glin.github.io/reactable/articles/custom-rendering.html
+* observable?
+  https://glin.quarto.pub/observable-reactable/
 
+  
 ```{r input-demo}
 #| eval: !expr interactive()
 
 input <-
   list(
-    col_name = "cyl",
-    table_name = "",
+    col_name = "_id",
+    table_name = "ord",
     search_type = "Table"
   )
 
@@ -66,7 +75,7 @@ base_datatable <- function(df, ...) {
 extract_bold <- function(string, pattern) {
   # string <- "am - cyl - disp - hp"
   # pattern <- "cyl hp"
-
+  
   bold_pattern <- 
     glue(
       "(?i)({x})",
@@ -74,7 +83,7 @@ extract_bold <- function(string, pattern) {
     )
   
   string |> 
-     str_replace_all(bold_pattern, "<strong>\\1</strong>")
+    str_replace_all(bold_pattern, "<strong>\\1</strong>")
 }
 ```
 
@@ -106,7 +115,6 @@ search_type <-
 
 fluidPage(
   fluidRow(
-    column(2, db_name),
     column(3, table_name),
     column(5, col_name),
     column(2, search_type)
@@ -128,7 +136,7 @@ prepare_regex <- function(x) {
     ifelse(x == "", ".*", x) |> 
     str_replace_all("\\s+", "|")
   
- glue("(?i){pattern}")
+  glue("(?i){pattern}")
 }
 
 output$table <- DT::renderDT({
@@ -136,7 +144,8 @@ output$table <- DT::renderDT({
   print(reactiveValuesToList(input))
   print(input$search_type)
   
-
+  table_regex <- prepare_regex(table_search())
+  column_regex <- prepare_regex(col_search())
   
   
   # multi_col_entered <- length(column_all) > 1
@@ -163,7 +172,7 @@ output$table <- DT::renderDT({
   df <- 
     base_data |> 
     filter(
-      str_detect(table_name, table_search()),
+      str_detect(table_name, table_regex),
       str_detect(field, column_regex)
     )
   
@@ -174,28 +183,24 @@ output$table <- DT::renderDT({
     
   } else {
     # bold text if column search != ".*"
-    if(column_all != ".*") {
-      final_df <- mutate(df, field = map_chr(field, extract_bold, col_search()))
-    }
-    
-    base_datatable(
-      final_df,
-      autoWidth = TRUE,
-      columnDefs = list(
-        list(targets = c(0), visible = TRUE, width = "10%"),
-        list(targets = c(1), visible = TRUE, width = "10%"),
-        list(targets = c(2), visible = TRUE, width = "80%")
+    df |> 
+      mutate(field = map_chr(field, extract_bold, column_regex)) |> 
+      base_datatable(
+        autoWidth = TRUE,
+        columnDefs = list(
+          list(targets = c(0), visible = TRUE, width = "10%"),
+          list(targets = c(1), visible = TRUE, width = "80%")
+        )
       )
-    )
   }
   
 }, server = TRUE)
 
 
-final_df |> 
-  reactable::reactable(
-    columns = list(
-      field = colDef(html = TRUE)
-    )
-  )
+# final_df |> 
+#   reactable::reactable(
+#     columns = list(
+#       field = colDef(html = TRUE)
+#     )
+#   )
 ```
