@@ -6,7 +6,7 @@ Most examples come from [The Big Book of R](https://www.bigbookofr.com/statistic
 
 
 ## Started
-* [ ] [Introduction to Modern Statistics](https://openintro-ims.netlify.app/index.html) - Mine Çetinkaya-Rundel and Johanna Hardin [repo](https://github.com/openintrostat/ims)
+* [ ] [Introduction to Modern Statistics](books/introduction-to-modern-statistics) - Mine Çetinkaya-Rundel and Johanna Hardin
 
 
 ## Statistics
