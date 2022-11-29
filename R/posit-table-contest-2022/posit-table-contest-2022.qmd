@@ -1,0 +1,171 @@
+---
+title: "Our Data Dictionary"
+format: 
+  html:
+    code-tools: true
+    page-layout: full
+execute: 
+  echo: false
+  message: false
+  warning: false
+---
+
+```{r}
+library(tidyverse)
+library(shiny)
+library(reactable)
+
+raw_data <- read_rds("salika.Rds")
+```
+
+
+Search our data dictionary to find tables that have more than two or more fields of interest. You can use regular expressions or fragments of field names separated by spaces. The filter looks in alphabetical order.
+
+```{r}
+js_filter <-  JS(
+  "function(rows, columnId, filterValue) {
+      try {
+        let pattern = filterValue.split(' ').filter(n => n).sort().join('.*')
+        let regexPattern = RegExp(pattern, 'i')
+        
+        return rows.filter(
+          function(row) {
+            return regexPattern.test(row.values[columnId])
+          }
+        )
+      } catch(e) {
+          return rows
+      }
+       
+  }"
+)
+
+
+js_match_style <- JS(
+  "function(cellInfo) {
+    try {
+      let filterValue = cellInfo.filterValue
+      let pattern = filterValue.split(' ').filter(n => n).sort().join('|')
+      let regexPattern = new RegExp('(' + pattern + ')', 'gi')
+      let replacement = '<span style=\"color:black;font-weight:bold;\">$1</span>'
+      return cellInfo.value.replace(regexPattern, replacement)
+    } catch(e) {
+        return cellInfo.value
+    }
+  }"
+)
+
+
+raw_data |>
+  group_by(table) |>
+  summarise(field_list = paste(sort(field), collapse = " • ")) |>
+  ungroup() |>
+  reactable(
+    showPageSizeOptions = TRUE,
+    highlight = TRUE, 
+    height = 700,
+    theme = reactableTheme(
+      style = list(
+        color = "#444444",
+        fontFamily = "Segoe UI, Helvetica, Arial, sans-serif"
+      )
+    ),
+    defaultColDef = colDef(
+      filterable = TRUE,
+      filterMethod = js_filter,
+      cell = js_match_style,
+      html = TRUE
+    ),
+    columns = list(
+      table = colDef(width = 200)
+    )
+  )
+```
+
+
+```{r}
+#| echo: false
+#| eval: false
+
+# how do I put the cell values in order for better regex. Right now can't search
+# for 'sales store' or 'store sales' needs to be 'store total'
+# otherwise, can remove .sort() in filter
+
+
+rows = [["d e f,"], ["c a b"], ["i_h_g"]];
+
+let reorderCellValues = function(data) {
+    return data.map(function(s) {
+      return s.toString().replace(/_/g, ' ').split(' ').filter(n => n).sort().join(' ')
+    })
+}
+
+console.log(rows.map(reorderCellValues))
+
+
+raw_data |>
+  group_by(table) |>
+  summarise(field_list = paste(sort(field), collapse = " • ")) |>
+  ungroup() |>
+  reactable(
+    showPageSizeOptions = TRUE,
+    highlight = TRUE, 
+    height = 700,
+    theme = reactableTheme(
+      style = list(
+        color = "#444444",
+        fontFamily = "Segoe UI, Helvetica, Arial, sans-serif"
+      )
+    ),
+    defaultColDef = colDef(
+      filterable = TRUE,
+      filterMethod = JS(
+          "function(rows, columnId, filterValue) {
+      try {
+        let pattern = filterValue.split(' ').filter(n => n).sort().join('.*')
+        let regexPattern = RegExp(pattern, 'i')
+        
+        
+        let reorderCellValues = function(data) {
+            return data.map(function(s) {
+              return s.toString().replace(/_/g, ' ').split(' ').filter(n => n).sort().join(' ')
+            })
+        }
+        
+        console.log(rows.values[[1]][0])
+        //console.log(rows.map(reorderCellValues))
+      
+        //console.log(rows)
+        //for (i = 0; i < rows.length; i++) {
+        //  rowValues.values[i] = rowValues.values[i].replace(/ |_/g, ' ').split(' ').filter(n => n).sort().join(' ')
+        //}
+        
+        return rows.filter(
+          function(row) {
+            return regexPattern.test(row.values[columnId])
+            //return regexPattern.test(rowValues)
+          }
+        )
+      } catch(e) {
+          return rows
+      }
+       
+  }"
+      ),
+      cell = js_match_style,
+      html = TRUE
+    ),
+    columns = list(
+      table = colDef(width = 200)
+    )
+  )
+```
+
+The Salika Database is a relational database sample (`.db`) developed by [MySQL](https://www.jooq.org/sakila)
+
+<details>
+
+[Posit contest details](https://www.rstudio.com/blog/rstudio-table-contest-2022/)
+
+
+</details>
