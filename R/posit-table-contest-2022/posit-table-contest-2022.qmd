@@ -25,14 +25,19 @@ Search our data dictionary to find tables that have more than two or more fields
 js_filter <-  JS(
   "function(rows, columnId, filterValue) {
       try {
-        let pattern = filterValue.split(' ').filter(n => n).sort().join('.*')
-        let regexPattern = RegExp(pattern, 'i')
-        
-        return rows.filter(
-          function(row) {
-            return regexPattern.test(row.values[columnId])
-          }
-        )
+        //let pattern1 = filterValue.split(' ').filter(n => n).join('.*')
+        //let pattern2 = filterValue.split(' ').filter(n => n).sort().join('.*')
+        //let fullPattern = pattern1 + '|' + pattern2
+        //let regexPattern = RegExp(fullPattern, 'i')
+        //
+        //return rows.filter(
+        //  function(row) {
+        //    return regexPattern.test(row.values[columnId])
+        //  }
+        //)
+        const filterPatterns = filterValue.split(' ')
+        const searchRegExp = RegExp(`(${filterPatterns.join('|')})+`, 'gi')
+        return rows.filter(row => new Set(row.values[columnId].match(searchRegExp)).size == filterPatterns.length)
       } catch(e) {
           return rows
       }
@@ -91,7 +96,9 @@ raw_data |>
 # for 'sales store' or 'store sales' needs to be 'store total'
 # otherwise, can remove .sort() in filter
 
+```
 
+```{js}
 rows = [["d e f,"], ["c a b"], ["i_h_g"]];
 
 let reorderCellValues = function(data) {
@@ -103,60 +110,34 @@ let reorderCellValues = function(data) {
 console.log(rows.map(reorderCellValues))
 
 
-raw_data |>
-  group_by(table) |>
-  summarise(field_list = paste(sort(field), collapse = " • ")) |>
-  ungroup() |>
+
+rows = [{"table": 1, "field": "Joe"}, {"table": 2, "field": "Jake Joe Joey"}]
+columnId = "field"
+filterValue = 'Jo Ja'
+// searchRegExp = RegExp(`(${filterValue.split(' ').join('|')})+`, 'g')
+// rows.filter(x => searchRegExp.test(x[columnId]))
+const filterPatterns = filterValue.split(' ')
+const searchRegExp = RegExp(`(${filterPatterns.join('|')})+`, 'g')
+rows.filter(row => new Set(row[columnId].match(searchRegExp)).size == filterPatterns.length)
+
+//rows.map(row => row.match(searchRegExp))[columnId]
+```
+
+```{r}
+library(tidyverse)
+library(reactable)
+
+tibble(field_list = head(sentences, 20)) |>
   reactable(
-    showPageSizeOptions = TRUE,
-    highlight = TRUE, 
-    height = 700,
-    theme = reactableTheme(
-      style = list(
-        color = "#444444",
-        fontFamily = "Segoe UI, Helvetica, Arial, sans-serif"
-      )
-    ),
     defaultColDef = colDef(
       filterable = TRUE,
+      html = TRUE,
       filterMethod = JS(
           "function(rows, columnId, filterValue) {
-      try {
-        let pattern = filterValue.split(' ').filter(n => n).sort().join('.*')
-        let regexPattern = RegExp(pattern, 'i')
-        
-        
-        let reorderCellValues = function(data) {
-            return data.map(function(s) {
-              return s.toString().replace(/_/g, ' ').split(' ').filter(n => n).sort().join(' ')
-            })
-        }
-        
-        console.log(rows.values[[1]][0])
-        //console.log(rows.map(reorderCellValues))
-      
-        //console.log(rows)
-        //for (i = 0; i < rows.length; i++) {
-        //  rowValues.values[i] = rowValues.values[i].replace(/ |_/g, ' ').split(' ').filter(n => n).sort().join(' ')
-        //}
-        
-        return rows.filter(
-          function(row) {
-            return regexPattern.test(row.values[columnId])
-            //return regexPattern.test(rowValues)
-          }
-        )
-      } catch(e) {
-          return rows
-      }
-       
-  }"
-      ),
-      cell = js_match_style,
-      html = TRUE
-    ),
-    columns = list(
-      table = colDef(width = 200)
+              const filterPatterns = filterValue.split(' ')
+              const searchRegExp = RegExp(`(${filterPatterns.join('|')})+`, 'gi')
+              return rows.filter(row => new Set(row.values[columnId].match(searchRegExp)).size == filterPatterns.length)
+        }")
     )
   )
 ```
