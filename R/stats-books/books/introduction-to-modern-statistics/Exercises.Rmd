@@ -10,17 +10,28 @@ knitr::opts_chunk$set(echo = TRUE)
 
 *Authors - Mine Çetinkaya-Rundel and Johanna Hardin*
 
+<<<<<<< Updated upstream
 * Site - https://openintro-ims.netlify.app/index.html
 * Repo - https://github.com/openintrostat/ims
 
 * Tutorials - https://openintrostat.github.io/ims-tutorials/
 * Labs - http://openintrostat.github.io/oilabs-tidy/
+=======
+-   Site - <https://openintro-ims.netlify.app/index.html>
+
+-   Repo - <https://github.com/openintrostat/ims>
+
+-   Tutorials - <https://openintrostat.github.io/ims-tutorials/>
+
+-   Labs - <http://openintrostat.github.io/oilabs-tidy/>
+>>>>>>> Stashed changes
 
 ```{r workspace}
 library(openintro)
 library(tidyverse)
 ```
 
+<<<<<<< Updated upstream
 ## Chapter 1
 
 ### Stents
@@ -38,127 +49,264 @@ stent365
 ```
 
 ## Chapter 3
+=======
+## Chapter 2
+
+- **census** = entire population
+- **sample** = subset of population
+- **parameter** = summary measurement for population
+- **statistic** = summary measurement for sample
+
+```{r}
+UCBAdmissions |>
+  as.data.frame() |> 
+  count(Dept, Gender, Admit, wt = Freq) |> 
+  group_by(Dept, Gender) |> 
+  summarise(pct = sum(n[Admit == "Admitted"]) / sum(n)) |> 
+  ungroup() |> 
+  spread(Gender, pct)
+
+#  Dept    Male  Female
+# 
+#  A     0.621   0.824  TRUE 
+#  B     0.630   0.68   TRUE
+#  C     0.369   0.341  FALSE
+#  D     0.331   0.349  TRUE
+#  E     0.277   0.239  FALSE
+#  F     0.0590  0.0704
+  
+ucb_admit %>%
+  # Group by department, then gender
+  group_by(Dept, Gender) %>%
+  # Table of counts of admission status and gender and department
+  count(Admit) %>%
+  # Create new variable
+  mutate(prop = n / sum(n)) 
+```
+
+## Chapter 3
+
+>>>>>>> Stashed changes
 ```{r}
 
 ```
 
 ## Chapter 4
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 ```{r}
 
 ```
 
 ## Chapter 5
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 ```{r}
 
 ```
 
 ## Chapter 6
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 ```{r}
 
 ```
 
 ## Chapter 7
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 ```{r}
 
 ```
 
 ## Chapter 8
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 ```{r}
 
 ```
 
 ## Chapter 9
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 ```{r}
 
 ```
 
 ## Chapter 10
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 ```{r}
 
 ```
 
 ## Chapter 11
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 ```{r}
 
 ```
 
 ## Chapter 12
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 ```{r}
 
 ```
 
 ## Chapter 13
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 ```{r}
 
 ```
 
 ## Chapter 14
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 ```{r}
 
 ```
 
 ## Chapter 15
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 ```{r}
 
 ```
 
 ## Chapter 16
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 ```{r}
 
 ```
 
 ## Chapter 17
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 ```{r}
 
 ```
 
 ## Chapter 18
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 ```{r}
 
 ```
 
 ## Chapter 19
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 ```{r}
 
 ```
 
 ## Chapter 20
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 ```{r}
 
 ```
 
 ## Chapter 21
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 ```{r}
 
 ```
 
 ## Chapter 22
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 ```{r}
 
 ```
 
 ## Chapter 23
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 ```{r}
 
 ```
 
 ## Chapter 24
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 ```{r}
 
 ```
 
 ## Chapter 25
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 ```{r}
 
 ```
 
 ## Chapter 26
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 ```{r}
 
 ```
 
 ## Chapter 27
+<<<<<<< Updated upstream
 ```{r}
 
 ```
 
+=======
+
+```{r}
+
+```
+>>>>>>> Stashed changes
