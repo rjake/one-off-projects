@@ -40,6 +40,11 @@ overlapping areas shared with other districts. This analysis provides the data f
     &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
     <img src="R/find-good-datasets/app-example.png" height="200"/>
 
+* Posit Table Contest 2022 ([code](R/posit-table-contest-2022/posit-table-contest-2022.html) | [app]()) entry for 2022 
+
+    &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+    <img src="" height="200"/>
+    
 # Other
 * [COVID confidence intervals]() While the # of cases is subject to testing or 
 a person being symptomatic enough to seek medical care, the number of deaths due
