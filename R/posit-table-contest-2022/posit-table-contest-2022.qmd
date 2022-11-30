@@ -25,19 +25,11 @@ Search our data dictionary to find tables that have more than two or more fields
 js_filter <-  JS(
   "function(rows, columnId, filterValue) {
       try {
-        //let pattern1 = filterValue.split(' ').filter(n => n).join('.*')
-        //let pattern2 = filterValue.split(' ').filter(n => n).sort().join('.*')
-        //let fullPattern = pattern1 + '|' + pattern2
-        //let regexPattern = RegExp(fullPattern, 'i')
-        //
-        //return rows.filter(
-        //  function(row) {
-        //    return regexPattern.test(row.values[columnId])
-        //  }
-        //)
-        const filterPatterns = filterValue.split(' ')
-        const searchRegExp = RegExp(`(${filterPatterns.join('|')})+`, 'gi')
-        return rows.filter(row => new Set(row.values[columnId].match(searchRegExp)).size == filterPatterns.length)
+        const pattern = filterValue.split(' ')
+        const find = RegExp(`(${pattern.join('|')})+`, 'gi')
+        return rows.filter(
+          row => new Set(row.values[columnId].match(find)).size == pattern.length
+        )
       } catch(e) {
           return rows
       }
