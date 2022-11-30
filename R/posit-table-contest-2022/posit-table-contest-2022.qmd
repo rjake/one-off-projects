@@ -22,13 +22,15 @@ raw_data <- read_rds("salika.Rds")
 Search our data dictionary to find tables that have more than two or more fields of interest. You can use regular expressions or fragments of field names separated by spaces. The filter looks in alphabetical order.
 
 ```{r}
+# each fragment is searched for separately with match size >= # of fragments
+# size > length happens when something like city(_id)? returns two positive matches
 js_filter <-  JS(
   "function(rows, columnId, filterValue) {
       try {
         const pattern = filterValue.split(' ')
         const find = RegExp(`(${pattern.join('|')})+`, 'gi')
         return rows.filter(
-          row => new Set(row.values[columnId].match(find)).size == pattern.length
+          row => new Set(row.values[columnId].match(find)).size >= pattern.length
         )
       } catch(e) {
           return rows
