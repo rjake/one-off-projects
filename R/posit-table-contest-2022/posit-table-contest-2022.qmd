@@ -1,0 +1,104 @@
+---
+title: "Data Dictionary"
+format: 
+  html:
+    theme: flatly
+    code-tools: true
+    page-layout: full
+execute: 
+  echo: false
+  message: false
+  warning: false
+---
+
+```{r}
+library(tidyverse)
+library(reactable)
+
+raw_data <- read_rds("salika.Rds")
+```
+
+Search our data dictionary to find tables containing two or more fields of interest.  
+You can use regular expressions or fragments of field names separated by spaces. 
+<details>
+<summary> See examples </summary>
+* `category title` finds records with fields like "category" and like "title"
+* `cust zip phone` finds records where there is customer information, zip code and phone numbers
+* `\bname\b phone` find exactly the field "name" (\b = boundary) and a field containing "phone"
+* `amount|rate` amount or rate (pipe = or)
+* `city(_id)?` find "city" maybe followed by "_id" (? = maybe)
+* see [here](https://github.com/rstudio/cheatsheets/blob/main/strings.pdf) for more on regular experssions
+</details>
+
+```{r}
+# each fragment is searched for separately with match size >= # of fragments
+# size > length happens when something like city(_id)? returns two positive matches
+js_filter <-  JS(
+  "function(rows, columnId, filterValue) {
+      // rows = [{'table': 1, 'field': 'city'}, {'table': 2, 'field': 'city city_id'}] 
+      // columnId = 'field'
+      // filterValue = 'city(_id)?'
+      try {
+        const pattern = filterValue.split(' ')
+        const find = RegExp(`(${pattern.join('|')})+`, 'gi')
+        return rows.filter(
+          row => new Set(row.values[columnId].match(find)).size >= pattern.length
+        )
+      } catch(e) {
+          return rows
+      }
+       
+  }"
+)
+
+# highlight all fragment occurrences string matches
+js_match_style <- JS(
+  "function(cellInfo) {
+    try {
+      let filterValue = cellInfo.filterValue
+      let pattern = filterValue.split(' ').filter(n => n).sort().join('|')
+      let regexPattern = new RegExp('(' + pattern + ')', 'gi')
+      let replacement = '<span style=\"color:black;font-weight:bold;\">$1</span>'
+      return cellInfo.value.replace(regexPattern, replacement)
+    } catch(e) {
+        return cellInfo.value
+    }
+  }"
+)
+
+raw_data |>
+  group_by(table) |>
+  summarise(field_list = paste(sort(field), collapse = " • ")) |>
+  ungroup() |>
+  reactable(
+    showPageSizeOptions = TRUE,
+    defaultPageSize = 50,
+    highlight = TRUE, 
+    height = 500,
+    theme = reactableTheme(style = list(color = "grey")),
+    defaultColDef = colDef(# for all columns
+      filterable = TRUE,
+      filterMethod = js_filter,
+      cell = js_match_style,
+      html = TRUE
+    ),
+    columns = list( # for 'table' only
+      table = colDef(width = 200)
+    )
+  )
+```
+
+The Salika Database is a relational database sample (`.db`) developed by [MySQL](https://www.jooq.org/sakila)
+
+<details>
+<summary> More info </summary>
+* [Posit contest details](https://www.rstudio.com/blog/rstudio-table-contest-2022/)
+* [`r fontawesome::fa("github")` rjake](http://www.github.com/rjake)
+
+This entry mimics a data dictionary tool I previously created with `shiny`. A data dictionary displays metadata about the relationships between tables and columns within a database. While it isn't hard to find which tables have which columns, it is a lot harder to identify tables that have columns x, y and z. An extra challenge is that columns might not have the same naming conventions across tables. This data dictionary evaluates word fragments and regular expressions to filter rows. At the same time, there is a custom rendering function to bold the matching text.
+
+I wanted to write something that was generalizable to another person's metadata and I wanted it to be under 100 lines of code. After seeing all the cool features in [`reactable`](https://glin.github.io/reactable/index.html), I decided to try it out with quarto and a tiny bit of JS.
+
+</details>
+
+*Jake Riley 11/29/2022*
