@@ -1,6 +1,6 @@
 # One-off Projects & Analyses 
 
-<a href="https://github.com/rjake/one-off-projects"> <img src="https://img.shields.io/static/v1?style=for-the-badge&color=999999&message=Code&logo=GitHub&logoColor=fff&label="  alt="Resume"></a>
+<a href="https://github.com/rjake/one-off-projects"> <img src="https://img.shields.io/static/v1?style=for-the-badge&color=666666&message=Code&logo=GitHub&logoColor=fff&label="  alt="Resume"></a>
 
     
     
@@ -16,8 +16,8 @@ and infection rates?
 * [Drawing wih R](R/drawing-with-r) Given an image (jpg), can R return the graphic as
 circles or lines
 
-    &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;;
-    <img src="R/drawing-with-r/output/example.png" height="200"/>
+    &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+    <img src="R/drawing-with-r/output/example.png" height="150"/>
 
 
 * [Gerrymandering](R/gerrymandering) While there is no great way to identify in an area
