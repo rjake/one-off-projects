@@ -66,6 +66,7 @@ js_match_style <- JS(
   }"
 )
 
+# collapse data into one row per table
 raw_data |>
   group_by(table) |>
   summarise(field_list = paste(sort(field), collapse = " • ")) |>
