@@ -45,20 +45,17 @@ get_data_info <- function(x) {
     max_rows <- 100
     max_cols <- 20
     
-    # pkg <- str_extract(x, ".*(?=::)")
-    # item <- str_extract(x, "(?<=::).*")
+    pkg <- str_extract(x, ".*(?=::)")
+    item <- str_extract(x, "(?<=::).*")
     
-    #data(list = item, package = pkg)
+    # need this weird logic for data like AER::BankWages
+    data(list = item, package = pkg)
+    df <- get(item)
+    rm(list = item, envir = globalenv())
     
-    df <- x |> rlang::parse_expr() |> eval()
-    
-    #rm(list = item, envir = globalenv())
-    
-    # rm(list = item, envir = globalenv())
+    # metadata
     item_class <- class(df)
-    
     is_df <- inherits(df, "data.frame") & !inherits(df, "sf")
-    
     dim <- dim(df) |> paste(collapse = " x ")
     is_trunc <- TRUE
     
@@ -101,6 +98,7 @@ get_data_info(x = "ggplot2::diamonds")
 get_data_info(x = "ggplot2::economics")
 get_data_info(x = "ggplot2::economics_long")
 get_data_info(x = "openintro::hfi")
+get_data_info(x = "AER::BankWages") # not actually available when called this way
 get_data_info(x = "openintro::antibiotics") # not truncated
 get_data_info(x = "openintro::ucla_f18") # has logic
 get_data_info(x = "stringr::sentences") # not df
@@ -128,7 +126,6 @@ list_details <-
   map_dfr(flatten)
 
 
-
 prep_details <-
   list_details |> 
   mutate(n_other = n_col - n_discrete - n_numeric - n_date - n_logic) |>
@@ -151,9 +148,6 @@ data_details |>
   count(pkg) |> 
   print(n = Inf)
 
-data_details |> 
-#  filter(category == "other") |> 
-  count(category, class)
 
 write_csv(data_details, "data_details.csv")
 
