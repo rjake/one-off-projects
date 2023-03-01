@@ -139,7 +139,7 @@ data_details <-
     pkg = package,
     name = item
   ) |> 
-  filter((n_row >= 30 & n_col >= 5) | n_discrete > 0) |> 
+  filter((n_row >= 30 & n_col >= 3) | n_discrete > 0) |> 
   arrange(name) |> 
   print()
 

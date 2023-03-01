@@ -478,12 +478,18 @@ About
 Column
 -------------------------------------
 
-Hi. Thanks for visiting the app. I hope you found it useful. The goal was to create a way to preview built-in data sets that might be useful to use. The data sets come from base R, the tidyverse, and a few other packages. This work was inspired by the [`RPackages` project](https://vincentarelbundock.github.io/Rdatasets/articles/data.html) by Vincent Arel-Bundock.
+Hi. Thanks for visiting the app. I hope you found it useful. The goal was to create a way to preview built-in data sets that might be useful to use. This work was inspired by the [`RPackages` project](https://vincentarelbundock.github.io/Rdatasets/articles/data.html) by Vincent Arel-Bundock.
 
-I used some criteria to pare down the data sets that are included:
+The data sets come from:
 
-* data frames with at least 30 rows and 5 columns
-* or data frames with at least one character/factor column
+* base R - listed under `datasets::`
+* the top 100 packages downloaded last month from CRAN by using `cranlogs::cran_top_downloads(when = "last-month", count = 100)` (as of 3/1/2023)
+* these additional packages as they are have numerous built-in data sets: `AER`, `carData`, `Ecdat`, `HistData`, `ISLR`, `MASS`, `openintro`, `survival`, `usdata`, `wooldridge`
+  
+I also used some additional criteria to pare down the data sets:
+
+* data frames must have at least 30 rows and 3 columns
+* or at least one character/factor column
 
 
 ##### Presentation:
@@ -493,11 +499,11 @@ specs <- ds_obj$`tidyr::billboard`$data |> dim()
 
 * to make this a lighter sized app, the data sets are truncated to `r specs[1]` rows and a max of `r specs[2]` columns
 * the data listed under `datsets` shows what comes with R on installation. You can find installed data from all packages using `data(package = .packages(all.available = TRUE))` (you can add `$results` to view it as a data frame)
-* the button for `discrete` might seem misleading for factors that are represented as integers. For example the `Diet` column in the `ChickWeight` table is a factor of integers 1-4
+* the button for `discrete` might seem misleading for factors that are represented as integers. For example the `Diet` column in the `ChickWeight` table looks like integers 1-4 but are stored as an ordinal data type
 * code for the app can be found via the `</>` icon in the top right and the underlying files are located on [my github](https://github.com/rjake/one-off-projects/blob/main/R/find-good-datasets)
 * if you can think of packages that should be included, [shoot me an email](mailto:rjake@sas.upenn.edu)
 
 ##### Note:
 
-Some packages like `AER` and `Stat2Data` have data that is only accessible via the `data()` function. For example, you won't find `SandwichAnts` via `Stat2Data::SandwichAnts`, you'll have to use `data("SandwichAnts", package = "Stat2Data")` and then it will appear in your global environment. 
+Some packages like `AER` have data that is only accessible via the `data()` function. For example, you won't find `CASchools` via `AER::CASchools`, you'll have to use `data("CASchools", package = "AER")` and then it will appear in your global environment. 
 
