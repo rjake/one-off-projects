@@ -200,7 +200,7 @@ Sidebar {.sidebar data-width=470}
 # * listen_col_types( ) ----
 listen_col_types <- reactive({
   if (is.null(input$col_types) | "any" %in% input$col_types) {
-    ids <- seq_along(ds_info$category)
+    ids <- seq_len(nrow(ds_info))
   } else {
     
     # assign default value of all being true
@@ -254,6 +254,20 @@ checkboxGroupButtons(
   choices = c("any", "discrete", "numeric", "date"),
   selected = "discrete"
 )
+
+observeEvent(input$col_types, {
+  if (any(input$col_types == "any")) {
+    # unselect all others
+    updateRadioGroupButtons(
+      session,
+      inputId = "col_types",
+      selected = "any"
+    )
+    
+    # kick off reactive data
+    listen_col_types()
+  }
+})
 
 ```
 
