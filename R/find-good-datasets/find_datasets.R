@@ -4,9 +4,25 @@ setwd(dirname(.rs.api.getSourceEditorContext()$path))
 library(tidyverse)
 library(glue)
 
+
+top_100 <- cranlogs::cran_top_downloads(when = "last-month", count = 100) # 3/1/2023
+
+addl_pkgs <- c(
+  "AER", "carData", "Ecdat", "HistData", "ISLR", "MASS", 
+  "openintro", "survival", "usdata", "wooldridge"
+)
+
+# check that all are available
+if (!all(c(addl_pkgs, top_100$package) %in% .packages(all.available = TRUE))) {
+  setdiff(c(addl_pkgs, top_100$package), .packages(all.available = TRUE)) |> 
+    glue_collapse("', '") |> 
+    glue(x = _, "these packages are missing: c('{x}')") |> 
+    stop()
+}
+
 base_data <-
-  data(package = .packages(all.available = TRUE))$results |>
-  as_tibble() |>
+  data(package = c(top_100$package, addl_pkgs, "datasets"))$results |>
+  as_tibble() |> 
   rename_all(tolower) |>
   select(-libpath) |> 
   mutate(
@@ -14,10 +30,6 @@ base_data <-
     pkg_data = glue("{package}::{item}")
   ) |> 
   distinct() |> 
-  filter(
-    !str_detect(package, "^(headliner|maptools|plyr|simplecolors|sp)$"),
-    !str_detect(item, "^(coralPval|HHSCyberSecurityBreaches|Khan|NCI60|ipo|treering)$")
-  ) |> 
   mutate(
     origin = case_when(
       package == "datasets" ~ "base",
@@ -29,44 +41,32 @@ base_data <-
 
 
 
-
 get_data_info <- function(x) {
     max_rows <- 100
     max_cols <- 20
     
-    pkg <- str_extract(x, ".*(?=::)")
-    item <- str_extract(x, "(?<=::).*")
-    # if (pkg %in% c("AER", "Stat2Data")) {
-    #   data(list = item)
-    # } else {
-      data(list = item, package = pkg)
-    #}
-    df <- get(item)  #rlang::parse_expr(x) |> eval()
-    rm(list = item, envir = globalenv())
-    df_class <- class(df)
-    is_df <- inherits(df, "data.frame") & !inherits(df, "sf")
+    # pkg <- str_extract(x, ".*(?=::)")
+    # item <- str_extract(x, "(?<=::).*")
     
+    #data(list = item, package = pkg)
+    
+    df <- x |> rlang::parse_expr() |> eval()
+    
+    #rm(list = item, envir = globalenv())
+    
+    # rm(list = item, envir = globalenv())
+    item_class <- class(df)
+    
+    is_df <- inherits(df, "data.frame") & !inherits(df, "sf")
     
     dim <- dim(df) |> paste(collapse = " x ")
     is_trunc <- TRUE
     
-    # if (is.list(df) & !is_df) {
-    #   use_data <- map(df, head, max_rows / 2)
-    #   
-    # } else if (is.vector(df) & !is.list(df)) {
-    #   use_data <- head(df, max_rows)
-    #   dim <- length(df)
-    #   
-    # } else 
     if (!is_df) {
       return(NULL)
-      # use_data <- df
-      # is_trunc <- FALSE
-      
     } else if (nrow(df) < max_rows & ncol(df) <= max_cols) {
       use_data <- df
       is_trunc <- FALSE
-      
     } else {
       use_data <- 
         head(df, max_rows) |> 
@@ -79,17 +79,8 @@ get_data_info <- function(x) {
       attr(use_data, "spec") <- NULL # comes in with some tibbles, ex openintro::hfi
     }
     
-    class_test <- function(df, class) {
-      sum(
-        sapply(
-          df,
-          function(col) {
-            class(col) |> discard(str_detect, "labelled") |> pluck(1) %in% class
-          }
-        )
-      )
-    }
-    
+    class_types <- map_chr(df, ~pluck(class(.x), 1))
+
     list(
       pkg_data = x,
       data = use_data,
@@ -97,29 +88,29 @@ get_data_info <- function(x) {
       dim = as.character(dim),
       n_col = ncol(df),
       n_row = nrow(df),
-      class = df_class[1],
-      n_discrete = class_test(df, c("character", "factor", "ordered")),
-      n_numeric = class_test(df, c("numeric", "integer", "labelled")),
-      n_date = class_test(df, c("Date", "POSIXct", "dttm"))
+      class = item_class[1],
+      n_discrete = sum(class_types %in% c("character", "factor", "ordered")),
+      n_numeric = sum(class_types %in% c("numeric", "integer", "labelled")),
+      n_date = sum(class_types %in% c("Date", "POSIXct", "dttm")),
+      n_logic = sum(class_types %in% c("logical"))
     )
 }
 
 
-get_data_info(x = "Stat2Data::BeeStings")
-get_data_info(x = "COUNT::fishing")
-get_data_info(x = "ks::platesf")
 get_data_info(x = "ggplot2::diamonds")
+get_data_info(x = "ggplot2::economics")
+get_data_info(x = "ggplot2::economics_long")
 get_data_info(x = "openintro::hfi")
-get_data_info(x = "stringr::sentences")
-get_data_info(x = "openintro::children_gender_stereo")
-get_data_info("datasets::Seatbelts")
+get_data_info(x = "openintro::antibiotics") # not truncated
+get_data_info(x = "openintro::ucla_f18") # has logic
+get_data_info(x = "stringr::sentences") # not df
+get_data_info(x = "datasets::Seatbelts") # not df
+
 
 ds_obj <-
-  map(
-    .x = base_data$pkg_data, #[201:205]
-    possibly(get_data_info, otherwise = NULL)
-  ) |>
   set_names(base_data$pkg_data) |> 
+  # head() |> 
+  map(.f = possibly(get_data_info, otherwise = NULL)) |>
   discard(is.null)
 
 
@@ -128,6 +119,8 @@ map(ds_obj, pluck, "data") |>
   map_df(object.size) |> 
   gather() |> 
   arrange(desc(value))
+
+sum(.Last.value$value)
 
 list_details <- 
   ds_obj |> 
@@ -138,19 +131,7 @@ list_details <-
 
 prep_details <-
   list_details |> 
-  mutate(
-    category = case_when(
-      str_detect(class, "data.frame|nfnGroupedData|tbl_df") ~ "data.frame",
-      class %in% c("character", "factor", "numeric") ~ "vector",
-      str_detect(class, "ts$") ~ "ts",
-      TRUE ~ "other"
-    ),
-    is_df = category == "data.frame",
-    .after = pkg_data
-  ) |> 
-  mutate(
-    n_other = n_col - n_discrete - n_numeric - n_date
-  ) |>
+  mutate(n_other = n_col - n_discrete - n_numeric - n_date - n_logic) |>
   print()
 
 
@@ -161,16 +142,14 @@ data_details <-
     pkg = package,
     name = item
   ) |> 
-  filter(
-    (n_row >= 30 & n_col >= 5)
-    | n_discrete > 0
-  ) |> 
+  filter((n_row >= 30 & n_col >= 5) | n_discrete > 0) |> 
   arrange(name) |> 
   print()
 
 
 data_details |> 
-  count(pkg)
+  count(pkg) |> 
+  print(n = Inf)
 
 data_details |> 
 #  filter(category == "other") |> 

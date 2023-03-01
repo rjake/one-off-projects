@@ -365,12 +365,11 @@ renderUI({
     filter(pkg_data == input$selected) |>
     mutate(
       dim = replace_na(dim, ""),
-      cat_addl = ifelse(class != category, glue(" ({category})"), ""),
-      dim_addl = ifelse(is_df & is_trunc, " (truncated for display)", "")
+      dim_addl = ifelse(is_trunc, " (truncated for display)", "")
     ) |> 
     glue::glue_data(
       "{strong(pkg_data)} - {title}\\
-      <br/> {{{class}}}{cat_addl} {dim}{dim_addl}
+      <br/> {{{class}}} {dim}{dim_addl}
       <br/>"
     ) |>
     paste(
