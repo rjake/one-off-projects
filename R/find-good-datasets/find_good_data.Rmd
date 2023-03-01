@@ -36,6 +36,8 @@ input <-
     selected = "carData::Arrests"
   )
 
+output <- list()
+
 ```
 
 ```{css css-style}
@@ -359,8 +361,8 @@ Column
 
 # TODO: add title: packageDescription("beeswarm")$Title
 
-renderUI({
-  #print(input$selected)
+data_display <- reactive({
+    #print(input$selected)
   ds_info |> 
     filter(pkg_data == input$selected) |>
     mutate(
@@ -371,7 +373,11 @@ renderUI({
       "{strong(pkg_data)} - {title}\\
       <br/> {{{class}}} {dim}{dim_addl}
       <br/>"
-    ) |>
+    )
+})
+
+renderUI({
+  data_display() |>
     paste(
       actionLink(
         inputId = "meta",
@@ -388,20 +394,25 @@ renderUI({
     HTML()
 })
 
-output$skimr_results <- renderPrint(
+output$skimr_results <- renderUI(
   expr = {
     x <- ds_obj[[input$selected]]$data
-    skimr::skim(x) |> 
-      skimr::partition()
+    #skimr_results <- 
+      skimr::skim(x) #|> skimr::partition()
   }
 )
 
+output$skimr_title <- renderUI({
+  data_display() |> 
+    HTML()
+})
 
  observeEvent(input$stats, {
    showModal(
      modalDialog(
        title = "Stats",
-       verbatimTextOutput("skimr_results"),
+       uiOutput("skimr_title"),
+       uiOutput("skimr_results"),
        easyClose = TRUE,
        size = "l",
        footer = NULL
