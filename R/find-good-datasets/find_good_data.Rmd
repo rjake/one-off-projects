@@ -12,7 +12,6 @@ output:
       href: https://github.com/rjake/one-off-projects/blob/main/R/find-good-datasets
       align: right
 resource_files:
-- ds_list.Rds
 - data_details.csv
 ---
 
@@ -35,6 +34,8 @@ input <-
     col_types = c("discrete", "date"),
     selected = "carData::Arrests"
   )
+
+output <- list()
 
 ```
 
@@ -64,18 +65,24 @@ library(skimr)
 
 options(width = 100) # for renderPrint -> verbatimTextOutput
 
+truncate <- list(
+  nrow = 100,
+  ncol = 20
+)
 
 # * ds_obj ----
-ds_obj <- read_rds("ds_list.Rds")
+# ds_obj <- read_rds("ds_list.Rds")
 
 # * ds_info ----
 ds_info <- 
   read_csv("data_details.csv") |> 
+  filter((n_row >= 30 & n_col >= 3) | n_discrete > 0) |> 
   arrange(
-    desc(pkg == "datasets"),
-    pkg,
+    #desc(pkg == "datasets"),
+    #pkg,
     name
   )
+  
 
 # * starting_data ----
 # starting_data <- 
@@ -85,6 +92,29 @@ ds_info <-
 #     selected = "CO2"
 #   )
 
+```
+
+```{r libraries-required}
+library(datasets)
+library(AER)
+library(carData)
+library(dplyr)
+library(Ecdat)
+library(forcats)
+library(ggplot2)
+library(HistData)
+library(ISLR)
+library(lubridate)
+library(MASS)
+library(openintro)
+library(survival)
+library(tidyr)
+library(usdata)
+library(wooldridge)
+
+select <- dplyr::select # conflicts with MASS::select
+
+e <- new.env() # * e ----
 ```
 
 
@@ -121,14 +151,6 @@ log_rv <- function() {
   )
 }
 
-
-iprint <- function(x, n = 15) {
-  if (interactive()) {
-    print(x, n = n)
-  } else {
-    return(x)
-  }
-}
 
 vec_to_button <- function(inputId, vec, label = NULL, ...) {
   x <- table(vec)
@@ -198,7 +220,7 @@ Sidebar {.sidebar data-width=470}
 # * listen_col_types( ) ----
 listen_col_types <- reactive({
   if (is.null(input$col_types) | "any" %in% input$col_types) {
-    ids <- seq_along(ds_info$category)
+    ids <- seq_len(nrow(ds_info))
   } else {
     
     # assign default value of all being true
@@ -239,6 +261,19 @@ listen_pkg <- reactive({
 listen_possible <- reactive({
   intersect(listen_pkg(), listen_col_types())
 })
+
+# * use_data() ----
+use_data <- reactive({
+    i <- which(ds_info$pkg_data == input$selected)
+    
+    data(
+      list = ds_info$name[i], 
+      package = ds_info$pkg[i], 
+      envir = e
+    )
+    
+    get(ds_info$name[i], envir = e)
+})
 ```
 
 ### {data-height=40}
@@ -252,6 +287,20 @@ checkboxGroupButtons(
   choices = c("any", "discrete", "numeric", "date"),
   selected = "discrete"
 )
+
+observeEvent(input$col_types, {
+  if (any(input$col_types == "any")) {
+    # unselect all others
+    updateRadioGroupButtons(
+      session,
+      inputId = "col_types",
+      selected = "any"
+    )
+    
+    # kick off reactive data
+    listen_col_types()
+  }
+})
 
 ```
 
@@ -322,6 +371,7 @@ observeEvent(list(input$forward, input$arrow_right), {
 
 ```
 
+
 ```{r input-selected}
 
 renderUI({
@@ -355,32 +405,39 @@ Column
 ---------------------------------------
 
 ### {data-height=60}
-```{r data-info}
+```{r skimr}
 
 # TODO: add title: packageDescription("beeswarm")$Title
 
-renderUI({
-  #print(input$selected)
+data_display <- reactive({
+    #print(input$selected)
   ds_info |> 
     filter(pkg_data == input$selected) |>
     mutate(
       dim = replace_na(dim, ""),
-      cat_addl = ifelse(class != category, glue(" ({category})"), ""),
-      dim_addl = ifelse(is_df & is_trunc, " (truncated for display)", "")
+      dim_addl = ifelse(
+        n_row > truncate$nrow | n_col > truncate$ncol, 
+        " (truncated in display)", 
+        ""
+      )
     ) |> 
     glue::glue_data(
       "{strong(pkg_data)} - {title}\\
-      <br/> {{{class}}}{cat_addl} {dim}{dim_addl}
+      <br/> {{{class}}} {dim}{dim_addl}
       <br/>"
-    ) |>
+    )
+})
+
+renderUI({
+  data_display() |>
     paste(
-      actionLink(
-        inputId = "meta",
-        label = "Metadata",
-        style = "color:dodgerblue;",
-        onclick = "location.href='#section-metadata';"
-      ),
-      "|",
+      # actionLink(
+      #   inputId = "meta",
+      #   label = "Metadata",
+      #   style = "color:dodgerblue;",
+      #   onclick = "location.href='#section-metadata';"
+      # ),
+      # "|",
       actionLink(
         inputId = "stats",
         label = "Stats"
@@ -389,19 +446,29 @@ renderUI({
     HTML()
 })
 
-output$skimr_results <- renderPrint(
-  expr = {
-    x <- ds_obj[[input$selected]]$data
-    skimr::skim(x) |> 
-      skimr::partition()
-  }
-)
+
+output$skimr_title <- renderUI({
+  data_display() |> 
+    str_remove(" \\(truncated in display\\)") |> 
+    HTML()
+})
+
+
+output$skimr_results <- renderPrint({
+  df <- use_data()
+
+  skimr::skim(df) |>
+    skimr::partition() #|>
+  #   skimr:::knit_print.skim_df() |>
+  #   shiny::markdown()
+})
 
 
  observeEvent(input$stats, {
    showModal(
      modalDialog(
        title = "Stats",
+       uiOutput("skimr_title"),
        verbatimTextOutput("skimr_results"),
        easyClose = TRUE,
        size = "l",
@@ -413,19 +480,25 @@ output$skimr_results <- renderPrint(
 
 ```
 
+
 ### 
 
 ```{r output-table}
 # https://stackoverflow.com/questions/41381466/can-we-either-print-or-plot-in-shiny-in-same-panel
 renderReactable({
-  x <- ds_obj[[input$selected]]$data
+  df <- use_data()
+  #x <- df[1:min(c(100, nrow(df))), 1:min(c(20, ncol(df)))]
+  x <- df |> 
+    slice(  1:min(c(truncate$nrow, nrow(df))) ) |> 
+    select( 1:min(c(truncate$ncol,  ncol(df))) )
+    
   reactable(x, filterable = TRUE, pagination = FALSE)
 })
 
 ```
 
 
-Metadata
+All Metadata
 =======================================     
    
 Column
@@ -473,32 +546,36 @@ actionButton(
 #})
 ```
 
+
 About
 =====================================     
    
 Column
 -------------------------------------
 
-Hi. Thanks for visiting the app. I hope you found it useful. The goal was to create a way to preview built-in data sets that might be useful to use. The data sets come from base R, the tidyverse, and a few other packages. This work was inspired by the [`RPackages` project](https://vincentarelbundock.github.io/Rdatasets/articles/data.html) by Vincent Arel-Bundock.
+Hi. Thanks for visiting the app. I hope you found it useful. The goal was to create a way to preview built-in data sets that might be useful to use. This work was inspired by the [`RPackages` project](https://vincentarelbundock.github.io/Rdatasets/articles/data.html) by Vincent Arel-Bundock.
 
-I used some criteria to pare down the data sets that are included:
+The data sets come from:
 
-* data frames with at least 30 rows and 5 columns
-* or data frames with at least one character/factor column
+* base R - listed under `datasets::`
+* the top 100 packages downloaded last month from CRAN by using `cranlogs::cran_top_downloads(when = "last-month", count = 100)` (as of 3/1/2023)
+* these additional packages as they are have numerous built-in data sets: `AER`, `carData`, `Ecdat`, `HistData`, `ISLR`, `MASS`, `openintro`, `survival`, `usdata`, `wooldridge`
+  
+I also used some additional criteria to pare down the data sets:
+
+* data frames must have at least 30 rows and 3 columns
+* or at least one character/factor column
 
 
 ##### Presentation:
-```{r}
-specs <- ds_obj$`tidyr::billboard`$data |> dim()
-```
 
-* to make this a lighter sized app, the data sets are truncated to `r specs[1]` rows and a max of `r specs[2]` columns
+* to make this a lighter sized app, the data sets are truncated to `r truncate$nrow` rows and a max of `r truncate$ncol` columns
 * the data listed under `datsets` shows what comes with R on installation. You can find installed data from all packages using `data(package = .packages(all.available = TRUE))` (you can add `$results` to view it as a data frame)
-* the button for `discrete` might seem misleading for factors that are represented as integers. For example the `Diet` column in the `ChickWeight` table is a factor of integers 1-4
+* the button for `discrete` might seem misleading for factors that are represented as integers. For example the `Diet` column in the `ChickWeight` table looks like integers 1-4 but are stored as an ordinal data type
 * code for the app can be found via the `</>` icon in the top right and the underlying files are located on [my github](https://github.com/rjake/one-off-projects/blob/main/R/find-good-datasets)
 * if you can think of packages that should be included, [shoot me an email](mailto:rjake@sas.upenn.edu)
 
 ##### Note:
 
-Some packages like `AER` and `Stat2Data` have data that is only accessible via the `data()` function. For example, you won't find `SandwichAnts` via `Stat2Data::SandwichAnts`, you'll have to use `data("SandwichAnts", package = "Stat2Data")` and then it will appear in your global environment. 
+Some packages like `AER` have data that is only accessible via the `data()` function. For example, you won't find `CASchools` via `AER::CASchools`, you'll have to use `data("CASchools", package = "AER")` and then it will appear in your global environment. 
 
