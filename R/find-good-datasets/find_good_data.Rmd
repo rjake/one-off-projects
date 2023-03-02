@@ -12,7 +12,6 @@ output:
       href: https://github.com/rjake/one-off-projects/blob/main/R/find-good-datasets
       align: right
 resource_files:
-- ds_list.Rds
 - data_details.csv
 ---
 
@@ -66,18 +65,24 @@ library(skimr)
 
 options(width = 100) # for renderPrint -> verbatimTextOutput
 
+truncate <- list(
+  nrow = 100,
+  ncol = 20
+)
 
 # * ds_obj ----
-ds_obj <- read_rds("ds_list.Rds")
+# ds_obj <- read_rds("ds_list.Rds")
 
 # * ds_info ----
 ds_info <- 
   read_csv("data_details.csv") |> 
+  filter((n_row >= 30 & n_col >= 3) | n_discrete > 0) |> 
   arrange(
-    desc(pkg == "datasets"),
-    pkg,
+    #desc(pkg == "datasets"),
+    #pkg,
     name
   )
+  
 
 # * starting_data ----
 # starting_data <- 
@@ -87,6 +92,29 @@ ds_info <-
 #     selected = "CO2"
 #   )
 
+```
+
+```{r libraries-required}
+library(datasets)
+library(AER)
+library(carData)
+library(dplyr)
+library(Ecdat)
+library(forcats)
+library(ggplot2)
+library(HistData)
+library(ISLR)
+library(lubridate)
+library(MASS)
+library(openintro)
+library(survival)
+library(tidyr)
+library(usdata)
+library(wooldridge)
+
+select <- dplyr::select # conflicts with MASS::select
+
+e <- new.env() # * e ----
 ```
 
 
@@ -123,14 +151,6 @@ log_rv <- function() {
   )
 }
 
-
-iprint <- function(x, n = 15) {
-  if (interactive()) {
-    print(x, n = n)
-  } else {
-    return(x)
-  }
-}
 
 vec_to_button <- function(inputId, vec, label = NULL, ...) {
   x <- table(vec)
@@ -241,6 +261,19 @@ listen_pkg <- reactive({
 listen_possible <- reactive({
   intersect(listen_pkg(), listen_col_types())
 })
+
+# * use_data() ----
+use_data <- reactive({
+    i <- which(ds_info$pkg_data == input$selected)
+    
+    data(
+      list = ds_info$name[i], 
+      package = ds_info$pkg[i], 
+      envir = e
+    )
+    
+    get(ds_info$name[i], envir = e)
+})
 ```
 
 ### {data-height=40}
@@ -338,6 +371,7 @@ observeEvent(list(input$forward, input$arrow_right), {
 
 ```
 
+
 ```{r input-selected}
 
 renderUI({
@@ -371,7 +405,7 @@ Column
 ---------------------------------------
 
 ### {data-height=60}
-```{r data-info}
+```{r skimr}
 
 # TODO: add title: packageDescription("beeswarm")$Title
 
@@ -381,7 +415,11 @@ data_display <- reactive({
     filter(pkg_data == input$selected) |>
     mutate(
       dim = replace_na(dim, ""),
-      dim_addl = ifelse(is_trunc, " (truncated for display)", "")
+      dim_addl = ifelse(
+        n_row > truncate$nrow | n_col > truncate$ncol, 
+        " (truncated in display)", 
+        ""
+      )
     ) |> 
     glue::glue_data(
       "{strong(pkg_data)} - {title}\\
@@ -393,13 +431,13 @@ data_display <- reactive({
 renderUI({
   data_display() |>
     paste(
-      actionLink(
-        inputId = "meta",
-        label = "Metadata",
-        style = "color:dodgerblue;",
-        onclick = "location.href='#section-metadata';"
-      ),
-      "|",
+      # actionLink(
+      #   inputId = "meta",
+      #   label = "Metadata",
+      #   style = "color:dodgerblue;",
+      #   onclick = "location.href='#section-metadata';"
+      # ),
+      # "|",
       actionLink(
         inputId = "stats",
         label = "Stats"
@@ -408,25 +446,30 @@ renderUI({
     HTML()
 })
 
-output$skimr_results <- renderUI(
-  expr = {
-    x <- ds_obj[[input$selected]]$data
-    #skimr_results <- 
-      skimr::skim(x) #|> skimr::partition()
-  }
-)
 
 output$skimr_title <- renderUI({
   data_display() |> 
+    str_remove(" \\(truncated in display\\)") |> 
     HTML()
 })
+
+
+output$skimr_results <- renderPrint({
+  df <- use_data()
+
+  skimr::skim(df) |>
+    skimr::partition() #|>
+  #   skimr:::knit_print.skim_df() |>
+  #   shiny::markdown()
+})
+
 
  observeEvent(input$stats, {
    showModal(
      modalDialog(
        title = "Stats",
        uiOutput("skimr_title"),
-       uiOutput("skimr_results"),
+       verbatimTextOutput("skimr_results"),
        easyClose = TRUE,
        size = "l",
        footer = NULL
@@ -437,19 +480,25 @@ output$skimr_title <- renderUI({
 
 ```
 
+
 ### 
 
 ```{r output-table}
 # https://stackoverflow.com/questions/41381466/can-we-either-print-or-plot-in-shiny-in-same-panel
 renderReactable({
-  x <- ds_obj[[input$selected]]$data
+  df <- use_data()
+  #x <- df[1:min(c(100, nrow(df))), 1:min(c(20, ncol(df)))]
+  x <- df |> 
+    slice(  1:min(c(truncate$nrow, nrow(df))) ) |> 
+    select( 1:min(c(truncate$ncol,  ncol(df))) )
+    
   reactable(x, filterable = TRUE, pagination = FALSE)
 })
 
 ```
 
 
-Metadata
+All Metadata
 =======================================     
    
 Column
@@ -497,6 +546,7 @@ actionButton(
 #})
 ```
 
+
 About
 =====================================     
    
@@ -518,11 +568,8 @@ I also used some additional criteria to pare down the data sets:
 
 
 ##### Presentation:
-```{r}
-specs <- ds_obj$`tidyr::billboard`$data |> dim()
-```
 
-* to make this a lighter sized app, the data sets are truncated to `r specs[1]` rows and a max of `r specs[2]` columns
+* to make this a lighter sized app, the data sets are truncated to `r truncate$nrow` rows and a max of `r truncate$ncol` columns
 * the data listed under `datsets` shows what comes with R on installation. You can find installed data from all packages using `data(package = .packages(all.available = TRUE))` (you can add `$results` to view it as a data frame)
 * the button for `discrete` might seem misleading for factors that are represented as integers. For example the `Diet` column in the `ChickWeight` table looks like integers 1-4 but are stored as an ordinal data type
 * code for the app can be found via the `</>` icon in the top right and the underlying files are located on [my github](https://github.com/rjake/one-off-projects/blob/main/R/find-good-datasets)
