@@ -49,3 +49,7 @@ r_related_df |>
   geom_col(aes(x = pct), fill = "dodgerblue") +
   geom_text(aes(x = pct, label = label), size = 4) +
   scale_x_continuous(labels = scales::percent_format())
+
+
+# Can also use SEDE (Stack Exchange Data Explorer) 
+# https://data.stackexchange.com/stackoverflow/query/1741453?TargetTag=r
