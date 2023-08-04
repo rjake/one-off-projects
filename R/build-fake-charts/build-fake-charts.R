@@ -264,7 +264,7 @@ plot_opts <- local({
     theme_opt =
       c(
         NA,
-        'legend.position = "none"',
+        #'legend.position = "none"',
         'plot.title.position = "plot"',
         "panel.grid = element_blank()",
         "axis.text.x = element_text(angle = 90)"
