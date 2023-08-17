@@ -1,14 +1,17 @@
 # Synthea
-Synthetic health record generator provided by [mitre.org](https://synthea.mitre.org/).
+`synthea` is a synthetic health record generator provided by [mitre.org](https://synthea.mitre.org/). It builds the medical records for the entire lifetime of `n` patients. It uses bayesian statistics and census data to send patients through different [health event modules](https://synthetichealth.github.io/module-builder/), for example [injuries](https://synthetichealth.github.io/module-builder/#injuries). The output is 18 data files (csv, ccda, fhir, json) from encounters and allergies to claims and durable medical equipment.
 
-`synthea` builds the entire lifetime medical record for `n` patients.
+In this repo:
+* this README has info on how to generate the data module
+* there is a script in [build-data](https://github.com/rjake/one-off-projects/blob/main/other/synthea/build-data/load-data.sql) that uses [duckdb](https://duckdb.org/) to load the data
+* the scripts in [clean-data](clean-data) are used to build curated data sets by defining cohorts and joining in dimensions
 
-See modules [here](https://synthetichealth.github.io/module-builder/), for example [injuries](https://synthetichealth.github.io/module-builder/#injuries)
+---
 
 ## Running Synthea
 ### Installation
 1) Make sure you have Java 11 or newer (select JDK not JRE) [see here]()
-  * what is the difference between on [this](https://www.oracle.com/java/technologies/downloads/) page
+  * **TODO: what is the difference between on [this](https://www.oracle.com/java/technologies/downloads/) page**
     > *JDK 20 is the latest release of Java SE Platform and JDK 17 LTS is the latest long-term support release for the Java SE platform.*
     * https://www.oracle.com/java/technologies/downloads/#jdk20-windows
     * https://www.oracle.com/java/technologies/downloads/#jdk17-windows
@@ -49,8 +52,7 @@ These are the arguments
 ## Cleaning Data
 * Import data into a database:
   * A good resource is [duckdb](https://duckdb.org/)
-  * See [load-data.sql](./load-data.sql) for an example of using duckdb to load data
-* Under
+  * See [load-data.sql](build-data/load-data.sql) for an example of using duckdb to load data
 
 ## Tutorials & resources
 * [wiki](https://github.com/synthetichealth/synthea/wiki)
