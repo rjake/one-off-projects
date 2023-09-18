@@ -106,9 +106,9 @@ select -- en.description, count(*), count(distinct en.id), sum(si.n)
             else 'Single'
             end
         end as marital_status,
-    pt.race,
-    pt.ethnicity,
-    pt.gender,
+    pt.race as race,
+    pt.ethnicity as ethnicity,
+    pt.gender as gender,
     -- visit
     case when age_days / 365.25 < 18 then 'CHILDREN''S HOSPITAL OF PHILADELPHIA' else og.name end as hospital_cachement_area,-- en.organization,
     --og.name end as organization_name,
@@ -172,3 +172,4 @@ where
    -- and lower(en.reasondescription) like '%heart failure%'
     -- and lower(en.reasondescription) <> 'primary small cell malignant neoplasm of lung  tnm stage 1 (disorder)'
 --group by 1
+;

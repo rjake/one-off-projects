@@ -34,9 +34,9 @@ select
     --max(cl.servicedate) over(partition by 1) as max_date,
     round((cl.servicedate::date - pt.birthdate::date) / 365.25, 1) as age_years,
     --pt.birthdate,
-    pt.race,
-    pt.ethnicity,
-    pt.gender,
+    pt.race as race,
+    pt.ethnicity as ethnicity,
+    pt.gender as gender,
     --pt.city,
     --pt.birthplace,
     case cl.healthcareclaimtypeid1
