@@ -1,5 +1,5 @@
 # set the folder location
-folder_path <- "output/n-10000"
+folder_path <- "output/n-2000"
 
 # basically runs from here
 setwd(dirname(.rs.api.getSourceEditorContext()$path))
@@ -10,7 +10,8 @@ hospitals <- # all hospitals nation wide
   read_csv("https://raw.githubusercontent.com/synthetichealth/synthea/HEAD/src/main/resources/providers/hospitals.csv")
 
 orgs <- # organizations from synthea generated files
-  read_csv("output/csv/organizations.csv") |>
+  file.path(folder_path, "csv/organizations.csv") |> 
+  read_csv() |>
   rename_all(tolower) |>
   st_as_sf(coords = c("lon","lat"), crs = 4326, remove = FALSE)
 
@@ -47,8 +48,9 @@ closest_hospital <- # match org to closest hospital
 # export to: output/n-xxx/closest_hospital.csv
 write_csv(
   closest_hospital,
-  paste0(
-    file.path(getwd(), "output", folder_path),
+  file.path(
+    getwd(),
+    folder_path,
     "closest_hospital.csv"
   )
 )
