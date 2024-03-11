@@ -65,8 +65,8 @@ confidence intervals?
 
 
 * [Text - Sentiment Analysis](R/text-sentiment-analysis) This is a templated script I put together for someone to get started with sentiment analysis. It uses `spacyr` and `reticulate` for some of the lemmanization and part-of-speech tagging (
-[overview](R/text-sentiment-analysis/text-analysis.md), 
-[script](R/text-sentiment-analysis/diagram-sentences.R)
+[overview](R/text-sentiment-analysis/README.md), 
+[script](R/text-sentiment-analysis/text-analysis.Rmd)
 )
     * <img src="R/text-sentiment-analysis/text-analysis_files/figure-gfm/igraph_network_diagram-1.png" height="200"/>
 
