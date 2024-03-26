@@ -1,0 +1,159 @@
+---
+title: summary
+execute:
+  eval: false
+format:
+  html: default
+---
+
+```{r workspace}
+library(tidyverse)
+library(dbplyr)
+library(glue)
+library(duckdb)
+
+use_dir <- tools::file_path_as_absolute("~/../Downloads/sj-hackathon")
+db_name <- file.path(use_dir, "hackathon-files.duckdb")
+fields_of_interest <- c("docket_number", "otn")
+
+
+con <-
+  dbConnect(
+    drv = duckdb(), 
+    dbdir = db_name
+  )
+
+info_cols <- 
+  tbl(con, "information_schema.columns") |> 
+  select(table_name:data_type) |> 
+  collect()
+```
+
+
+```{r table-cols}
+info_cols |> 
+  count(column_name, sort = TRUE) |> 
+  head() |> 
+  knitr::kable()
+```
+
+|column_name             |  n|
+|:-----------------------|--:|
+|docket_number           | 25|
+|otn                     | 23|
+|defendant_name          |  6|
+|offense_sequence_number |  5|
+|bail_identifier         |  4|
+|filed_date              |  4|
+
+```{r likely-keys}
+count_cols_of_interest <- 
+  info_cols |> 
+  group_by(table_name) |> 
+  summarise(
+    # TODO: soft code?
+    #cols = map(fields_of_interest, ~max(column_name == .x))  
+    docket_number = max(column_name == "docket_number"),
+    otn = max(column_name == "otn")
+  ) |> 
+  mutate(total = docket_number + otn) |> # TODO: use rowsums?
+  arrange(total)
+
+count_cols_of_interest |> 
+  head() |> 
+  knitr::kable()
+```
+
+  
+|table_name                         | docket_number| otn| both|
+|:----------------------------------|-------------:|---:|----:|
+|cpcms_participant_confinement_data |             0|   0|    0|
+|cpcms_sentence_link_data           |             0|   0|    0|
+|cpcms_related_case_data            |             1|   0|    1|
+|mdjs_case_confinement_data         |             1|   0|    1|
+|cpcms_alias_data                   |             1|   1|    2|
+|cpcms_attorney_data                |             1|   1|    2|
+
+```{r prepare-queries}
+tbl_stats <- 
+  count_cols_of_interest |> 
+  filter(total == 2) |> 
+  pull(table_name) |> 
+  map_dfr(
+    .f =
+      ~tbl(con, .x) |> 
+      summarise(
+        n = n(),
+        # TODO: soft code?
+        n_docket = n_distinct(docket_number),
+        n_otn = n_distinct(otn)
+      ) |> 
+      mutate(
+        .before = everything(),
+        table_name = .x
+      ) |> 
+      collect()
+  )
+
+write_csv(tbl_stats, "output/table_stats.csv")
+
+tbl_stats |> 
+  head() |> 
+  knitr::kable()
+
+```
+|table_name                |          n|   n_docket|     n_otn|
+|:-------------------------|----------:|----------:|---------:|
+|cpcms_alias_data          |  2,643,219|    767,174|   741,411|
+|cpcms_attorney_data       |  4,031,373|  1,467,912| 1,393,788|
+|cpcms_bail_action_data    |  2,161,741|  1,359,849| 1,290,947|
+|cpcms_bail_post_data      |    639,361|    567,379|   547,990|
+|cpcms_calendar_event_data | 10,777,682|  1,424,597| 1,350,185|
+|cpcms_case_data           |  1,492,301|  1,484,536| 1,409,861|
+  
+```{r}
+col_stat_prep <-
+  info_cols |>
+  #filter(data_type == "VARCHAR") |>
+  group_by(table_name, column_name) |>
+  summarise(
+    query =
+      glue(
+        "select
+            '{table_name}' as table_name,
+            '{column_name}' as column_name,
+            '{data_type}' as data_type,
+            sum(case when {column_name} is not null then 1 else 0 end) as n_with_data,
+            count(distinct {column_name}) as n_distinct,
+            n_distinct / n_with_data as pct_unique,
+            n_with_data / count(*) as pct_with_data
+          from
+            {table_name}"
+      ) #|> 
+      #as.character() |> 
+      #str_remove_all("\n")
+  )
+
+col_stats <- 
+  map_dfr(
+    .x = col_stat_prep$query,
+    .f = ~dbGetQuery(conn = con, statement = .x)
+  )
+
+write_csv(col_stats, "output/column_stats.csv")
+
+col_stats |> 
+  head() |> 
+  mutate(across(starts_with("pct"), ~round(.x, 5))) |> 
+  knitr::kable()
+
+```
+
+|table_name          |column_name     |data_type |   n_with_data| n_distinct| pct_unique| pct_with_data|
+|:-------------------|:---------------|:---------|-------------:|----------:|----------:|-------------:|
+|cpcms_alias_data    |defendant_name  |VARCHAR   |     2,643,172|  1,178,994|    0.44605|       0.99998|
+|cpcms_alias_data    |docket_number   |VARCHAR   |     2,643,219|    767,174|    0.29024|       1.00000|
+|cpcms_alias_data    |otn             |VARCHAR   |     2,634,278|    741,411|    0.28145|       0.99662|
+|cpcms_attorney_data |address         |VARCHAR   |     4,031,373|     28,139|    0.00698|       1.00000|
+|cpcms_attorney_data |attorney_name   |VARCHAR   |     4,031,373|     17,317|    0.00430|       1.00000|
+|cpcms_attorney_data |attorney_status |VARCHAR   |     4,031,373|          3|    0.00000|       1.00000|
