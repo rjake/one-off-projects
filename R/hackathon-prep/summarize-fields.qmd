@@ -1,9 +1,9 @@
 ---
-title: summary
+title: "Table / Column Summary"
 execute:
-  eval: false
+    eval: false
 format:
-  html: default
+    html: default
 ---
 
 ```{r workspace}
@@ -125,7 +125,7 @@ col_stat_prep <-
             '{data_type}' as data_type,
             sum(case when {column_name} is not null then 1 else 0 end) as n_with_data,
             count(distinct {column_name}) as n_distinct,
-            n_distinct / n_with_data as pct_unique,
+            n_with_data / n_distinct as pct_unique,
             n_with_data / count(*) as pct_with_data
           from
             {table_name}"
@@ -138,7 +138,8 @@ col_stats <-
   map_dfr(
     .x = col_stat_prep$query,
     .f = ~dbGetQuery(conn = con, statement = .x)
-  )
+  ) |> 
+  as_tibble()
 
 write_csv(col_stats, "output/column_stats.csv")
 
@@ -157,3 +158,32 @@ col_stats |>
 |cpcms_attorney_data |address         |VARCHAR   |     4,031,373|     28,139|    0.00698|       1.00000|
 |cpcms_attorney_data |attorney_name   |VARCHAR   |     4,031,373|     17,317|    0.00430|       1.00000|
 |cpcms_attorney_data |attorney_status |VARCHAR   |     4,031,373|          3|    0.00000|       1.00000|
+
+```{r}
+col_stat_action <- 
+  col_stats |> 
+  left_join(tbl_stats |> select(table_name, n_rows = n)) |> 
+  relocate(n_rows, .after = data_type) |> 
+  mutate(
+    pii = str_detect(column_name, "dob|defendant_name"),
+    action = 
+      case_when(
+        n_distinct == 1 ~ "drop: only one value",
+        pct_with_data < 0.5 ~ "drop: many nulls",
+        # TODO: fix date & percent data types in DB
+        str_detect(column_name, "date|dt") | data_type == "DATE" ~ "date",
+        str_detect(column_name, "percentage") | data_type == "DOUBLE" ~ "numeric",
+        # keys
+        str_detect(column_name, paste(fields_of_interest, collapse = "|")) ~ "key",
+        pct_unique >= 0.9 ~ "likely key",
+        str_detect(column_name, "identifier") ~ "likely key",
+        # groups
+        n_distinct == 2 ~ "group: dichotomous",
+        n_distinct <= 10 ~ "group: <= 10",
+        n_distinct <= 30 ~ "group: <= 30",
+        .default = "other"
+      )
+  )
+  
+write_csv(col_stat_action, "output/column_stats_action.csv")
+````
