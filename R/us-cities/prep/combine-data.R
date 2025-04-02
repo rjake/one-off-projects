@@ -6,6 +6,7 @@ library(geosphere)
 
 # Raw data ----
 # census
+census_county <- read_csv("sources/output/census-county-2024.csv")
 census_subcounty <- read_csv("sources/output/census-subcounty-2024.csv")
 
 # geo spatial
@@ -48,6 +49,29 @@ info_weather <-
 
 
 # Prepare data ----
+county_info <- 
+  census_county |> 
+  select(
+    subcounty_fips, 
+    n_population,
+    pct_poverty,
+    n_lgbt,
+    pct_lgbt,
+    pct_price_150_299K
+  ) |> 
+  left_join(
+    geo_subcounty |> st_drop_geometry()
+  ) |> 
+  relocate(
+    county_fips, 
+    state_name, 
+    county_name, 
+    subcounty_name, 
+    .after = subcounty_fips
+  ) |> 
+  left_join(info_elections) |> 
+  left_join(info_weather)
+
 subcounty_info <- 
   census_subcounty |> 
   select(
