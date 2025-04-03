@@ -120,8 +120,9 @@ subcounty_climbing <-
   mutate(
     n_gym_10mi = find_within_n_miles(., geo_climbing_gyms, 10),
     n_gym_20mi = find_within_n_miles(., geo_climbing_gyms, 20),
-    n_route_60mi = find_within_n_miles(., geo_routes, 60),
-    n_route_200mi = find_within_n_miles(., geo_routes, 200)
+    n_boulder_60mi = find_within_n_miles(., geo_routes |> filter(route_type == "Boulder"), 60),
+    n_route_60mi = find_within_n_miles(., geo_routes |> filter(route_type != "Boulder"), 60),
+    n_route_200mi = find_within_n_miles(., geo_routes |> filter(route_type != "Boulder"), 200)
   )
 
 subcounty_final <- 

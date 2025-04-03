@@ -32,33 +32,47 @@ mp_state_ids <-
 
 
 # Functions ----
-mp_download_state <- function(id, overwrite = FALSE) {
-  # id <- mp_state_ids$id[1]
+mp_download_state <- function(id, type, overwrite = FALSE) {
+  # id <- mp_state_ids$id[3]
   state_name <- mp_state_ids$title[mp_state_ids$id == id]
   file_name <- 
     glue(
       x = state_name |> janitor::make_clean_names(),
-      "input/mountain-project/{x}.csv"
+      "input/mountain-project/{type}/{x}.csv"
     )
   
   if (file.exists(file_name) & !overwrite) {
     return(invisible())
   }
   
-  file_location <- 
-    glue(
-      "https://www.mountainproject.com/\\
-      route-finder-export?\\
-      selectedIds={id}\\
-      &type=rock\\
-      &diffMinrock=2300&diffMinboulder=20000&diffMinaid=70000&diffMinice=30000&diffMinmixed=50000\\
-      &diffMaxrock=2500&diffMaxboulder=20050&diffMaxaid=75260&diffMaxice=38500&diffMaxmixed=65050\\
-      &is_sport_climb=1\\
-      &stars=2.8\\
-      &pitches=0\\
-      &sort1=popularity+desc\\
-      &sort2=rating"
-    )
+  if (type == "rock") {
+    file_location <- 
+      glue(
+        "https://www.mountainproject.com/route-finder-export\\
+        ?selectedIds={id}\\
+        &type=rock\\
+        &diffMinrock=2300&diffMinboulder=20000\\
+        &diffMaxrock=2500&diffMaxboulder=20050\\
+        &diffMinaid=70000&diffMinice=30000&diffMinmixed=50000\\
+        &diffMaxaid=75260&diffMaxice=38500&diffMaxmixed=65050\\
+        &is_sport_climb=1\\
+        &stars=0&pitches=1\\
+        &sort1=popularity+desc&sort2=rating"
+      )
+  } else if (type == "boulder") {
+    file_location <- 
+      glue(
+        "https://www.mountainproject.com/route-finder-export\\
+        ?selectedIds={id}\\
+        &type=boulder\\
+        &diffMinrock=2300&diffMinboulder=20150\\
+        &diffMaxrock=2500&diffMaxboulder=20250\\
+        &diffMinaid=70000&diffMinice=30000&diffMinmixed=50000\\
+        &diffMaxaid=75260&diffMaxice=38500&diffMaxmixed=65050\\
+        &stars=2.8&pitches=0\\
+        &sort1=popularity+desc&sort2=rating"
+      )
+  }
   
   df <- read_csv(file_location)
   
@@ -96,16 +110,28 @@ location_rev <- function(x) {
 if (FALSE) {
   walk(
     mp_state_ids$id,
-    possibly(~mp_download_state(.x)),
+    possibly(~mp_download_state(.x, type = "rock")),
     .progress = TRUE
   )
   
+  walk(
+    mp_state_ids$id,
+    possibly(~mp_download_state(.x, type = "boulder")),
+    .progress = TRUE
+  )
+  "Downloaded these manually
+  Warning messages: SSL/TLS connection timeout Failed to open 
+  1: 'https://www.mountainproject.com/route-finder-export?selectedIds=105708959&type=boulder&diffMinrock=2300&diffMinboulder=20150&diffMaxrock=2500&diffMaxboulder=20250&diffMinaid=70000&diffMinice=30000&diffMinmixed=50000&diffMaxaid=75260&diffMaxice=38500&diffMaxmixed=65050&stars=2.8&pitches=0&sort1=popularity+desc&sort2=rating'
+  2: 'https://www.mountainproject.com/route-finder-export?selectedIds=105708956&type=boulder&diffMinrock=2300&diffMinboulder=20150&diffMaxrock=2500&diffMaxboulder=20250&diffMinaid=70000&diffMinice=30000&diffMinmixed=50000&diffMaxaid=75260&diffMaxice=38500&diffMaxmixed=65050&stars=2.8&pitches=0&sort1=popularity+desc&sort2=rating'
+  3: 'https://www.mountainproject.com/route-finder-export?selectedIds=105852400&type=boulder&diffMinrock=2300&diffMinboulder=20150&diffMaxrock=2500&diffMaxboulder=20250&diffMinaid=70000&diffMinice=30000&diffMinmixed=50000&diffMaxaid=75260&diffMaxice=38500&diffMaxmixed=65050&stars=2.8&pitches=0&sort1=popularity+desc&sort2=rating'
+  "
 }
 
 # Aggregate data ----
 all_routes <- 
   list.files(
     "input/mountain-project/",
+    recursive = TRUE,
     full.names = TRUE
   ) |> 
   read_csv()
@@ -121,8 +147,6 @@ final_routes <-
 
 # Save ----
 write_csv(final_routes, "output/mountain-project-popular-routes.csv")
-
-
 
 
 # Not using:
