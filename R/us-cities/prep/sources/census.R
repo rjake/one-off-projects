@@ -24,16 +24,17 @@ state_info <-
 
 acs_vars <- load_variables(2022, "acs5", TRUE)
 
-vars_of_interest <- 
+vars_of_interest <- {
   acs_vars |> 
   filter(
     str_detect(
       name, 
       c(
         "B01001_001",    # population
+        #"B09019_001",    # households
         "B09019_01[13]", # gayness
         "B06012_00[23]", # poverty
-        "B25087_0[01].",  # housing costs
+        "B25087_0[01].", # housing costs
         "B25096.*"       # house price
       ) |> 
         glue_collapse("|")
@@ -44,13 +45,14 @@ vars_of_interest <-
     category = 
       case_when(
         name == "B01001_001" ~ "population",
+        name == "B09019_001" ~ "household",
         str_detect(name, "B09019_01[13]") ~ "lgbt",
         str_detect(name, "B06012_00[23]") ~ "poverty",
         str_detect(name, "B25087_0[01]") ~ "housing costs",
         str_detect(name, "B25096.*") ~ "house price"
       )
   )
-
+}
 
 # Get Data ----
 get_subcounty <- function(state, overwrite = FALSE) {
@@ -82,10 +84,6 @@ if (FALSE) {
       year = 2023, 
       variables = vars_of_interest$name,
       cache_table = TRUE
-    ) |> 
-    rename(
-      geoid = GEOID,
-      location = NAME
     )
   
   write_csv(county_estimates, "input/census/raw-county-estimates.csv")
@@ -115,7 +113,6 @@ aggregate_census <- function(df) {
       fips = GEOID,
       name = NAME
     ) |> 
-    filter(!str_detect(variable, "B25096_00(1|2|12)")) |> 
     left_join(
       vars_of_interest |> 
         select(
@@ -130,7 +127,7 @@ aggregate_census <- function(df) {
     mutate(
       subcategory = 
         case_when(
-          variable == "B25087_001" ~ "n_house",
+          variable == "B25087_001" ~ "house",
           # monthly cost
           str_detect(variable, "B25087_01[6789]") ~ "cost_higher",
           str_detect(variable, "B25087.*") ~ "cost_to_2499",
