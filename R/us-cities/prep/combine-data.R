@@ -26,11 +26,11 @@ geo_subcounty <-
   read_csv("sources/output/subcounty-geo.csv") |> 
   st_as_sf(coords = c("x", "y"), crs = 4326, remove  = FALSE)
 
-subcounty_buffer <- 
-  geo_subcounty |> 
-  st_buffer(
-    dist = units::set_units(200, "miles")
-  )
+# subcounty_buffer <- 
+#   geo_subcounty |> 
+#   st_buffer(
+#     dist = units::set_units(200, "miles")
+#   )
   
 # other
 info_elections <- 
@@ -43,7 +43,7 @@ info_elections <-
 info_weather <- 
   read_csv("sources/output/weather-2023.csv") |> 
   mutate(
-    county_fips = str_pad(county_fips, 2, "left", "0")
+    county_fips = str_pad(county_fips, 5, "left", "0")
   ) |> 
   select(county_fips:avg_daytime_temp)
 
@@ -52,25 +52,25 @@ info_weather <-
 county_info <- 
   census_county |> 
   select(
-    subcounty_fips, 
+    county_fips, 
+    county_name,
     n_population,
     pct_poverty,
     n_lgbt,
     pct_lgbt,
     pct_price_150_299K
   ) |> 
-  left_join(
-    geo_subcounty |> st_drop_geometry()
-  ) |> 
-  relocate(
+  mutate(
+    .before = everything(),
     county_fips, 
-    state_name, 
-    county_name, 
-    subcounty_name, 
-    .after = subcounty_fips
+    state_name = str_extract(county_name, "(?<=, ).*"), 
+    county_name = str_remove(county_name, " County,.*")
   ) |> 
   left_join(info_elections) |> 
   left_join(info_weather)
+
+write_csv(county_info, "county-info.csv")
+
 
 subcounty_info <- 
   census_subcounty |> 
@@ -125,6 +125,7 @@ subcounty_climbing <-
     n_route_200mi = find_within_n_miles(., geo_routes |> filter(route_type != "Boulder"), 200)
   )
 
+# Final ----
 subcounty_final <- 
   subcounty_info |> 
   left_join(
@@ -140,3 +141,45 @@ subcounty_final <-
 
 
 write_csv(subcounty_final, "county-subdivision-info.csv")
+
+
+# Mock analysis ----
+subcounty_final <- read_csv("county-subdivision-info.csv")
+
+subcounty_final |> 
+  #filter(county_fips == 42101) 
+  #filter(state_name == "North Carolina") |> 
+  #filter(county_name == "Durham County") |> 
+  filter(
+      subcounty_fips %in% c( 
+        "0803191007", # denver
+        
+        "1100150000", # dc
+        "2951065000", # st. louis
+        
+        "3702190086", # asheville
+        "3706393764", # durham (triangle)
+        "3708192124", # greensboro (morehead)
+        "3711993268", # charlotte
+        
+        "4210160000", # philly
+        
+        "4845390165"  # austin
+        
+      )
+  )
+|> 
+  filter(
+    n_population > 10000,
+    n_lgbt > 50,
+    n_gym_10mi > 0,
+    pct_dem > 0.60,
+    pct_poverty < 0.30,
+    pct_temp_ideal >= 0.60,
+    pct_temp_below_60 < 0.25,
+    #n_route_60mi >= 5
+  ) |> 
+  mutate(
+    n_lgbt = pmin(n_lgbt, 2000)
+  ) |> 
+  view()
