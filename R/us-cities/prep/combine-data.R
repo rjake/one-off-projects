@@ -257,7 +257,7 @@ county_final |>
   theme_void() +
   theme(
     plot.background = element_rect(fill = "white"),
-    plot.margin = margin(l = 20, r = 20),
+    plot.margin = margin(20, 20, 20, 20),
     #panel.background = element_rect(fill = "grey75")
   ) +
   labs(
@@ -269,7 +269,7 @@ county_final |>
   )
 #
 
-ggsave("../img/map-se.png")
+ggsave("../img/map-se.png", width = 6, height = 5.2)
 
 
 
