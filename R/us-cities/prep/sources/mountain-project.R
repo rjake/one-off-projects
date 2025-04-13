@@ -17,6 +17,7 @@ Download popular routes from mountain project:
 setwd(dirname(.rs.api.getSourceEditorContext()$path))
 
 library(tidyverse)
+library(glue)
 
 mp_html <- read_lines("https://www.mountainproject.com/area/classics")
 
@@ -98,10 +99,9 @@ round_any <- function(x, accuracy, f = round) {
 
 location_rev <- function(x) {
   # x <- "Mule Hollow Wall > Big Cottonwood Canyon > Central Wasatch > Wasatch Range > Utah"
-  str_split_1(x, " > ") |> 
-    rev() |> 
-    head(3) |> 
-    tail(2) |> 
+  locations <- str_split_1(x, " > ") |> rev()
+  
+  locations[-1] |> 
     paste0(collapse = " > ")
 }
 
@@ -142,45 +142,59 @@ final_routes <-
   mutate(
     .before = everything(),
     state = str_to_title(state),
-    crag = map_chr(location, ~location_rev(.x))
-  )
+    location = map_chr(location, ~location_rev(.x))
+  ) |> 
+  relocate(y, .after = x)
 
-# Save ----
-write_csv(final_routes, "output/mountain-project-popular-routes.csv")
-
-
-# Not using:
-
-crag_stats <- 
+# Crag-gregate ----
+crag_id <- 
   final_routes |> 
-  #filter(state == "North Carolina") |> 
+  #filter(str_detect(location, "Nevada.*Red Rocks")) |> 
   mutate(
-    region_1 = str_extract(crag, "^[^>]+") |> trimws(),
-    region_2 = str_extract(crag, "[^>]+$") |> trimws()
+    #.keep = "used",
+    regions = str_extract(location, "^[^>]+(> [^>]+){0,2}") |> trimws()
   ) |> 
-  add_count(
-    state, region_1,
-    name = "n_region_1"
+  separate_wider_delim(
+    regions, 
+    delim = " > ",
+    names = c("region_1", "region_2", "region_3"),
+    too_few = "align_start",
+    too_many = "drop"
   ) |> 
-  add_count(
-    state, region_1, region_2,
-    name = "n_region_2"
+  mutate(
+    region_2 = replace_na(region_2, "-"),
+    region_3 = replace_na(region_3, "-")
   ) |> 
-  arrange(crag) |> 
+  #filter(state == "North Carolina") |> 
+  group_by(state, region_1) |> 
+  arrange(location, x) |> 
+  mutate(x_diff = x - lag(x, default = first(x))) |> 
+  arrange(location, y) |> 
+  mutate(y_diff = y - lag(y, default = first(y))) |> 
+  arrange(location) |> 
+  mutate(
+    region_crag_id = cumsum(abs(x_diff) > 0.2 | abs(y_diff) > 0.2),
+    crag = glue("{state} > {region_1} > {str_pad(region_crag_id, 2, pad = '0')}")
+  ) |> 
+  ungroup() 
+  
+# Save ----
+write_csv(crag_id, "output/mountain-project-popular-routes.csv")
+
+
+crag_stats <-
+  crag_id |> 
   summarise(
-    .by = c(state, crag, region_1, region_2, n_region_1, n_region_2),
+    .by = c(state, crag, region_1),
+    region_2 = first(region_2),
+    example_location = first(region_3),
     x = mean(x),
     y = mean(y),
-    n_routes = n(),
+    n = n(),
+    n_boulder = sum(str_detect(route_type, "Boulder")),
+    n_routes = sum(str_detect(route_type, "Sport")),
     mean_rating = mean(avg_stars),
     median_rating = median(avg_stars)
   )
 
-
-separate_wider_delim(
-  location,
-  names = c("state_name", "region", "location", "sub_location_1", "sub_loction_2"),
-  delim = " > ",
-  too_few = "align_start",
-  too_many = "drop"
-)
+write_csv(crag_stats, "output/crag-stats.csv")

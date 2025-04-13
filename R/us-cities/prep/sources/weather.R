@@ -41,7 +41,7 @@ if (FALSE) {
 
 # Aggregate data ----
 all_weather <- 
-  list.files("prep/sources/weather/", full.names = TRUE) |> 
+  list.files("input/weather/", full.names = TRUE) |> 
   read_csv()
 
 
@@ -57,9 +57,11 @@ weather_stats <-
   summarise(
     .by = c(state_abbr, county_name, county_fips),
     pct_temp_ideal = mean(between(day, 60, 90)),
+    pct_temp_below_40 = mean(day < 40),
+    pct_temp_below_50 = mean(day < 50),
     pct_temp_below_60 = mean(day < 60),
     avg_daytime_temp = mean(day)
   )
 
 # Save ----
-write_csv(weather_stats, "prep/sources/output/weather-2023.csv")
+write_csv(weather_stats, "output/weather-2023.csv")
