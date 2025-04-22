@@ -3,3 +3,4 @@ README.html
 .Rproj.user
 *.gz
 R/resume/nul
+/other/synthea/full-fact-tables/create-data/output/n-1000/csv
