@@ -18,6 +18,14 @@ find_within_n_miles <- function(x, y, n) {
 census_county <- read_csv("sources/output/census-county-2024.csv")
 census_subcounty <- read_csv("sources/output/census-subcounty-2024.csv")
 
+hud_rent <- # https://www.huduser.gov/portal/datasets/50per.html#year2024
+  read_csv("sources/input/apartment-cost/FY2024_FMR_50_county_revised.csv") |> 
+  transmute(
+    county_fips = paste0(state_code, county_code),
+    hud_mean_1_br = rent_50_1,
+    hud_mean_2_br = rent_50_2
+  )
+
 # geo spatial
 geo_climbing_gyms <- 
   read_csv("sources/output/climbing-gyms.csv") |> 
@@ -109,7 +117,8 @@ county_final <-
     county_gym |> 
       st_drop_geometry() |> 
       select(county_fips, gym_x, gym_y, gym_name, rating, n_votes)
-  )
+  ) |>
+  left_join(hud_rent)
 
 county_final |> 
   write_csv("county-info.csv")
@@ -183,20 +192,32 @@ setwd(dirname(.rs.api.getSourceEditorContext()$path))
 library(tidyverse)
 library(simplecolors)
 
-county_final <- read_csv("county-info.csv")
-crag_stats <- read_csv("sources/output/crag-stats.csv")
+county_final <- 
+  read_csv("county-info.csv") |> 
+  filter(!str_detect(state_name, "Alaska|Hawaii|Puerto"))
+
+subcounty_final <- 
+  read_csv("county-subdivision-info.csv") |> 
+  filter(!str_detect(state_name, "Alaska|Hawaii|Puerto"))
+
+crag_stats <- 
+  read_csv("sources/output/crag-stats.csv") |> 
+  filter(!str_detect(state, "Alaska|Hawaii|Puerto"))
 
 
 # county map ----
-states <- map_data("state") 
+states <- 
+  map_data("state") |> 
+  filter(!str_detect(region, "alaska|hawaii|puerto"))
   
-min_y <- 41
-min_x <- -92
+#min_y <- 41
+#min_x <- -125#92
 
-county_final |> 
+p <-
+  county_final |> 
   filter(
-    x > min_x, 
-    y < min_y,
+    #x > min_x, 
+    #y < min_y,
     n_population > 10000,
     n_lgbt > 50,
     pct_dem > 0.60,
@@ -212,20 +233,20 @@ county_final |>
       )
   ) |> 
   ggplot() +
+  geom_polygon( # states
+    data = states,# |> filter(long > min_x - 2, lat < min_y),
+    aes(long, lat, group = group),
+    fill = "white", color = "grey70", linewidth = 0.25
+  ) +
   geom_point( # crags
     data = 
-      crag_stats |> filter(x > min_x, y < min_y),
+      crag_stats,# |> filter(x > min_x, y < min_y),
     aes(x, y, shape = "crag/boulder"), 
-    alpha = 0.75,
+    alpha = 0.4,
     color = "grey85",
     fill = sc("dullorange1"),
-    size = 3
+    size = 2
   )  +
-  geom_polygon( # states
-    data = states |> filter(long > min_x - 2, lat < min_y),
-    aes(long, lat, group = group),
-    fill = NA, color = "grey70", linewidth = 0.25
-  ) +
   geom_point( # population
     aes(x, y, size = n_lgbt, color = temp, fill = temp),
     shape = 21, 
@@ -251,8 +272,8 @@ county_final |>
     size = guide_legend(override.aes = list(color = "black"))
   ) +
   coord_quickmap(
-    xlim = c(min_x + 2, min_x + 18),
-    ylim = c(min_y - 15.5, min_y - 1)
+    xlim = c(-125, -68),
+    ylim = c(25.5, 49.5)
   ) +
   theme_void() +
   theme(
@@ -267,9 +288,22 @@ county_final |>
     fill = "Temperature",
     size = "# LGBT"
   )
+
+p
 #
 
-ggsave("../img/map-se.png", width = 6, height = 5.2)
+ggsave(P, "../img/map-all.png", width = 11, height = 5.5)
+
+# subset
+p +
+  #theme_gray() +
+  #theme(plot.background = element_rect("grey80")) +
+  coord_quickmap(
+    xlim =c (-97, -76),
+    ylim = c(25.5, 39.6)
+  )
+
+ggsave("../img/map-se.png", width = 8, height = 5.5)
 
 
 
