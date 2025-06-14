@@ -47,8 +47,11 @@ all_weather <-
 
 weather_stats <- 
   all_weather |> 
+  #filter(fips == "37063") |> 
   transmute(
     state_abbr = st_abb,
+    date,
+    ppt,
     county_name,
     county_fips = fips,
     night = (tmin * 9/5) + 32,
@@ -56,11 +59,16 @@ weather_stats <-
   ) |> 
   summarise(
     .by = c(state_abbr, county_name, county_fips),
-    pct_temp_ideal = mean(between(day, 60, 90)),
+    total_precip_in = round(sum(ppt) / 25.4, 1),
+    avg_temp_july_day = ifelse(str_detect(date, "202307"), day, NA) |> mean(na.rm = TRUE), 
+    avg_temp_jan_day = ifelse(str_detect(date, "202301"), day, NA) |> mean(na.rm = TRUE), 
+    pct_temp_60_80 = mean(between(day, 60, 80)),
+    pct_temp_75_90 = mean(between(day, 75, 90)),
     pct_temp_below_40 = mean(day < 40),
     pct_temp_below_50 = mean(day < 50),
     pct_temp_below_60 = mean(day < 60),
-    avg_daytime_temp = mean(day)
+    avg_daytime_temp = mean(day),
+    avg_night_temp = mean(night)
   )
 
 # Save ----
