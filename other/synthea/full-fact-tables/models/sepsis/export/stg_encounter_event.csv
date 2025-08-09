@@ -1,0 +1,869 @@
+encounter_id,patient_id,event_start,event_end,event_id,event_description,event_type
+11480b46,b94f33ac,2019-02-14T05:38:09Z,2019-02-14T06:08:09Z,430701006,Resuscitation using intravenous fluid,procedure
+11480b46,b94f33ac,2019-02-14T06:08:09Z,2019-02-14T06:38:09Z,305351004,Admission to intensive care unit,procedure
+11480b46,b94f33ac,2019-02-14T06:38:09Z,2019-02-14T07:08:09Z,430701006,Resuscitation using intravenous fluid,procedure
+7e154d38,73961f37,2014-06-30T01:05:27Z,2014-06-30T01:35:27Z,430701006,Resuscitation using intravenous fluid,procedure
+7e154d38,73961f37,2014-06-30T01:35:27Z,2014-06-30T02:05:27Z,449214001,Transfer to stepdown unit,procedure
+7e154d38,73961f37,2014-07-09T06:05:27Z,2014-07-09T06:35:27Z,305351004,Admission to intensive care unit,procedure
+7e154d38,73961f37,2014-07-09T06:35:27Z,2014-07-09T07:05:27Z,430701006,Resuscitation using intravenous fluid,procedure
+95800ba5,f29301db,2021-01-26T23:01:58Z,2021-01-26T23:31:58Z,430701006,Resuscitation using intravenous fluid,procedure
+95800ba5,f29301db,2021-01-26T23:31:58Z,2021-01-27T00:01:58Z,305351004,Admission to intensive care unit,procedure
+95800ba5,f29301db,2021-01-27T00:01:58Z,2021-01-27T00:31:58Z,430701006,Resuscitation using intravenous fluid,procedure
+95800ba5,f29301db,2021-01-28T06:31:58Z,2021-01-28T07:01:58Z,449214001,Transfer to stepdown unit,procedure
+f81c89ae,fb446bc3,2020-09-05T10:54:36Z,2020-09-05T11:24:36Z,430701006,Resuscitation using intravenous fluid,procedure
+f81c89ae,fb446bc3,2020-09-05T11:24:36Z,2020-09-05T11:54:36Z,449214001,Transfer to stepdown unit,procedure
+f81c89ae,fb446bc3,2020-09-09T14:54:36Z,2020-09-09T15:24:36Z,305351004,Admission to intensive care unit,procedure
+f81c89ae,fb446bc3,2020-09-09T15:24:36Z,2020-09-09T15:54:36Z,430701006,Resuscitation using intravenous fluid,procedure
+f81c89ae,fb446bc3,2020-09-11T12:54:36Z,2020-09-11T13:24:36Z,449214001,Transfer to stepdown unit,procedure
+5d56baec,20e14f53,2019-08-29T20:34:02Z,2019-08-29T21:04:02Z,430701006,Resuscitation using intravenous fluid,procedure
+5d56baec,20e14f53,2019-08-29T21:04:02Z,2019-08-29T21:34:02Z,449214001,Transfer to stepdown unit,procedure
+5d56baec,20e14f53,2019-09-03T11:34:02Z,2019-09-03T12:04:02Z,305351004,Admission to intensive care unit,procedure
+5d56baec,20e14f53,2019-09-03T12:04:02Z,2019-09-03T12:34:02Z,430701006,Resuscitation using intravenous fluid,procedure
+5d56baec,20e14f53,2019-09-04T13:34:02Z,2019-09-04T14:04:02Z,449214001,Transfer to stepdown unit,procedure
+5d56baec,20e14f53,2019-09-12T00:04:02Z,2019-09-12T00:34:02Z,305351004,Admission to intensive care unit,procedure
+5d56baec,20e14f53,2019-09-12T00:34:02Z,2019-09-12T01:04:02Z,430701006,Resuscitation using intravenous fluid,procedure
+5d56baec,20e14f53,2019-09-13T07:04:02Z,2019-09-13T07:34:02Z,449214001,Transfer to stepdown unit,procedure
+08e4d0d7,99cba850,2021-06-26T19:01:59Z,2021-06-26T19:31:59Z,430701006,Resuscitation using intravenous fluid,procedure
+08e4d0d7,99cba850,2021-06-26T19:31:59Z,2021-06-26T20:01:59Z,305351004,Admission to intensive care unit,procedure
+08e4d0d7,99cba850,2021-06-26T20:01:59Z,2021-06-26T20:31:59Z,430701006,Resuscitation using intravenous fluid,procedure
+08e4d0d7,99cba850,2021-06-28T06:31:59Z,2021-06-28T07:01:59Z,449214001,Transfer to stepdown unit,procedure
+08e4d0d7,99cba850,2021-07-05T14:01:59Z,2021-07-05T14:31:59Z,305351004,Admission to intensive care unit,procedure
+08e4d0d7,99cba850,2021-07-05T14:31:59Z,2021-07-05T15:01:59Z,430701006,Resuscitation using intravenous fluid,procedure
+08e4d0d7,99cba850,2021-07-07T11:01:59Z,2021-07-07T11:31:59Z,449214001,Transfer to stepdown unit,procedure
+e6b803f5,9e89bc3f,2022-03-19T08:22:00Z,2022-03-19T08:52:00Z,430701006,Resuscitation using intravenous fluid,procedure
+e6b803f5,9e89bc3f,2022-03-19T08:52:00Z,2022-03-19T09:22:00Z,449214001,Transfer to stepdown unit,procedure
+1efd7dc0,ef04a566,2002-05-24T15:42:35Z,2002-05-24T16:12:35Z,430701006,Resuscitation using intravenous fluid,procedure
+1efd7dc0,ef04a566,2002-05-24T16:12:35Z,2002-05-24T16:42:35Z,449214001,Transfer to stepdown unit,procedure
+1efd7dc0,ef04a566,2002-06-01T07:42:35Z,2002-06-01T08:12:35Z,305351004,Admission to intensive care unit,procedure
+1efd7dc0,ef04a566,2002-06-01T08:12:35Z,2002-06-01T08:42:35Z,430701006,Resuscitation using intravenous fluid,procedure
+1efd7dc0,ef04a566,2002-06-02T09:42:35Z,2002-06-02T10:12:35Z,449214001,Transfer to stepdown unit,procedure
+1efd7dc0,ef04a566,2002-06-08T07:12:35Z,2002-06-08T07:42:35Z,305351004,Admission to intensive care unit,procedure
+1efd7dc0,ef04a566,2002-06-08T07:42:35Z,2002-06-08T08:12:35Z,430701006,Resuscitation using intravenous fluid,procedure
+1efd7dc0,ef04a566,2002-06-09T17:12:35Z,2002-06-09T17:42:35Z,449214001,Transfer to stepdown unit,procedure
+1efd7dc0,ef04a566,2002-06-17T05:42:35Z,2002-06-17T06:12:35Z,305351004,Admission to intensive care unit,procedure
+1efd7dc0,ef04a566,2002-06-17T06:12:35Z,2002-06-17T06:42:35Z,430701006,Resuscitation using intravenous fluid,procedure
+1efd7dc0,ef04a566,2002-06-19T00:42:35Z,2002-06-19T01:12:35Z,449214001,Transfer to stepdown unit,procedure
+1efd7dc0,ef04a566,2002-06-27T20:12:35Z,2002-06-27T20:42:35Z,305351004,Admission to intensive care unit,procedure
+1efd7dc0,ef04a566,2002-06-27T20:42:35Z,2002-06-27T21:12:35Z,430701006,Resuscitation using intravenous fluid,procedure
+5a8da9ba,33c09fc4,2025-02-28T10:35:37Z,2025-02-28T11:05:37Z,430701006,Resuscitation using intravenous fluid,procedure
+5a8da9ba,33c09fc4,2025-02-28T11:05:37Z,2025-02-28T11:35:37Z,449214001,Transfer to stepdown unit,procedure
+8c994d79,81f20b55,2017-08-23T17:19:35Z,2017-08-23T17:49:35Z,430701006,Resuscitation using intravenous fluid,procedure
+8c994d79,81f20b55,2017-08-23T17:49:35Z,2017-08-23T18:19:35Z,449214001,Transfer to stepdown unit,procedure
+8c994d79,81f20b55,2017-08-29T19:19:35Z,2017-08-29T19:49:35Z,305351004,Admission to intensive care unit,procedure
+8c994d79,81f20b55,2017-08-29T19:49:35Z,2017-08-29T20:19:35Z,430701006,Resuscitation using intravenous fluid,procedure
+8c994d79,81f20b55,2017-08-31T13:19:35Z,2017-08-31T13:49:35Z,449214001,Transfer to stepdown unit,procedure
+ad3b77df,28bd271b,2011-12-31T23:31:56Z,2012-01-01T00:01:56Z,430701006,Resuscitation using intravenous fluid,procedure
+ad3b77df,28bd271b,2012-01-01T00:01:56Z,2012-01-01T00:31:56Z,449214001,Transfer to stepdown unit,procedure
+ad3b77df,28bd271b,2012-01-10T19:31:56Z,2012-01-10T20:01:56Z,305351004,Admission to intensive care unit,procedure
+ad3b77df,28bd271b,2012-01-10T20:01:56Z,2012-01-10T20:31:56Z,430701006,Resuscitation using intravenous fluid,procedure
+ad3b77df,28bd271b,2012-01-12T03:31:56Z,2012-01-12T04:01:56Z,449214001,Transfer to stepdown unit,procedure
+ad3b77df,28bd271b,2012-01-16T03:01:56Z,2012-01-16T03:31:56Z,305351004,Admission to intensive care unit,procedure
+ad3b77df,28bd271b,2012-01-16T03:31:56Z,2012-01-16T04:01:56Z,430701006,Resuscitation using intravenous fluid,procedure
+7bb1639c,cfbbacd2,2022-10-28T06:34:52Z,2022-10-28T07:04:52Z,430701006,Resuscitation using intravenous fluid,procedure
+7bb1639c,cfbbacd2,2022-10-28T07:04:52Z,2022-10-28T07:34:52Z,305351004,Admission to intensive care unit,procedure
+7bb1639c,cfbbacd2,2022-10-28T07:34:52Z,2022-10-28T08:04:52Z,430701006,Resuscitation using intravenous fluid,procedure
+7bb1639c,cfbbacd2,2022-10-29T15:04:52Z,2022-10-29T15:34:52Z,449214001,Transfer to stepdown unit,procedure
+a07b56ea,f0242eff,2021-04-18T19:24:01Z,2021-04-18T19:54:01Z,430701006,Resuscitation using intravenous fluid,procedure
+a07b56ea,f0242eff,2021-04-18T19:54:01Z,2021-04-18T20:24:01Z,305351004,Admission to intensive care unit,procedure
+a07b56ea,f0242eff,2021-04-18T20:24:01Z,2021-04-18T20:54:01Z,430701006,Resuscitation using intravenous fluid,procedure
+a07b56ea,f0242eff,2021-04-20T06:54:01Z,2021-04-20T07:24:01Z,449214001,Transfer to stepdown unit,procedure
+a07b56ea,f0242eff,2021-04-28T04:24:01Z,2021-04-28T04:54:01Z,305351004,Admission to intensive care unit,procedure
+a07b56ea,f0242eff,2021-04-28T04:54:01Z,2021-04-28T05:24:01Z,430701006,Resuscitation using intravenous fluid,procedure
+a07b56ea,f0242eff,2021-04-28T05:24:01Z,2021-04-28T05:54:01Z,40617009,Artificial ventilation,regime/therapy
+a07b56ea,f0242eff,2021-04-28T05:54:01Z,2021-05-05T21:54:01Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+46520536,e3f67c22,2023-11-19T22:37:20Z,2023-11-19T23:07:20Z,430701006,Resuscitation using intravenous fluid,procedure
+46520536,e3f67c22,2023-11-19T23:07:20Z,2023-11-19T23:37:20Z,449214001,Transfer to stepdown unit,procedure
+2d3fa1f8,8fdbf8fe,2013-07-04T01:19:42Z,2013-07-04T01:49:42Z,430701006,Resuscitation using intravenous fluid,procedure
+2d3fa1f8,8fdbf8fe,2013-07-04T01:49:42Z,2013-07-04T02:19:42Z,305351004,Admission to intensive care unit,procedure
+2d3fa1f8,8fdbf8fe,2013-07-04T02:19:42Z,2013-07-04T02:49:42Z,430701006,Resuscitation using intravenous fluid,procedure
+2d3fa1f8,8fdbf8fe,2013-07-05T02:49:42Z,2013-07-05T03:19:42Z,449214001,Transfer to stepdown unit,procedure
+2d3fa1f8,8fdbf8fe,2013-07-08T05:19:42Z,2013-07-08T05:49:42Z,305351004,Admission to intensive care unit,procedure
+2d3fa1f8,8fdbf8fe,2013-07-08T05:49:42Z,2013-07-08T06:19:42Z,430701006,Resuscitation using intravenous fluid,procedure
+2d3fa1f8,8fdbf8fe,2013-07-09T14:19:42Z,2013-07-09T14:49:42Z,449214001,Transfer to stepdown unit,procedure
+2d3fa1f8,8fdbf8fe,2013-07-15T06:49:42Z,2013-07-15T07:19:42Z,305351004,Admission to intensive care unit,procedure
+2d3fa1f8,8fdbf8fe,2013-07-15T07:19:42Z,2013-07-15T07:49:42Z,430701006,Resuscitation using intravenous fluid,procedure
+7180b85a,5125f047,2023-05-14T15:19:55Z,2023-05-14T15:49:55Z,430701006,Resuscitation using intravenous fluid,procedure
+7180b85a,5125f047,2023-05-14T15:49:55Z,2023-05-14T16:19:55Z,449214001,Transfer to stepdown unit,procedure
+ac413d78,f3ed360c,2020-07-31T21:28:57Z,2020-07-31T21:58:57Z,430701006,Resuscitation using intravenous fluid,procedure
+ac413d78,f3ed360c,2020-07-31T21:58:57Z,2020-07-31T22:28:57Z,449214001,Transfer to stepdown unit,procedure
+ac413d78,f3ed360c,2020-08-07T12:28:57Z,2020-08-07T12:58:57Z,305351004,Admission to intensive care unit,procedure
+ac413d78,f3ed360c,2020-08-07T12:58:57Z,2020-08-07T13:28:57Z,430701006,Resuscitation using intravenous fluid,procedure
+ac413d78,f3ed360c,2020-08-08T23:28:57Z,2020-08-08T23:58:57Z,449214001,Transfer to stepdown unit,procedure
+d95eefad,ce9c6b21,2019-04-13T02:54:34Z,2019-04-13T03:24:34Z,430701006,Resuscitation using intravenous fluid,procedure
+d95eefad,ce9c6b21,2019-04-13T03:24:34Z,2019-04-13T03:54:34Z,305351004,Admission to intensive care unit,procedure
+d95eefad,ce9c6b21,2019-04-13T03:54:34Z,2019-04-13T04:24:34Z,430701006,Resuscitation using intravenous fluid,procedure
+d95eefad,ce9c6b21,2019-04-15T03:24:34Z,2019-04-15T03:54:34Z,449214001,Transfer to stepdown unit,procedure
+5f222a24,f35ceaf9,2000-08-29T11:59:27Z,2000-08-29T12:29:27Z,430701006,Resuscitation using intravenous fluid,procedure
+5f222a24,f35ceaf9,2000-08-29T12:29:27Z,2000-08-29T12:59:27Z,449214001,Transfer to stepdown unit,procedure
+5f222a24,f35ceaf9,2000-09-02T11:59:27Z,2000-09-02T12:29:27Z,305351004,Admission to intensive care unit,procedure
+5f222a24,f35ceaf9,2000-09-02T12:29:27Z,2000-09-02T12:59:27Z,430701006,Resuscitation using intravenous fluid,procedure
+5f222a24,f35ceaf9,2000-09-04T03:59:27Z,2000-09-04T04:29:27Z,449214001,Transfer to stepdown unit,procedure
+5f222a24,f35ceaf9,2000-09-07T15:29:27Z,2000-09-07T15:59:27Z,305351004,Admission to intensive care unit,procedure
+5f222a24,f35ceaf9,2000-09-07T15:59:27Z,2000-09-07T16:29:27Z,430701006,Resuscitation using intravenous fluid,procedure
+e722f49e,e327bc68,2001-10-05T18:19:57Z,2001-10-05T18:49:57Z,430701006,Resuscitation using intravenous fluid,procedure
+e722f49e,e327bc68,2001-10-05T18:49:57Z,2001-10-05T19:19:57Z,305351004,Admission to intensive care unit,procedure
+e722f49e,e327bc68,2001-10-05T19:19:57Z,2001-10-05T19:49:57Z,430701006,Resuscitation using intravenous fluid,procedure
+e722f49e,e327bc68,2001-10-05T19:49:57Z,2001-10-05T20:19:57Z,40617009,Artificial ventilation,regime/therapy
+e722f49e,e327bc68,2001-10-05T20:19:57Z,2001-10-13T16:19:57Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+e722f49e,e327bc68,2001-10-15T04:19:57Z,2001-10-15T04:49:57Z,449214001,Transfer to stepdown unit,procedure
+e722f49e,e327bc68,2001-10-19T20:49:57Z,2001-10-19T21:19:57Z,305351004,Admission to intensive care unit,procedure
+e722f49e,e327bc68,2001-10-19T21:19:57Z,2001-10-19T21:49:57Z,430701006,Resuscitation using intravenous fluid,procedure
+e722f49e,e327bc68,2001-10-19T21:49:57Z,2001-10-19T22:19:57Z,40617009,Artificial ventilation,regime/therapy
+e722f49e,e327bc68,2001-10-19T22:19:57Z,2001-10-26T12:19:57Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+e90ee4ca,31da5b27,2020-10-07T14:14:15Z,2020-10-07T14:44:15Z,430701006,Resuscitation using intravenous fluid,procedure
+e90ee4ca,31da5b27,2020-10-07T14:44:15Z,2020-10-07T15:14:15Z,449214001,Transfer to stepdown unit,procedure
+bb9d4b66,57f72c95,2024-03-03T02:57:04Z,2024-03-03T03:27:04Z,430701006,Resuscitation using intravenous fluid,procedure
+bb9d4b66,57f72c95,2024-03-03T03:27:04Z,2024-03-03T03:57:04Z,449214001,Transfer to stepdown unit,procedure
+de535bac,20a05b70,2017-11-03T11:59:27Z,2017-11-03T12:29:27Z,430701006,Resuscitation using intravenous fluid,procedure
+de535bac,20a05b70,2017-11-03T12:29:27Z,2017-11-03T12:59:27Z,449214001,Transfer to stepdown unit,procedure
+f10380f0,7d7dd3f1,2022-02-08T16:44:43Z,2022-02-08T17:14:43Z,430701006,Resuscitation using intravenous fluid,procedure
+f10380f0,7d7dd3f1,2022-02-08T17:14:43Z,2022-02-08T17:44:43Z,449214001,Transfer to stepdown unit,procedure
+f10380f0,7d7dd3f1,2022-02-16T15:44:43Z,2022-02-16T16:14:43Z,305351004,Admission to intensive care unit,procedure
+f10380f0,7d7dd3f1,2022-02-16T16:14:43Z,2022-02-16T16:44:43Z,430701006,Resuscitation using intravenous fluid,procedure
+f10380f0,7d7dd3f1,2022-02-17T19:44:43Z,2022-02-17T20:14:43Z,449214001,Transfer to stepdown unit,procedure
+b401cf83,9cff1232,2004-08-26T09:07:21Z,2004-08-26T09:37:21Z,430701006,Resuscitation using intravenous fluid,procedure
+b401cf83,9cff1232,2004-08-26T09:37:21Z,2004-08-26T10:07:21Z,449214001,Transfer to stepdown unit,procedure
+b401cf83,9cff1232,2004-09-04T08:07:21Z,2004-09-04T08:37:21Z,305351004,Admission to intensive care unit,procedure
+b401cf83,9cff1232,2004-09-04T08:37:21Z,2004-09-04T09:07:21Z,430701006,Resuscitation using intravenous fluid,procedure
+b401cf83,9cff1232,2004-09-06T08:07:21Z,2004-09-06T08:37:21Z,449214001,Transfer to stepdown unit,procedure
+b401cf83,9cff1232,2004-09-11T09:37:21Z,2004-09-11T10:07:21Z,305351004,Admission to intensive care unit,procedure
+b401cf83,9cff1232,2004-09-11T10:07:21Z,2004-09-11T10:37:21Z,430701006,Resuscitation using intravenous fluid,procedure
+b401cf83,9cff1232,2004-09-11T10:37:21Z,2004-09-11T11:07:21Z,40617009,Artificial ventilation,regime/therapy
+b401cf83,9cff1232,2004-09-11T11:07:21Z,2004-09-19T15:07:21Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+38022f7c,1d7fc54b,2022-07-19T01:05:42Z,2022-07-19T01:35:42Z,430701006,Resuscitation using intravenous fluid,procedure
+38022f7c,1d7fc54b,2022-07-19T01:35:42Z,2022-07-19T02:05:42Z,449214001,Transfer to stepdown unit,procedure
+38022f7c,1d7fc54b,2022-07-23T10:05:42Z,2022-07-23T10:35:42Z,305351004,Admission to intensive care unit,procedure
+38022f7c,1d7fc54b,2022-07-23T10:35:42Z,2022-07-23T11:05:42Z,430701006,Resuscitation using intravenous fluid,procedure
+38022f7c,1d7fc54b,2022-07-24T15:05:42Z,2022-07-24T15:35:42Z,449214001,Transfer to stepdown unit,procedure
+07c64065,24049ed4,2020-11-06T09:11:29Z,2020-11-06T09:41:29Z,430701006,Resuscitation using intravenous fluid,procedure
+07c64065,24049ed4,2020-11-06T09:41:29Z,2020-11-06T10:11:29Z,449214001,Transfer to stepdown unit,procedure
+f3827394,f189b513,2018-11-18T18:10:07Z,2018-11-18T18:40:07Z,430701006,Resuscitation using intravenous fluid,procedure
+f3827394,f189b513,2018-11-18T18:40:07Z,2018-11-18T19:10:07Z,449214001,Transfer to stepdown unit,procedure
+f3827394,f189b513,2018-11-25T02:10:07Z,2018-11-25T02:40:07Z,305351004,Admission to intensive care unit,procedure
+f3827394,f189b513,2018-11-25T02:40:07Z,2018-11-25T03:10:07Z,430701006,Resuscitation using intravenous fluid,procedure
+f3827394,f189b513,2018-11-25T03:10:07Z,2018-11-25T03:40:07Z,40617009,Artificial ventilation,regime/therapy
+f3827394,f189b513,2018-11-25T03:40:07Z,2018-12-04T05:40:07Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+0cb52589,0bc4418d,2022-08-29T09:07:21Z,2022-08-29T09:37:21Z,430701006,Resuscitation using intravenous fluid,procedure
+0cb52589,0bc4418d,2022-08-29T09:37:21Z,2022-08-29T10:07:21Z,449214001,Transfer to stepdown unit,procedure
+0cb52589,0bc4418d,2022-09-06T11:07:21Z,2022-09-06T11:37:21Z,305351004,Admission to intensive care unit,procedure
+0cb52589,0bc4418d,2022-09-06T11:37:21Z,2022-09-06T12:07:21Z,430701006,Resuscitation using intravenous fluid,procedure
+0cb52589,0bc4418d,2022-09-07T22:07:21Z,2022-09-07T22:37:21Z,449214001,Transfer to stepdown unit,procedure
+bb27df37,328f0204,2004-07-21T08:36:29Z,2004-07-21T09:06:29Z,430701006,Resuscitation using intravenous fluid,procedure
+bb27df37,328f0204,2004-07-21T09:06:29Z,2004-07-21T09:36:29Z,449214001,Transfer to stepdown unit,procedure
+bb27df37,328f0204,2004-07-30T05:36:29Z,2004-07-30T06:06:29Z,305351004,Admission to intensive care unit,procedure
+bb27df37,328f0204,2004-07-30T06:06:29Z,2004-07-30T06:36:29Z,430701006,Resuscitation using intravenous fluid,procedure
+bb27df37,328f0204,2004-07-31T13:36:29Z,2004-07-31T14:06:29Z,449214001,Transfer to stepdown unit,procedure
+4da8bdfa,5c6bfa98,2014-06-09T01:26:52Z,2014-06-09T01:56:52Z,430701006,Resuscitation using intravenous fluid,procedure
+4da8bdfa,5c6bfa98,2014-06-09T01:56:52Z,2014-06-09T02:26:52Z,305351004,Admission to intensive care unit,procedure
+4da8bdfa,5c6bfa98,2014-06-09T02:26:52Z,2014-06-09T02:56:52Z,430701006,Resuscitation using intravenous fluid,procedure
+4da8bdfa,5c6bfa98,2014-06-09T02:56:52Z,2014-06-09T03:26:52Z,40617009,Artificial ventilation,regime/therapy
+4da8bdfa,5c6bfa98,2014-06-09T03:26:52Z,2014-06-16T17:26:52Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+ec691862,fed32db6,2016-03-30T20:29:56Z,2016-03-30T20:59:56Z,430701006,Resuscitation using intravenous fluid,procedure
+ec691862,fed32db6,2016-03-30T20:59:56Z,2016-03-30T21:29:56Z,449214001,Transfer to stepdown unit,procedure
+90ca830f,05753ab2,2016-12-04T18:10:07Z,2016-12-04T18:40:07Z,430701006,Resuscitation using intravenous fluid,procedure
+90ca830f,05753ab2,2016-12-04T18:40:07Z,2016-12-04T19:10:07Z,305351004,Admission to intensive care unit,procedure
+90ca830f,05753ab2,2016-12-04T19:10:07Z,2016-12-04T19:40:07Z,430701006,Resuscitation using intravenous fluid,procedure
+90ca830f,05753ab2,2016-12-04T19:40:07Z,2016-12-04T20:10:07Z,40617009,Artificial ventilation,regime/therapy
+90ca830f,05753ab2,2016-12-04T20:10:07Z,2016-12-10T22:10:07Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+170b89af,c009111d,2019-03-07T06:05:34Z,2019-03-07T06:35:34Z,430701006,Resuscitation using intravenous fluid,procedure
+170b89af,c009111d,2019-03-07T06:35:34Z,2019-03-07T07:05:34Z,305351004,Admission to intensive care unit,procedure
+170b89af,c009111d,2019-03-07T07:05:34Z,2019-03-07T07:35:34Z,430701006,Resuscitation using intravenous fluid,procedure
+170b89af,c009111d,2019-03-08T11:35:34Z,2019-03-08T12:05:34Z,449214001,Transfer to stepdown unit,procedure
+b924aa3b,d9479f9b,2011-06-12T01:26:52Z,2011-06-12T01:56:52Z,430701006,Resuscitation using intravenous fluid,procedure
+b924aa3b,d9479f9b,2011-06-12T01:56:52Z,2011-06-12T02:26:52Z,449214001,Transfer to stepdown unit,procedure
+7194108a,859a787c,2018-12-16T08:30:27Z,2018-12-16T09:00:27Z,430701006,Resuscitation using intravenous fluid,procedure
+7194108a,859a787c,2018-12-16T09:00:27Z,2018-12-16T09:30:27Z,449214001,Transfer to stepdown unit,procedure
+2a28a280,11884639,2012-09-25T03:06:22Z,2012-09-25T03:36:22Z,430701006,Resuscitation using intravenous fluid,procedure
+2a28a280,11884639,2012-09-25T03:36:22Z,2012-09-25T04:06:22Z,449214001,Transfer to stepdown unit,procedure
+2a28a280,11884639,2012-10-04T22:06:22Z,2012-10-04T22:36:22Z,305351004,Admission to intensive care unit,procedure
+2a28a280,11884639,2012-10-04T22:36:22Z,2012-10-04T23:06:22Z,430701006,Resuscitation using intravenous fluid,procedure
+2a28a280,11884639,2012-10-04T23:06:22Z,2012-10-04T23:36:22Z,40617009,Artificial ventilation,regime/therapy
+2a28a280,11884639,2012-10-04T23:36:22Z,2012-10-13T18:36:22Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+5468930e,3c25e7a8,2017-07-20T01:26:52Z,2017-07-20T01:56:52Z,430701006,Resuscitation using intravenous fluid,procedure
+5468930e,3c25e7a8,2017-07-20T01:56:52Z,2017-07-20T02:26:52Z,305351004,Admission to intensive care unit,procedure
+5468930e,3c25e7a8,2017-07-20T02:26:52Z,2017-07-20T02:56:52Z,430701006,Resuscitation using intravenous fluid,procedure
+5468930e,3c25e7a8,2017-07-21T20:56:52Z,2017-07-21T21:26:52Z,449214001,Transfer to stepdown unit,procedure
+5468930e,3c25e7a8,2017-07-31T03:26:52Z,2017-07-31T03:56:52Z,305351004,Admission to intensive care unit,procedure
+5468930e,3c25e7a8,2017-07-31T03:56:52Z,2017-07-31T04:26:52Z,430701006,Resuscitation using intravenous fluid,procedure
+5468930e,3c25e7a8,2017-08-01T09:26:52Z,2017-08-01T09:56:52Z,449214001,Transfer to stepdown unit,procedure
+5468930e,3c25e7a8,2017-08-10T02:56:52Z,2017-08-10T03:26:52Z,305351004,Admission to intensive care unit,procedure
+5468930e,3c25e7a8,2017-08-10T03:26:52Z,2017-08-10T03:56:52Z,430701006,Resuscitation using intravenous fluid,procedure
+5468930e,3c25e7a8,2017-08-11T06:56:52Z,2017-08-11T07:26:52Z,449214001,Transfer to stepdown unit,procedure
+5468930e,3c25e7a8,2017-08-15T12:26:52Z,2017-08-15T12:56:52Z,305351004,Admission to intensive care unit,procedure
+5468930e,3c25e7a8,2017-08-15T12:56:52Z,2017-08-15T13:26:52Z,430701006,Resuscitation using intravenous fluid,procedure
+5468930e,3c25e7a8,2017-08-16T20:26:52Z,2017-08-16T20:56:52Z,449214001,Transfer to stepdown unit,procedure
+2f218288,360ed097,2017-08-18T19:05:49Z,2017-08-18T19:35:49Z,430701006,Resuscitation using intravenous fluid,procedure
+2f218288,360ed097,2017-08-18T19:35:49Z,2017-08-18T20:05:49Z,449214001,Transfer to stepdown unit,procedure
+c0853494,731716bd,2001-08-27T19:50:38Z,2001-08-27T20:20:38Z,430701006,Resuscitation using intravenous fluid,procedure
+c0853494,731716bd,2001-08-27T20:20:38Z,2001-08-27T20:50:38Z,305351004,Admission to intensive care unit,procedure
+c0853494,731716bd,2001-08-27T20:50:38Z,2001-08-27T21:20:38Z,430701006,Resuscitation using intravenous fluid,procedure
+e5bb66bd,b5e2fecb,2002-07-10T04:24:43Z,2002-07-10T04:54:43Z,430701006,Resuscitation using intravenous fluid,procedure
+e5bb66bd,b5e2fecb,2002-07-10T04:54:43Z,2002-07-10T05:24:43Z,305351004,Admission to intensive care unit,procedure
+e5bb66bd,b5e2fecb,2002-07-10T05:24:43Z,2002-07-10T05:54:43Z,430701006,Resuscitation using intravenous fluid,procedure
+e5bb66bd,b5e2fecb,2002-07-11T12:54:43Z,2002-07-11T13:24:43Z,449214001,Transfer to stepdown unit,procedure
+e5bb66bd,b5e2fecb,2002-07-15T03:24:43Z,2002-07-15T03:54:43Z,305351004,Admission to intensive care unit,procedure
+e5bb66bd,b5e2fecb,2002-07-15T03:54:43Z,2002-07-15T04:24:43Z,430701006,Resuscitation using intravenous fluid,procedure
+e5bb66bd,b5e2fecb,2002-07-16T05:24:43Z,2002-07-16T05:54:43Z,449214001,Transfer to stepdown unit,procedure
+e5bb66bd,b5e2fecb,2002-07-20T05:54:43Z,2002-07-20T06:24:43Z,305351004,Admission to intensive care unit,procedure
+e5bb66bd,b5e2fecb,2002-07-20T06:24:43Z,2002-07-20T06:54:43Z,430701006,Resuscitation using intravenous fluid,procedure
+e5bb66bd,b5e2fecb,2002-07-20T06:54:43Z,2002-07-20T07:24:43Z,40617009,Artificial ventilation,regime/therapy
+e5bb66bd,b5e2fecb,2002-07-20T07:24:43Z,2002-07-29T18:24:43Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+46cb7df9,bba15568,2012-09-10T08:48:13Z,2012-09-10T09:18:13Z,430701006,Resuscitation using intravenous fluid,procedure
+46cb7df9,bba15568,2012-09-10T09:18:13Z,2012-09-10T09:48:13Z,449214001,Transfer to stepdown unit,procedure
+46cb7df9,bba15568,2012-09-13T19:48:13Z,2012-09-13T20:18:13Z,305351004,Admission to intensive care unit,procedure
+46cb7df9,bba15568,2012-09-13T20:18:13Z,2012-09-13T20:48:13Z,430701006,Resuscitation using intravenous fluid,procedure
+46cb7df9,bba15568,2012-09-13T20:48:13Z,2012-09-13T21:18:13Z,40617009,Artificial ventilation,regime/therapy
+46cb7df9,bba15568,2012-09-13T21:18:13Z,2012-09-19T12:18:13Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+410a2bd6,13d785f4,2017-01-12T17:12:53Z,2017-01-12T17:42:53Z,430701006,Resuscitation using intravenous fluid,procedure
+410a2bd6,13d785f4,2017-01-12T17:42:53Z,2017-01-12T18:12:53Z,449214001,Transfer to stepdown unit,procedure
+d1467dc5,31e1e65c,2013-04-21T01:32:44Z,2013-04-21T02:02:44Z,430701006,Resuscitation using intravenous fluid,procedure
+d1467dc5,31e1e65c,2013-04-21T02:02:44Z,2013-04-21T02:32:44Z,305351004,Admission to intensive care unit,procedure
+d1467dc5,31e1e65c,2013-04-21T02:32:44Z,2013-04-21T03:02:44Z,430701006,Resuscitation using intravenous fluid,procedure
+d1467dc5,31e1e65c,2013-04-22T12:02:44Z,2013-04-22T12:32:44Z,449214001,Transfer to stepdown unit,procedure
+d1467dc5,31e1e65c,2013-04-28T13:32:44Z,2013-04-28T14:02:44Z,305351004,Admission to intensive care unit,procedure
+d1467dc5,31e1e65c,2013-04-28T14:02:44Z,2013-04-28T14:32:44Z,430701006,Resuscitation using intravenous fluid,procedure
+d1467dc5,31e1e65c,2013-04-28T14:32:44Z,2013-04-28T15:02:44Z,40617009,Artificial ventilation,regime/therapy
+d1467dc5,31e1e65c,2013-04-28T15:02:44Z,2013-05-03T12:02:44Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+179cffff,71653c70,2017-08-08T08:48:13Z,2017-08-08T09:18:13Z,430701006,Resuscitation using intravenous fluid,procedure
+179cffff,71653c70,2017-08-08T09:18:13Z,2017-08-08T09:48:13Z,305351004,Admission to intensive care unit,procedure
+179cffff,71653c70,2017-08-08T09:48:13Z,2017-08-08T10:18:13Z,430701006,Resuscitation using intravenous fluid,procedure
+179cffff,71653c70,2017-08-10T03:18:13Z,2017-08-10T03:48:13Z,449214001,Transfer to stepdown unit,procedure
+3121993a,97d44e3a,2019-03-03T13:30:32Z,2019-03-03T14:00:32Z,430701006,Resuscitation using intravenous fluid,procedure
+3121993a,97d44e3a,2019-03-03T14:00:32Z,2019-03-03T14:30:32Z,449214001,Transfer to stepdown unit,procedure
+f36acc4f,15d9a48e,2018-05-09T17:18:57Z,2018-05-09T17:48:57Z,430701006,Resuscitation using intravenous fluid,procedure
+f36acc4f,15d9a48e,2018-05-09T17:48:57Z,2018-05-09T18:18:57Z,449214001,Transfer to stepdown unit,procedure
+b9f62729,0ba6b426,2022-11-15T17:31:26Z,2022-11-15T18:01:26Z,430701006,Resuscitation using intravenous fluid,procedure
+b9f62729,0ba6b426,2022-11-15T18:01:26Z,2022-11-15T18:31:26Z,449214001,Transfer to stepdown unit,procedure
+9cd939f6,9e8cf79c,2012-12-12T03:15:50Z,2012-12-12T03:45:50Z,430701006,Resuscitation using intravenous fluid,procedure
+9cd939f6,9e8cf79c,2012-12-12T03:45:50Z,2012-12-12T04:15:50Z,305351004,Admission to intensive care unit,procedure
+9cd939f6,9e8cf79c,2012-12-12T04:15:50Z,2012-12-12T04:45:50Z,430701006,Resuscitation using intravenous fluid,procedure
+9cd939f6,9e8cf79c,2012-12-12T04:45:50Z,2012-12-12T05:15:50Z,40617009,Artificial ventilation,regime/therapy
+9cd939f6,9e8cf79c,2012-12-12T05:15:50Z,2012-12-20T06:15:50Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+d7a8a863,19962c41,2019-10-29T04:57:18Z,2019-10-29T05:27:18Z,430701006,Resuscitation using intravenous fluid,procedure
+d7a8a863,19962c41,2019-10-29T05:27:18Z,2019-10-29T05:57:18Z,449214001,Transfer to stepdown unit,procedure
+2da7c1a1,9aaf2b66,2021-08-22T21:52:35Z,2021-08-22T22:22:35Z,430701006,Resuscitation using intravenous fluid,procedure
+2da7c1a1,9aaf2b66,2021-08-22T22:22:35Z,2021-08-22T22:52:35Z,449214001,Transfer to stepdown unit,procedure
+d23954e2,38185df5,2011-10-02T01:32:44Z,2011-10-02T02:02:44Z,430701006,Resuscitation using intravenous fluid,procedure
+d23954e2,38185df5,2011-10-02T02:02:44Z,2011-10-02T02:32:44Z,305351004,Admission to intensive care unit,procedure
+d23954e2,38185df5,2011-10-02T02:32:44Z,2011-10-02T03:02:44Z,430701006,Resuscitation using intravenous fluid,procedure
+d23954e2,38185df5,2011-10-04T01:02:44Z,2011-10-04T01:32:44Z,449214001,Transfer to stepdown unit,procedure
+d23954e2,38185df5,2011-10-07T07:32:44Z,2011-10-07T08:02:44Z,305351004,Admission to intensive care unit,procedure
+d23954e2,38185df5,2011-10-07T08:02:44Z,2011-10-07T08:32:44Z,430701006,Resuscitation using intravenous fluid,procedure
+d23954e2,38185df5,2011-10-07T08:32:44Z,2011-10-07T09:02:44Z,40617009,Artificial ventilation,regime/therapy
+d23954e2,38185df5,2011-10-07T09:02:44Z,2011-10-12T17:02:44Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+ba5fc57d,944b9525,2017-10-02T04:24:43Z,2017-10-02T04:54:43Z,430701006,Resuscitation using intravenous fluid,procedure
+ba5fc57d,944b9525,2017-10-02T04:54:43Z,2017-10-02T05:24:43Z,449214001,Transfer to stepdown unit,procedure
+ba5fc57d,944b9525,2017-10-10T04:24:43Z,2017-10-10T04:54:43Z,305351004,Admission to intensive care unit,procedure
+ba5fc57d,944b9525,2017-10-10T04:54:43Z,2017-10-10T05:24:43Z,430701006,Resuscitation using intravenous fluid,procedure
+ba5fc57d,944b9525,2017-10-12T03:24:43Z,2017-10-12T03:54:43Z,449214001,Transfer to stepdown unit,procedure
+ba5fc57d,944b9525,2017-10-16T20:54:43Z,2017-10-16T21:24:43Z,305351004,Admission to intensive care unit,procedure
+ba5fc57d,944b9525,2017-10-16T21:24:43Z,2017-10-16T21:54:43Z,430701006,Resuscitation using intravenous fluid,procedure
+ba5fc57d,944b9525,2017-10-18T06:54:43Z,2017-10-18T07:24:43Z,449214001,Transfer to stepdown unit,procedure
+ba5fc57d,944b9525,2017-10-24T23:24:43Z,2017-10-24T23:54:43Z,305351004,Admission to intensive care unit,procedure
+ba5fc57d,944b9525,2017-10-24T23:54:43Z,2017-10-25T00:24:43Z,430701006,Resuscitation using intravenous fluid,procedure
+ba5fc57d,944b9525,2017-10-26T17:24:43Z,2017-10-26T17:54:43Z,449214001,Transfer to stepdown unit,procedure
+ba5fc57d,944b9525,2017-11-05T05:54:43Z,2017-11-05T06:24:43Z,305351004,Admission to intensive care unit,procedure
+ba5fc57d,944b9525,2017-11-05T06:24:43Z,2017-11-05T06:54:43Z,430701006,Resuscitation using intravenous fluid,procedure
+ba5fc57d,944b9525,2017-11-05T06:54:43Z,2017-11-05T07:24:43Z,40617009,Artificial ventilation,regime/therapy
+ba5fc57d,944b9525,2017-11-05T07:24:43Z,2017-11-13T04:24:43Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+994e8cbf,b9016af2,2017-02-15T15:37:02Z,2017-02-15T16:07:02Z,430701006,Resuscitation using intravenous fluid,procedure
+994e8cbf,b9016af2,2017-02-15T16:07:02Z,2017-02-15T16:37:02Z,305351004,Admission to intensive care unit,procedure
+994e8cbf,b9016af2,2017-02-15T16:37:02Z,2017-02-15T17:07:02Z,430701006,Resuscitation using intravenous fluid,procedure
+994e8cbf,b9016af2,2017-02-17T11:07:02Z,2017-02-17T11:37:02Z,449214001,Transfer to stepdown unit,procedure
+c41ce7f5,ae6f0440,2021-01-04T05:09:38Z,2021-01-04T05:39:38Z,430701006,Resuscitation using intravenous fluid,procedure
+c41ce7f5,ae6f0440,2021-01-04T05:39:38Z,2021-01-04T06:09:38Z,449214001,Transfer to stepdown unit,procedure
+ffca5abf,f5caa3e2,2016-11-26T18:32:48Z,2016-11-26T19:02:48Z,430701006,Resuscitation using intravenous fluid,procedure
+ffca5abf,f5caa3e2,2016-11-26T19:02:48Z,2016-11-26T19:32:48Z,449214001,Transfer to stepdown unit,procedure
+998bb5b4,c2333627,2002-07-31T03:12:15Z,2002-07-31T03:42:15Z,430701006,Resuscitation using intravenous fluid,procedure
+998bb5b4,c2333627,2002-07-31T03:42:15Z,2002-07-31T04:12:15Z,449214001,Transfer to stepdown unit,procedure
+998bb5b4,c2333627,2002-08-07T20:12:15Z,2002-08-07T20:42:15Z,305351004,Admission to intensive care unit,procedure
+998bb5b4,c2333627,2002-08-07T20:42:15Z,2002-08-07T21:12:15Z,430701006,Resuscitation using intravenous fluid,procedure
+7899b5bf,5722a79a,2025-02-28T05:03:15Z,2025-02-28T05:33:15Z,430701006,Resuscitation using intravenous fluid,procedure
+7899b5bf,5722a79a,2025-02-28T05:33:15Z,2025-02-28T06:03:15Z,449214001,Transfer to stepdown unit,procedure
+31fe6f27,f4490aa4,2021-07-13T21:58:06Z,2021-07-13T22:28:06Z,430701006,Resuscitation using intravenous fluid,procedure
+31fe6f27,f4490aa4,2021-07-13T22:28:06Z,2021-07-13T22:58:06Z,449214001,Transfer to stepdown unit,procedure
+31fe6f27,f4490aa4,2021-07-17T23:58:06Z,2021-07-18T00:28:06Z,305351004,Admission to intensive care unit,procedure
+31fe6f27,f4490aa4,2021-07-18T00:28:06Z,2021-07-18T00:58:06Z,430701006,Resuscitation using intravenous fluid,procedure
+31fe6f27,f4490aa4,2021-07-19T08:58:06Z,2021-07-19T09:28:06Z,449214001,Transfer to stepdown unit,procedure
+31fe6f27,f4490aa4,2021-07-27T00:28:06Z,2021-07-27T00:58:06Z,305351004,Admission to intensive care unit,procedure
+31fe6f27,f4490aa4,2021-07-27T00:58:06Z,2021-07-27T01:28:06Z,430701006,Resuscitation using intravenous fluid,procedure
+31fe6f27,f4490aa4,2021-07-28T10:28:06Z,2021-07-28T10:58:06Z,449214001,Transfer to stepdown unit,procedure
+0ab97046,73676b15,2005-02-23T04:24:43Z,2005-02-23T04:54:43Z,430701006,Resuscitation using intravenous fluid,procedure
+0ab97046,73676b15,2005-02-23T04:54:43Z,2005-02-23T05:24:43Z,449214001,Transfer to stepdown unit,procedure
+0ab97046,73676b15,2005-02-26T20:24:43Z,2005-02-26T20:54:43Z,305351004,Admission to intensive care unit,procedure
+0ab97046,73676b15,2005-02-26T20:54:43Z,2005-02-26T21:24:43Z,430701006,Resuscitation using intravenous fluid,procedure
+0ab97046,73676b15,2005-02-26T21:24:43Z,2005-02-26T21:54:43Z,40617009,Artificial ventilation,regime/therapy
+0ab97046,73676b15,2005-02-26T21:54:43Z,2005-03-05T12:54:43Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+26785f15,b793ad20,2021-09-23T11:18:47Z,2021-09-23T11:48:47Z,430701006,Resuscitation using intravenous fluid,procedure
+26785f15,b793ad20,2021-09-23T11:48:47Z,2021-09-23T12:18:47Z,449214001,Transfer to stepdown unit,procedure
+b6545b9e,32043a2b,2018-08-28T15:18:03Z,2018-08-28T15:48:03Z,430701006,Resuscitation using intravenous fluid,procedure
+b6545b9e,32043a2b,2018-08-28T15:48:03Z,2018-08-28T16:18:03Z,449214001,Transfer to stepdown unit,procedure
+b327178b,8026a0e3,2006-03-09T16:23:53Z,2006-03-09T16:53:53Z,430701006,Resuscitation using intravenous fluid,procedure
+b327178b,8026a0e3,2006-03-09T16:53:53Z,2006-03-09T17:23:53Z,449214001,Transfer to stepdown unit,procedure
+b327178b,8026a0e3,2006-03-17T17:23:53Z,2006-03-17T17:53:53Z,305351004,Admission to intensive care unit,procedure
+b327178b,8026a0e3,2006-03-17T17:53:53Z,2006-03-17T18:23:53Z,430701006,Resuscitation using intravenous fluid,procedure
+b327178b,8026a0e3,2006-03-18T19:23:53Z,2006-03-18T19:53:53Z,449214001,Transfer to stepdown unit,procedure
+0ca5c4e6,18941c0f,2022-05-19T18:14:29Z,2022-05-19T18:44:29Z,430701006,Resuscitation using intravenous fluid,procedure
+0ca5c4e6,18941c0f,2022-05-19T18:44:29Z,2022-05-19T19:14:29Z,449214001,Transfer to stepdown unit,procedure
+0d2c8cc4,fff1657b,2007-09-10T20:22:04Z,2007-09-10T20:52:04Z,430701006,Resuscitation using intravenous fluid,procedure
+0d2c8cc4,fff1657b,2007-09-10T20:52:04Z,2007-09-10T21:22:04Z,305351004,Admission to intensive care unit,procedure
+0d2c8cc4,fff1657b,2007-09-10T21:22:04Z,2007-09-10T21:52:04Z,430701006,Resuscitation using intravenous fluid,procedure
+b21c6f3d,39084767,2016-05-24T22:00:20Z,2016-05-24T22:30:20Z,430701006,Resuscitation using intravenous fluid,procedure
+b21c6f3d,39084767,2016-05-24T22:30:20Z,2016-05-24T23:00:20Z,449214001,Transfer to stepdown unit,procedure
+197602fd,0e600285,2023-12-24T18:13:42Z,2023-12-24T18:43:42Z,430701006,Resuscitation using intravenous fluid,procedure
+197602fd,0e600285,2023-12-24T18:43:42Z,2023-12-24T19:13:42Z,305351004,Admission to intensive care unit,procedure
+197602fd,0e600285,2023-12-24T19:13:42Z,2023-12-24T19:43:42Z,430701006,Resuscitation using intravenous fluid,procedure
+197602fd,0e600285,2023-12-26T15:43:42Z,2023-12-26T16:13:42Z,449214001,Transfer to stepdown unit,procedure
+197602fd,0e600285,2024-01-05T02:13:42Z,2024-01-05T02:43:42Z,305351004,Admission to intensive care unit,procedure
+197602fd,0e600285,2024-01-05T02:43:42Z,2024-01-05T03:13:42Z,430701006,Resuscitation using intravenous fluid,procedure
+197602fd,0e600285,2024-01-06T08:13:42Z,2024-01-06T08:43:42Z,449214001,Transfer to stepdown unit,procedure
+197602fd,0e600285,2024-01-13T23:43:42Z,2024-01-14T00:13:42Z,305351004,Admission to intensive care unit,procedure
+197602fd,0e600285,2024-01-14T00:13:42Z,2024-01-14T00:43:42Z,430701006,Resuscitation using intravenous fluid,procedure
+197602fd,0e600285,2024-01-15T00:43:42Z,2024-01-15T01:13:42Z,449214001,Transfer to stepdown unit,procedure
+ae75d289,f9ea1320,2021-06-21T22:00:31Z,2021-06-21T22:30:31Z,430701006,Resuscitation using intravenous fluid,procedure
+ae75d289,f9ea1320,2021-06-21T22:30:31Z,2021-06-21T23:00:31Z,449214001,Transfer to stepdown unit,procedure
+b8050fbb,bdb0d274,2015-09-28T16:44:08Z,2015-09-28T17:14:08Z,430701006,Resuscitation using intravenous fluid,procedure
+b8050fbb,bdb0d274,2015-09-28T17:14:08Z,2015-09-28T17:44:08Z,449214001,Transfer to stepdown unit,procedure
+6965553e,105522c6,2016-06-06T07:47:42Z,2016-06-06T08:17:42Z,430701006,Resuscitation using intravenous fluid,procedure
+6965553e,105522c6,2016-06-06T08:17:42Z,2016-06-06T08:47:42Z,449214001,Transfer to stepdown unit,procedure
+1435cc80,ac6022b0,2019-03-11T07:53:15Z,2019-03-11T08:23:15Z,430701006,Resuscitation using intravenous fluid,procedure
+1435cc80,ac6022b0,2019-03-11T08:23:15Z,2019-03-11T08:53:15Z,305351004,Admission to intensive care unit,procedure
+1435cc80,ac6022b0,2019-03-11T08:53:15Z,2019-03-11T09:23:15Z,430701006,Resuscitation using intravenous fluid,procedure
+1435cc80,ac6022b0,2019-03-12T18:23:15Z,2019-03-12T18:53:15Z,449214001,Transfer to stepdown unit,procedure
+9d2a8c29,6f2e7fee,2018-08-14T01:41:31Z,2018-08-14T02:11:31Z,430701006,Resuscitation using intravenous fluid,procedure
+9d2a8c29,6f2e7fee,2018-08-14T02:11:31Z,2018-08-14T02:41:31Z,449214001,Transfer to stepdown unit,procedure
+9d2a8c29,6f2e7fee,2018-08-23T08:41:31Z,2018-08-23T09:11:31Z,305351004,Admission to intensive care unit,procedure
+9d2a8c29,6f2e7fee,2018-08-23T09:11:31Z,2018-08-23T09:41:31Z,430701006,Resuscitation using intravenous fluid,procedure
+dcef02ab,029941b5,2023-02-08T06:46:28Z,2023-02-08T07:16:28Z,430701006,Resuscitation using intravenous fluid,procedure
+dcef02ab,029941b5,2023-02-08T07:16:28Z,2023-02-08T07:46:28Z,449214001,Transfer to stepdown unit,procedure
+3ad895e5,03262ae1,2022-12-11T10:43:07Z,2022-12-11T11:13:07Z,430701006,Resuscitation using intravenous fluid,procedure
+3ad895e5,03262ae1,2022-12-11T11:13:07Z,2022-12-11T11:43:07Z,449214001,Transfer to stepdown unit,procedure
+7c8add29,21b0b88c,2005-10-14T22:31:56Z,2005-10-14T23:01:56Z,430701006,Resuscitation using intravenous fluid,procedure
+7c8add29,21b0b88c,2005-10-14T23:01:56Z,2005-10-14T23:31:56Z,305351004,Admission to intensive care unit,procedure
+7c8add29,21b0b88c,2005-10-14T23:31:56Z,2005-10-15T00:01:56Z,430701006,Resuscitation using intravenous fluid,procedure
+f92abde3,ff835d44,2021-08-02T03:05:38Z,2021-08-02T03:35:38Z,430701006,Resuscitation using intravenous fluid,procedure
+f92abde3,ff835d44,2021-08-02T03:35:38Z,2021-08-02T04:05:38Z,449214001,Transfer to stepdown unit,procedure
+2fefdfc8,0fed6dc3,2020-12-31T10:55:41Z,2020-12-31T11:25:41Z,430701006,Resuscitation using intravenous fluid,procedure
+2fefdfc8,0fed6dc3,2020-12-31T11:25:41Z,2020-12-31T11:55:41Z,449214001,Transfer to stepdown unit,procedure
+6d7e9116,bcb375b7,2015-11-30T16:11:13Z,2015-11-30T16:41:13Z,430701006,Resuscitation using intravenous fluid,procedure
+6d7e9116,bcb375b7,2015-11-30T16:41:13Z,2015-11-30T17:11:13Z,449214001,Transfer to stepdown unit,procedure
+6d7e9116,bcb375b7,2015-12-08T08:11:13Z,2015-12-08T08:41:13Z,305351004,Admission to intensive care unit,procedure
+6d7e9116,bcb375b7,2015-12-08T08:41:13Z,2015-12-08T09:11:13Z,430701006,Resuscitation using intravenous fluid,procedure
+6d7e9116,bcb375b7,2015-12-09T23:11:13Z,2015-12-09T23:41:13Z,449214001,Transfer to stepdown unit,procedure
+d2343b4c,59939d5c,2023-08-19T21:11:33Z,2023-08-19T21:41:33Z,430701006,Resuscitation using intravenous fluid,procedure
+d2343b4c,59939d5c,2023-08-19T21:41:33Z,2023-08-19T22:11:33Z,449214001,Transfer to stepdown unit,procedure
+d2343b4c,59939d5c,2023-08-25T16:11:33Z,2023-08-25T16:41:33Z,305351004,Admission to intensive care unit,procedure
+d2343b4c,59939d5c,2023-08-25T16:41:33Z,2023-08-25T17:11:33Z,430701006,Resuscitation using intravenous fluid,procedure
+d2343b4c,59939d5c,2023-08-27T01:11:33Z,2023-08-27T01:41:33Z,449214001,Transfer to stepdown unit,procedure
+d2343b4c,59939d5c,2023-09-02T19:41:33Z,2023-09-02T20:11:33Z,305351004,Admission to intensive care unit,procedure
+d2343b4c,59939d5c,2023-09-02T20:11:33Z,2023-09-02T20:41:33Z,430701006,Resuscitation using intravenous fluid,procedure
+d46a6070,535a2172,2020-01-07T18:46:54Z,2020-01-07T19:16:54Z,430701006,Resuscitation using intravenous fluid,procedure
+d46a6070,535a2172,2020-01-07T19:16:54Z,2020-01-07T19:46:54Z,449214001,Transfer to stepdown unit,procedure
+94234149,f3a2d872,2013-06-02T16:11:13Z,2013-06-02T16:41:13Z,430701006,Resuscitation using intravenous fluid,procedure
+94234149,f3a2d872,2013-06-02T16:41:13Z,2013-06-02T17:11:13Z,305351004,Admission to intensive care unit,procedure
+94234149,f3a2d872,2013-06-02T17:11:13Z,2013-06-02T17:41:13Z,430701006,Resuscitation using intravenous fluid,procedure
+94234149,f3a2d872,2013-06-02T17:41:13Z,2013-06-02T18:11:13Z,40617009,Artificial ventilation,regime/therapy
+94234149,f3a2d872,2013-06-02T18:11:13Z,2013-06-06T14:11:13Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+94234149,f3a2d872,2013-06-08T07:11:13Z,2013-06-08T07:41:13Z,449214001,Transfer to stepdown unit,procedure
+94234149,f3a2d872,2013-06-11T12:41:13Z,2013-06-11T13:11:13Z,305351004,Admission to intensive care unit,procedure
+94234149,f3a2d872,2013-06-11T13:11:13Z,2013-06-11T13:41:13Z,430701006,Resuscitation using intravenous fluid,procedure
+94234149,f3a2d872,2013-06-12T22:41:13Z,2013-06-12T23:11:13Z,449214001,Transfer to stepdown unit,procedure
+94234149,f3a2d872,2013-06-16T02:11:13Z,2013-06-16T02:41:13Z,305351004,Admission to intensive care unit,procedure
+94234149,f3a2d872,2013-06-16T02:41:13Z,2013-06-16T03:11:13Z,430701006,Resuscitation using intravenous fluid,procedure
+b9b14f2d,39b9e505,2023-11-05T10:52:06Z,2023-11-05T11:22:06Z,430701006,Resuscitation using intravenous fluid,procedure
+b9b14f2d,39b9e505,2023-11-05T11:22:06Z,2023-11-05T11:52:06Z,305351004,Admission to intensive care unit,procedure
+b9b14f2d,39b9e505,2023-11-05T11:52:06Z,2023-11-05T12:22:06Z,430701006,Resuscitation using intravenous fluid,procedure
+b9b14f2d,39b9e505,2023-11-06T16:22:06Z,2023-11-06T16:52:06Z,449214001,Transfer to stepdown unit,procedure
+4d4005f4,a50b5938,2017-08-27T10:55:41Z,2017-08-27T11:25:41Z,430701006,Resuscitation using intravenous fluid,procedure
+4d4005f4,a50b5938,2017-08-27T11:25:41Z,2017-08-27T11:55:41Z,449214001,Transfer to stepdown unit,procedure
+7f3987ba,cf08d932,2020-09-12T01:12:49Z,2020-09-12T01:42:49Z,430701006,Resuscitation using intravenous fluid,procedure
+7f3987ba,cf08d932,2020-09-12T01:42:49Z,2020-09-12T02:12:49Z,449214001,Transfer to stepdown unit,procedure
+9bb2026c,00dcdb31,2018-07-03T20:27:08Z,2018-07-03T20:57:08Z,430701006,Resuscitation using intravenous fluid,procedure
+9bb2026c,00dcdb31,2018-07-03T20:57:08Z,2018-07-03T21:27:08Z,449214001,Transfer to stepdown unit,procedure
+389eb8b2,2031dc41,2020-10-18T01:57:28Z,2020-10-18T02:27:28Z,430701006,Resuscitation using intravenous fluid,procedure
+389eb8b2,2031dc41,2020-10-18T02:27:28Z,2020-10-18T02:57:28Z,449214001,Transfer to stepdown unit,procedure
+d80045d8,8330e7fc,2023-01-19T14:38:33Z,2023-01-19T15:08:33Z,430701006,Resuscitation using intravenous fluid,procedure
+d80045d8,8330e7fc,2023-01-19T15:08:33Z,2023-01-19T15:38:33Z,449214001,Transfer to stepdown unit,procedure
+ccad3caf,24dfdc84,2017-03-28T19:16:11Z,2017-03-28T19:46:11Z,430701006,Resuscitation using intravenous fluid,procedure
+ccad3caf,24dfdc84,2017-03-28T19:46:11Z,2017-03-28T20:16:11Z,305351004,Admission to intensive care unit,procedure
+ccad3caf,24dfdc84,2017-03-28T20:16:11Z,2017-03-28T20:46:11Z,430701006,Resuscitation using intravenous fluid,procedure
+ccad3caf,24dfdc84,2017-03-30T10:46:11Z,2017-03-30T11:16:11Z,449214001,Transfer to stepdown unit,procedure
+46058fea,91fd80cc,2000-10-26T01:00:55Z,2000-10-26T01:30:55Z,430701006,Resuscitation using intravenous fluid,procedure
+46058fea,91fd80cc,2000-10-26T01:30:55Z,2000-10-26T02:00:55Z,449214001,Transfer to stepdown unit,procedure
+46058fea,91fd80cc,2000-11-01T10:00:55Z,2000-11-01T10:30:55Z,305351004,Admission to intensive care unit,procedure
+46058fea,91fd80cc,2000-11-01T10:30:55Z,2000-11-01T11:00:55Z,430701006,Resuscitation using intravenous fluid,procedure
+46058fea,91fd80cc,2000-11-01T11:00:55Z,2000-11-01T11:30:55Z,40617009,Artificial ventilation,regime/therapy
+46058fea,91fd80cc,2000-11-01T11:30:55Z,2000-11-04T23:30:55Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+aed9ddcb,b944a8c0,2018-03-13T07:32:34Z,2018-03-13T08:02:34Z,430701006,Resuscitation using intravenous fluid,procedure
+aed9ddcb,b944a8c0,2018-03-13T08:02:34Z,2018-03-13T08:32:34Z,449214001,Transfer to stepdown unit,procedure
+b3630361,9abdc3b3,2024-05-09T08:28:24Z,2024-05-09T08:58:24Z,430701006,Resuscitation using intravenous fluid,procedure
+b3630361,9abdc3b3,2024-05-09T08:58:24Z,2024-05-09T09:28:24Z,449214001,Transfer to stepdown unit,procedure
+b3630361,9abdc3b3,2024-05-17T02:28:24Z,2024-05-17T02:58:24Z,305351004,Admission to intensive care unit,procedure
+b3630361,9abdc3b3,2024-05-17T02:58:24Z,2024-05-17T03:28:24Z,430701006,Resuscitation using intravenous fluid,procedure
+b3630361,9abdc3b3,2024-05-18T13:28:24Z,2024-05-18T13:58:24Z,449214001,Transfer to stepdown unit,procedure
+6e4a0591,2a04343a,2016-10-21T04:06:59Z,2016-10-21T04:36:59Z,430701006,Resuscitation using intravenous fluid,procedure
+6e4a0591,2a04343a,2016-10-21T04:36:59Z,2016-10-21T05:06:59Z,305351004,Admission to intensive care unit,procedure
+6e4a0591,2a04343a,2016-10-21T05:06:59Z,2016-10-21T05:36:59Z,430701006,Resuscitation using intravenous fluid,procedure
+6e4a0591,2a04343a,2016-10-21T05:36:59Z,2016-10-21T06:06:59Z,40617009,Artificial ventilation,regime/therapy
+6e4a0591,2a04343a,2016-10-21T06:06:59Z,2016-10-25T14:06:59Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+6e4a0591,2a04343a,2016-10-26T17:06:59Z,2016-10-26T17:36:59Z,449214001,Transfer to stepdown unit,procedure
+4cdd4a5e,59fd0565,2000-01-29T13:13:00Z,2000-01-29T13:43:00Z,430701006,Resuscitation using intravenous fluid,procedure
+4cdd4a5e,59fd0565,2000-01-29T13:43:00Z,2000-01-29T14:13:00Z,449214001,Transfer to stepdown unit,procedure
+4cdd4a5e,59fd0565,2000-02-07T10:13:00Z,2000-02-07T10:43:00Z,305351004,Admission to intensive care unit,procedure
+4cdd4a5e,59fd0565,2000-02-07T10:43:00Z,2000-02-07T11:13:00Z,430701006,Resuscitation using intravenous fluid,procedure
+4cdd4a5e,59fd0565,2000-02-08T18:13:00Z,2000-02-08T18:43:00Z,449214001,Transfer to stepdown unit,procedure
+4cdd4a5e,59fd0565,2000-02-13T03:43:00Z,2000-02-13T04:13:00Z,305351004,Admission to intensive care unit,procedure
+4cdd4a5e,59fd0565,2000-02-13T04:13:00Z,2000-02-13T04:43:00Z,430701006,Resuscitation using intravenous fluid,procedure
+4cdd4a5e,59fd0565,2000-02-13T04:43:00Z,2000-02-13T05:13:00Z,40617009,Artificial ventilation,regime/therapy
+4cdd4a5e,59fd0565,2000-02-13T05:13:00Z,2000-02-21T14:13:00Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+f6ed0fe9,56c5869c,2016-12-11T20:02:01Z,2016-12-11T20:32:01Z,430701006,Resuscitation using intravenous fluid,procedure
+f6ed0fe9,56c5869c,2016-12-11T20:32:01Z,2016-12-11T21:02:01Z,449214001,Transfer to stepdown unit,procedure
+f6ed0fe9,56c5869c,2016-12-15T07:02:01Z,2016-12-15T07:32:01Z,305351004,Admission to intensive care unit,procedure
+f6ed0fe9,56c5869c,2016-12-15T07:32:01Z,2016-12-15T08:02:01Z,430701006,Resuscitation using intravenous fluid,procedure
+f6ed0fe9,56c5869c,2016-12-16T10:02:01Z,2016-12-16T10:32:01Z,449214001,Transfer to stepdown unit,procedure
+353af206,fe5541e9,2024-01-24T23:40:10Z,2024-01-25T00:10:10Z,430701006,Resuscitation using intravenous fluid,procedure
+353af206,fe5541e9,2024-01-25T00:10:10Z,2024-01-25T00:40:10Z,305351004,Admission to intensive care unit,procedure
+353af206,fe5541e9,2024-01-25T00:40:10Z,2024-01-25T01:10:10Z,430701006,Resuscitation using intravenous fluid,procedure
+77d0fc17,208b7827,2019-07-02T23:26:17Z,2019-07-02T23:56:17Z,430701006,Resuscitation using intravenous fluid,procedure
+77d0fc17,208b7827,2019-07-02T23:56:17Z,2019-07-03T00:26:17Z,449214001,Transfer to stepdown unit,procedure
+2c8f32df,34f3b69a,2022-05-15T06:33:17Z,2022-05-15T07:03:17Z,430701006,Resuscitation using intravenous fluid,procedure
+2c8f32df,34f3b69a,2022-05-15T07:03:17Z,2022-05-15T07:33:17Z,305351004,Admission to intensive care unit,procedure
+2c8f32df,34f3b69a,2022-05-15T07:33:17Z,2022-05-15T08:03:17Z,430701006,Resuscitation using intravenous fluid,procedure
+2c8f32df,34f3b69a,2022-05-15T08:03:17Z,2022-05-15T08:33:17Z,40617009,Artificial ventilation,regime/therapy
+2c8f32df,34f3b69a,2022-05-15T08:33:17Z,2022-05-20T04:33:17Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+eb4e8b3e,82ff9d84,2015-11-15T05:35:32Z,2015-11-15T06:05:32Z,430701006,Resuscitation using intravenous fluid,procedure
+eb4e8b3e,82ff9d84,2015-11-15T06:05:32Z,2015-11-15T06:35:32Z,449214001,Transfer to stepdown unit,procedure
+eb4e8b3e,82ff9d84,2015-11-21T12:35:32Z,2015-11-21T13:05:32Z,305351004,Admission to intensive care unit,procedure
+eb4e8b3e,82ff9d84,2015-11-21T13:05:32Z,2015-11-21T13:35:32Z,430701006,Resuscitation using intravenous fluid,procedure
+eb4e8b3e,82ff9d84,2015-11-22T22:35:32Z,2015-11-22T23:05:32Z,449214001,Transfer to stepdown unit,procedure
+01086443,8d65384a,2008-08-09T03:38:48Z,2008-08-09T04:08:48Z,430701006,Resuscitation using intravenous fluid,procedure
+01086443,8d65384a,2008-08-09T04:08:48Z,2008-08-09T04:38:48Z,449214001,Transfer to stepdown unit,procedure
+48f34877,7b60259c,2024-09-18T11:40:48Z,2024-09-18T12:10:48Z,430701006,Resuscitation using intravenous fluid,procedure
+48f34877,7b60259c,2024-09-18T12:10:48Z,2024-09-18T12:40:48Z,305351004,Admission to intensive care unit,procedure
+48f34877,7b60259c,2024-09-18T12:40:48Z,2024-09-18T13:10:48Z,430701006,Resuscitation using intravenous fluid,procedure
+48f34877,7b60259c,2024-09-19T16:10:48Z,2024-09-19T16:40:48Z,449214001,Transfer to stepdown unit,procedure
+ecfa6de4,9d90c431,2011-01-05T08:41:39Z,2011-01-05T09:11:39Z,430701006,Resuscitation using intravenous fluid,procedure
+ecfa6de4,9d90c431,2011-01-05T09:11:39Z,2011-01-05T09:41:39Z,449214001,Transfer to stepdown unit,procedure
+855bc760,a98157ac,2007-05-16T09:16:59Z,2007-05-16T09:46:59Z,430701006,Resuscitation using intravenous fluid,procedure
+855bc760,a98157ac,2007-05-16T09:46:59Z,2007-05-16T10:16:59Z,449214001,Transfer to stepdown unit,procedure
+855bc760,a98157ac,2007-05-20T12:16:59Z,2007-05-20T12:46:59Z,305351004,Admission to intensive care unit,procedure
+855bc760,a98157ac,2007-05-20T12:46:59Z,2007-05-20T13:16:59Z,430701006,Resuscitation using intravenous fluid,procedure
+b212e6fd,e4fd6ee0,2023-03-13T16:00:30Z,2023-03-13T16:30:30Z,430701006,Resuscitation using intravenous fluid,procedure
+b212e6fd,e4fd6ee0,2023-03-13T16:30:30Z,2023-03-13T17:00:30Z,449214001,Transfer to stepdown unit,procedure
+b212e6fd,e4fd6ee0,2023-03-23T15:00:30Z,2023-03-23T15:30:30Z,305351004,Admission to intensive care unit,procedure
+b212e6fd,e4fd6ee0,2023-03-23T15:30:30Z,2023-03-23T16:00:30Z,430701006,Resuscitation using intravenous fluid,procedure
+b212e6fd,e4fd6ee0,2023-03-23T16:00:30Z,2023-03-23T16:30:30Z,40617009,Artificial ventilation,regime/therapy
+b212e6fd,e4fd6ee0,2023-03-23T16:30:30Z,2023-03-28T23:30:30Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+b212e6fd,e4fd6ee0,2023-03-30T01:30:30Z,2023-03-30T02:00:30Z,449214001,Transfer to stepdown unit,procedure
+ca6ec8a7,6bf3f7f6,2013-06-01T08:41:39Z,2013-06-01T09:11:39Z,430701006,Resuscitation using intravenous fluid,procedure
+ca6ec8a7,6bf3f7f6,2013-06-01T09:11:39Z,2013-06-01T09:41:39Z,449214001,Transfer to stepdown unit,procedure
+ca6ec8a7,6bf3f7f6,2013-06-10T21:41:39Z,2013-06-10T22:11:39Z,305351004,Admission to intensive care unit,procedure
+ca6ec8a7,6bf3f7f6,2013-06-10T22:11:39Z,2013-06-10T22:41:39Z,430701006,Resuscitation using intravenous fluid,procedure
+ca6ec8a7,6bf3f7f6,2013-06-10T22:41:39Z,2013-06-10T23:11:39Z,40617009,Artificial ventilation,regime/therapy
+ca6ec8a7,6bf3f7f6,2013-06-10T23:11:39Z,2013-06-20T04:11:39Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+034663f6,3778ebe3,2017-11-12T09:53:36Z,2017-11-12T10:23:36Z,430701006,Resuscitation using intravenous fluid,procedure
+034663f6,3778ebe3,2017-11-12T10:23:36Z,2017-11-12T10:53:36Z,305351004,Admission to intensive care unit,procedure
+034663f6,3778ebe3,2017-11-12T10:53:36Z,2017-11-12T11:23:36Z,430701006,Resuscitation using intravenous fluid,procedure
+034663f6,3778ebe3,2017-11-14T10:23:36Z,2017-11-14T10:53:36Z,449214001,Transfer to stepdown unit,procedure
+034663f6,3778ebe3,2017-11-18T09:53:36Z,2017-11-18T10:23:36Z,305351004,Admission to intensive care unit,procedure
+034663f6,3778ebe3,2017-11-18T10:23:36Z,2017-11-18T10:53:36Z,430701006,Resuscitation using intravenous fluid,procedure
+034663f6,3778ebe3,2017-11-19T22:53:36Z,2017-11-19T23:23:36Z,449214001,Transfer to stepdown unit,procedure
+b4f4001b,8fde3b28,2020-07-23T16:06:40Z,2020-07-23T16:36:40Z,430701006,Resuscitation using intravenous fluid,procedure
+b4f4001b,8fde3b28,2020-07-23T16:36:40Z,2020-07-23T17:06:40Z,449214001,Transfer to stepdown unit,procedure
+c2bd4711,cf6b0539,2018-11-17T20:25:53Z,2018-11-17T20:55:53Z,430701006,Resuscitation using intravenous fluid,procedure
+c2bd4711,cf6b0539,2018-11-17T20:55:53Z,2018-11-17T21:25:53Z,305351004,Admission to intensive care unit,procedure
+c2bd4711,cf6b0539,2018-11-17T21:25:53Z,2018-11-17T21:55:53Z,430701006,Resuscitation using intravenous fluid,procedure
+c2bd4711,cf6b0539,2018-11-19T07:55:53Z,2018-11-19T08:25:53Z,449214001,Transfer to stepdown unit,procedure
+c2bd4711,cf6b0539,2018-11-27T05:25:53Z,2018-11-27T05:55:53Z,305351004,Admission to intensive care unit,procedure
+c2bd4711,cf6b0539,2018-11-27T05:55:53Z,2018-11-27T06:25:53Z,430701006,Resuscitation using intravenous fluid,procedure
+c2bd4711,cf6b0539,2018-11-27T06:25:53Z,2018-11-27T06:55:53Z,40617009,Artificial ventilation,regime/therapy
+c2bd4711,cf6b0539,2018-11-27T06:55:53Z,2018-12-01T02:55:53Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+30c39e50,8f532684,2017-08-07T03:42:42Z,2017-08-07T04:12:42Z,430701006,Resuscitation using intravenous fluid,procedure
+30c39e50,8f532684,2017-08-07T04:12:42Z,2017-08-07T04:42:42Z,449214001,Transfer to stepdown unit,procedure
+54f4c3d2,2a6666d7,2019-03-21T08:41:39Z,2019-03-21T09:11:39Z,430701006,Resuscitation using intravenous fluid,procedure
+54f4c3d2,2a6666d7,2019-03-21T09:11:39Z,2019-03-21T09:41:39Z,449214001,Transfer to stepdown unit,procedure
+54f4c3d2,2a6666d7,2019-03-26T07:41:39Z,2019-03-26T08:11:39Z,305351004,Admission to intensive care unit,procedure
+54f4c3d2,2a6666d7,2019-03-26T08:11:39Z,2019-03-26T08:41:39Z,430701006,Resuscitation using intravenous fluid,procedure
+4a196f92,4e4e3c7f,2004-10-07T02:54:02Z,2004-10-07T03:24:02Z,430701006,Resuscitation using intravenous fluid,procedure
+4a196f92,4e4e3c7f,2004-10-07T03:24:02Z,2004-10-07T03:54:02Z,305351004,Admission to intensive care unit,procedure
+4a196f92,4e4e3c7f,2004-10-07T03:54:02Z,2004-10-07T04:24:02Z,430701006,Resuscitation using intravenous fluid,procedure
+4a196f92,4e4e3c7f,2004-10-07T04:24:02Z,2004-10-07T04:54:02Z,40617009,Artificial ventilation,regime/therapy
+4a196f92,4e4e3c7f,2004-10-07T04:54:02Z,2004-10-12T15:54:02Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+4a196f92,4e4e3c7f,2004-10-14T07:54:02Z,2004-10-14T08:24:02Z,449214001,Transfer to stepdown unit,procedure
+4a196f92,4e4e3c7f,2004-10-18T13:24:02Z,2004-10-18T13:54:02Z,305351004,Admission to intensive care unit,procedure
+4a196f92,4e4e3c7f,2004-10-18T13:54:02Z,2004-10-18T14:24:02Z,430701006,Resuscitation using intravenous fluid,procedure
+4a196f92,4e4e3c7f,2004-10-20T07:24:02Z,2004-10-20T07:54:02Z,449214001,Transfer to stepdown unit,procedure
+4a196f92,4e4e3c7f,2004-10-29T20:54:02Z,2004-10-29T21:24:02Z,305351004,Admission to intensive care unit,procedure
+4a196f92,4e4e3c7f,2004-10-29T21:24:02Z,2004-10-29T21:54:02Z,430701006,Resuscitation using intravenous fluid,procedure
+4a196f92,4e4e3c7f,2004-10-30T23:54:02Z,2004-10-31T00:24:02Z,449214001,Transfer to stepdown unit,procedure
+c8458704,9cf08fac,2009-09-12T06:17:09Z,2009-09-12T06:47:09Z,430701006,Resuscitation using intravenous fluid,procedure
+c8458704,9cf08fac,2009-09-12T06:47:09Z,2009-09-12T07:17:09Z,449214001,Transfer to stepdown unit,procedure
+1800cf7c,10c13c1e,2017-09-18T03:48:09Z,2017-09-18T04:18:09Z,430701006,Resuscitation using intravenous fluid,procedure
+1800cf7c,10c13c1e,2017-09-18T04:18:09Z,2017-09-18T04:48:09Z,449214001,Transfer to stepdown unit,procedure
+830e65ed,ade9c714,2018-10-14T01:27:02Z,2018-10-14T01:57:02Z,430701006,Resuscitation using intravenous fluid,procedure
+830e65ed,ade9c714,2018-10-14T01:57:02Z,2018-10-14T02:27:02Z,449214001,Transfer to stepdown unit,procedure
+d06b163f,06bef339,2022-10-26T09:24:11Z,2022-10-26T09:54:11Z,430701006,Resuscitation using intravenous fluid,procedure
+d06b163f,06bef339,2022-10-26T09:54:11Z,2022-10-26T10:24:11Z,449214001,Transfer to stepdown unit,procedure
+d06b163f,06bef339,2022-11-02T20:24:11Z,2022-11-02T20:54:11Z,305351004,Admission to intensive care unit,procedure
+d06b163f,06bef339,2022-11-02T20:54:11Z,2022-11-02T21:24:11Z,430701006,Resuscitation using intravenous fluid,procedure
+d06b163f,06bef339,2022-11-04T20:24:11Z,2022-11-04T20:54:11Z,449214001,Transfer to stepdown unit,procedure
+9f56f9a4,ea07af4c,2022-05-27T18:45:02Z,2022-05-27T19:15:02Z,430701006,Resuscitation using intravenous fluid,procedure
+9f56f9a4,ea07af4c,2022-05-27T19:15:02Z,2022-05-27T19:45:02Z,449214001,Transfer to stepdown unit,procedure
+9f56f9a4,ea07af4c,2022-06-06T13:45:02Z,2022-06-06T14:15:02Z,305351004,Admission to intensive care unit,procedure
+9f56f9a4,ea07af4c,2022-06-06T14:15:02Z,2022-06-06T14:45:02Z,430701006,Resuscitation using intravenous fluid,procedure
+9f56f9a4,ea07af4c,2022-06-08T05:45:02Z,2022-06-08T06:15:02Z,449214001,Transfer to stepdown unit,procedure
+44970da6,624d66f1,2017-08-25T17:04:16Z,2017-08-25T17:34:16Z,430701006,Resuscitation using intravenous fluid,procedure
+44970da6,624d66f1,2017-08-25T17:34:16Z,2017-08-25T18:04:16Z,305351004,Admission to intensive care unit,procedure
+44970da6,624d66f1,2017-08-25T18:04:16Z,2017-08-25T18:34:16Z,430701006,Resuscitation using intravenous fluid,procedure
+44970da6,624d66f1,2017-08-27T14:34:16Z,2017-08-27T15:04:16Z,449214001,Transfer to stepdown unit,procedure
+e67e3f9b,1e8b5a35,2022-05-11T06:26:40Z,2022-05-11T06:56:40Z,430701006,Resuscitation using intravenous fluid,procedure
+e67e3f9b,1e8b5a35,2022-05-11T06:56:40Z,2022-05-11T07:26:40Z,449214001,Transfer to stepdown unit,procedure
+e67e3f9b,1e8b5a35,2022-05-16T04:26:40Z,2022-05-16T04:56:40Z,305351004,Admission to intensive care unit,procedure
+e67e3f9b,1e8b5a35,2022-05-16T04:56:40Z,2022-05-16T05:26:40Z,430701006,Resuscitation using intravenous fluid,procedure
+e67e3f9b,1e8b5a35,2022-05-18T04:26:40Z,2022-05-18T04:56:40Z,449214001,Transfer to stepdown unit,procedure
+e67e3f9b,1e8b5a35,2022-05-24T09:56:40Z,2022-05-24T10:26:40Z,305351004,Admission to intensive care unit,procedure
+e67e3f9b,1e8b5a35,2022-05-24T10:26:40Z,2022-05-24T10:56:40Z,430701006,Resuscitation using intravenous fluid,procedure
+450647f3,12159947,2016-04-25T20:19:22Z,2016-04-25T20:49:22Z,430701006,Resuscitation using intravenous fluid,procedure
+450647f3,12159947,2016-04-25T20:49:22Z,2016-04-25T21:19:22Z,449214001,Transfer to stepdown unit,procedure
+450647f3,12159947,2016-05-03T13:19:22Z,2016-05-03T13:49:22Z,305351004,Admission to intensive care unit,procedure
+450647f3,12159947,2016-05-03T13:49:22Z,2016-05-03T14:19:22Z,430701006,Resuscitation using intravenous fluid,procedure
+450647f3,12159947,2016-05-03T14:19:22Z,2016-05-03T14:49:22Z,40617009,Artificial ventilation,regime/therapy
+450647f3,12159947,2016-05-03T14:49:22Z,2016-05-07T02:49:22Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+90573801,0e867532,2017-10-21T16:04:14Z,2017-10-21T16:34:14Z,430701006,Resuscitation using intravenous fluid,procedure
+90573801,0e867532,2017-10-21T16:34:14Z,2017-10-21T17:04:14Z,449214001,Transfer to stepdown unit,procedure
+3d962788,69cec7aa,2006-05-15T12:20:56Z,2006-05-15T12:50:56Z,430701006,Resuscitation using intravenous fluid,procedure
+3d962788,69cec7aa,2006-05-15T12:50:56Z,2006-05-15T13:20:56Z,449214001,Transfer to stepdown unit,procedure
+3d962788,69cec7aa,2006-05-23T18:20:56Z,2006-05-23T18:50:56Z,305351004,Admission to intensive care unit,procedure
+3d962788,69cec7aa,2006-05-23T18:50:56Z,2006-05-23T19:20:56Z,430701006,Resuscitation using intravenous fluid,procedure
+3d962788,69cec7aa,2006-05-25T07:20:56Z,2006-05-25T07:50:56Z,449214001,Transfer to stepdown unit,procedure
+3d962788,69cec7aa,2006-05-28T07:50:56Z,2006-05-28T08:20:56Z,305351004,Admission to intensive care unit,procedure
+3d962788,69cec7aa,2006-05-28T08:20:56Z,2006-05-28T08:50:56Z,430701006,Resuscitation using intravenous fluid,procedure
+3d962788,69cec7aa,2006-05-28T08:50:56Z,2006-05-28T09:20:56Z,40617009,Artificial ventilation,regime/therapy
+3d962788,69cec7aa,2006-05-28T09:20:56Z,2006-05-31T20:20:56Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+dffed927,bb7c85c3,2002-04-03T08:16:49Z,2002-04-03T08:46:49Z,430701006,Resuscitation using intravenous fluid,procedure
+dffed927,bb7c85c3,2002-04-03T08:46:49Z,2002-04-03T09:16:49Z,305351004,Admission to intensive care unit,procedure
+dffed927,bb7c85c3,2002-04-03T09:16:49Z,2002-04-03T09:46:49Z,430701006,Resuscitation using intravenous fluid,procedure
+dffed927,bb7c85c3,2002-04-03T09:46:49Z,2002-04-03T10:16:49Z,40617009,Artificial ventilation,regime/therapy
+dffed927,bb7c85c3,2002-04-03T10:16:49Z,2002-04-08T09:16:49Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+c807c321,d5534e94,2017-10-29T04:13:50Z,2017-10-29T04:43:50Z,430701006,Resuscitation using intravenous fluid,procedure
+c807c321,d5534e94,2017-10-29T04:43:50Z,2017-10-29T05:13:50Z,449214001,Transfer to stepdown unit,procedure
+04fae5e7,b43d514a,2018-10-19T11:27:04Z,2018-10-19T11:57:04Z,430701006,Resuscitation using intravenous fluid,procedure
+04fae5e7,b43d514a,2018-10-19T11:57:04Z,2018-10-19T12:27:04Z,449214001,Transfer to stepdown unit,procedure
+04fae5e7,b43d514a,2018-10-28T04:27:04Z,2018-10-28T04:57:04Z,305351004,Admission to intensive care unit,procedure
+04fae5e7,b43d514a,2018-10-28T04:57:04Z,2018-10-28T05:27:04Z,430701006,Resuscitation using intravenous fluid,procedure
+04fae5e7,b43d514a,2018-10-29T10:27:04Z,2018-10-29T10:57:04Z,449214001,Transfer to stepdown unit,procedure
+07cd0912,b23dff32,2024-05-20T09:27:19Z,2024-05-20T09:57:19Z,430701006,Resuscitation using intravenous fluid,procedure
+07cd0912,b23dff32,2024-05-20T09:57:19Z,2024-05-20T10:27:19Z,449214001,Transfer to stepdown unit,procedure
+c90273ea,6bce12f1,2016-12-01T08:10:03Z,2016-12-01T08:40:03Z,430701006,Resuscitation using intravenous fluid,procedure
+c90273ea,6bce12f1,2016-12-01T08:40:03Z,2016-12-01T09:10:03Z,449214001,Transfer to stepdown unit,procedure
+c90273ea,6bce12f1,2016-12-06T00:10:03Z,2016-12-06T00:40:03Z,305351004,Admission to intensive care unit,procedure
+c90273ea,6bce12f1,2016-12-06T00:40:03Z,2016-12-06T01:10:03Z,430701006,Resuscitation using intravenous fluid,procedure
+c90273ea,6bce12f1,2016-12-07T07:10:03Z,2016-12-07T07:40:03Z,449214001,Transfer to stepdown unit,procedure
+c90273ea,6bce12f1,2016-12-12T22:40:03Z,2016-12-12T23:10:03Z,305351004,Admission to intensive care unit,procedure
+c90273ea,6bce12f1,2016-12-12T23:10:03Z,2016-12-12T23:40:03Z,430701006,Resuscitation using intravenous fluid,procedure
+17b214b3,67e8c6ba,2015-05-09T12:20:56Z,2015-05-09T12:50:56Z,430701006,Resuscitation using intravenous fluid,procedure
+17b214b3,67e8c6ba,2015-05-09T12:50:56Z,2015-05-09T13:20:56Z,449214001,Transfer to stepdown unit,procedure
+3e34dd24,047ad818,2021-05-02T10:37:34Z,2021-05-02T11:07:34Z,430701006,Resuscitation using intravenous fluid,procedure
+3e34dd24,047ad818,2021-05-02T11:07:34Z,2021-05-02T11:37:34Z,449214001,Transfer to stepdown unit,procedure
+789703ea,497c3828,2015-10-13T20:59:42Z,2015-10-13T21:29:42Z,430701006,Resuscitation using intravenous fluid,procedure
+789703ea,497c3828,2015-10-13T21:29:42Z,2015-10-13T21:59:42Z,449214001,Transfer to stepdown unit,procedure
+ac319cb6,3db73ddd,2016-01-12T22:51:01Z,2016-01-12T23:21:01Z,430701006,Resuscitation using intravenous fluid,procedure
+ac319cb6,3db73ddd,2016-01-12T23:21:01Z,2016-01-12T23:51:01Z,449214001,Transfer to stepdown unit,procedure
+e83f8c8e,5c2f6c85,2019-03-31T20:52:40Z,2019-03-31T21:22:40Z,430701006,Resuscitation using intravenous fluid,procedure
+e83f8c8e,5c2f6c85,2019-03-31T21:22:40Z,2019-03-31T21:52:40Z,449214001,Transfer to stepdown unit,procedure
+8f5aadd5,82c88d88,2020-11-18T19:44:19Z,2020-11-18T20:14:19Z,430701006,Resuscitation using intravenous fluid,procedure
+8f5aadd5,82c88d88,2020-11-18T20:14:19Z,2020-11-18T20:44:19Z,449214001,Transfer to stepdown unit,procedure
+8f5aadd5,82c88d88,2020-11-21T23:44:19Z,2020-11-22T00:14:19Z,305351004,Admission to intensive care unit,procedure
+8f5aadd5,82c88d88,2020-11-22T00:14:19Z,2020-11-22T00:44:19Z,430701006,Resuscitation using intravenous fluid,procedure
+8f5aadd5,82c88d88,2020-11-22T00:44:19Z,2020-11-22T01:14:19Z,40617009,Artificial ventilation,regime/therapy
+8f5aadd5,82c88d88,2020-11-22T01:14:19Z,2020-11-27T11:14:19Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+3d9f65b5,44c79107,2020-08-18T08:12:17Z,2020-08-18T08:42:17Z,430701006,Resuscitation using intravenous fluid,procedure
+3d9f65b5,44c79107,2020-08-18T08:42:17Z,2020-08-18T09:12:17Z,449214001,Transfer to stepdown unit,procedure
+3d9f65b5,44c79107,2020-08-21T12:12:17Z,2020-08-21T12:42:17Z,305351004,Admission to intensive care unit,procedure
+3d9f65b5,44c79107,2020-08-21T12:42:17Z,2020-08-21T13:12:17Z,430701006,Resuscitation using intravenous fluid,procedure
+3d9f65b5,44c79107,2020-08-23T04:12:17Z,2020-08-23T04:42:17Z,449214001,Transfer to stepdown unit,procedure
+0850928f,cd985149,2021-07-01T09:22:36Z,2021-07-01T09:52:36Z,430701006,Resuscitation using intravenous fluid,procedure
+0850928f,cd985149,2021-07-01T09:52:36Z,2021-07-01T10:22:36Z,449214001,Transfer to stepdown unit,procedure
+5b1204e7,89bec4a5,2015-11-19T03:46:57Z,2015-11-19T04:16:57Z,430701006,Resuscitation using intravenous fluid,procedure
+5b1204e7,89bec4a5,2015-11-19T04:16:57Z,2015-11-19T04:46:57Z,449214001,Transfer to stepdown unit,procedure
+87dc5c83,aed1696d,2014-08-30T07:56:01Z,2014-08-30T08:26:01Z,430701006,Resuscitation using intravenous fluid,procedure
+87dc5c83,aed1696d,2014-08-30T08:26:01Z,2014-08-30T08:56:01Z,449214001,Transfer to stepdown unit,procedure
+87dc5c83,aed1696d,2014-09-03T14:56:01Z,2014-09-03T15:26:01Z,305351004,Admission to intensive care unit,procedure
+87dc5c83,aed1696d,2014-09-03T15:26:01Z,2014-09-03T15:56:01Z,430701006,Resuscitation using intravenous fluid,procedure
+87dc5c83,aed1696d,2014-09-04T17:56:01Z,2014-09-04T18:26:01Z,449214001,Transfer to stepdown unit,procedure
+87dc5c83,aed1696d,2014-09-08T15:26:01Z,2014-09-08T15:56:01Z,305351004,Admission to intensive care unit,procedure
+87dc5c83,aed1696d,2014-09-08T15:56:01Z,2014-09-08T16:26:01Z,430701006,Resuscitation using intravenous fluid,procedure
+87dc5c83,aed1696d,2014-09-09T20:26:01Z,2014-09-09T20:56:01Z,449214001,Transfer to stepdown unit,procedure
+87dc5c83,aed1696d,2014-09-17T03:56:01Z,2014-09-17T04:26:01Z,305351004,Admission to intensive care unit,procedure
+87dc5c83,aed1696d,2014-09-17T04:26:01Z,2014-09-17T04:56:01Z,430701006,Resuscitation using intravenous fluid,procedure
+87dc5c83,aed1696d,2014-09-17T04:56:01Z,2014-09-17T05:26:01Z,40617009,Artificial ventilation,regime/therapy
+87dc5c83,aed1696d,2014-09-17T05:26:01Z,2014-09-20T10:26:01Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+fb90dd0d,dba6bd14,2024-03-08T13:46:12Z,2024-03-08T14:16:12Z,430701006,Resuscitation using intravenous fluid,procedure
+fb90dd0d,dba6bd14,2024-03-08T14:16:12Z,2024-03-08T14:46:12Z,449214001,Transfer to stepdown unit,procedure
+fb90dd0d,dba6bd14,2024-03-15T01:46:12Z,2024-03-15T02:16:12Z,305351004,Admission to intensive care unit,procedure
+fb90dd0d,dba6bd14,2024-03-15T02:16:12Z,2024-03-15T02:46:12Z,430701006,Resuscitation using intravenous fluid,procedure
+fb90dd0d,dba6bd14,2024-03-16T21:46:12Z,2024-03-16T22:16:12Z,449214001,Transfer to stepdown unit,procedure
+6800b23a,e396c44e,2023-07-02T08:56:32Z,2023-07-02T09:26:32Z,430701006,Resuscitation using intravenous fluid,procedure
+6800b23a,e396c44e,2023-07-02T09:26:32Z,2023-07-02T09:56:32Z,449214001,Transfer to stepdown unit,procedure
+dbff52e4,4dde3684,2017-02-15T12:37:02Z,2017-02-15T13:07:02Z,430701006,Resuscitation using intravenous fluid,procedure
+dbff52e4,4dde3684,2017-02-15T13:07:02Z,2017-02-15T13:37:02Z,449214001,Transfer to stepdown unit,procedure
+0fcf5f2b,1c8024ca,2016-01-18T23:31:18Z,2016-01-19T00:01:18Z,430701006,Resuscitation using intravenous fluid,procedure
+0fcf5f2b,1c8024ca,2016-01-19T00:01:18Z,2016-01-19T00:31:18Z,305351004,Admission to intensive care unit,procedure
+0fcf5f2b,1c8024ca,2016-01-19T00:31:18Z,2016-01-19T01:01:18Z,430701006,Resuscitation using intravenous fluid,procedure
+0fcf5f2b,1c8024ca,2016-01-20T09:01:18Z,2016-01-20T09:31:18Z,449214001,Transfer to stepdown unit,procedure
+dfd43ed8,0a673438,2016-05-10T01:01:17Z,2016-05-10T01:31:17Z,430701006,Resuscitation using intravenous fluid,procedure
+dfd43ed8,0a673438,2016-05-10T01:31:17Z,2016-05-10T02:01:17Z,449214001,Transfer to stepdown unit,procedure
+dfd43ed8,0a673438,2016-05-15T18:01:17Z,2016-05-15T18:31:17Z,305351004,Admission to intensive care unit,procedure
+dfd43ed8,0a673438,2016-05-15T18:31:17Z,2016-05-15T19:01:17Z,430701006,Resuscitation using intravenous fluid,procedure
+dfd43ed8,0a673438,2016-05-15T19:01:17Z,2016-05-15T19:31:17Z,40617009,Artificial ventilation,regime/therapy
+dfd43ed8,0a673438,2016-05-15T19:31:17Z,2016-05-21T07:31:17Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+f1cbb7ac,1a773ba3,2019-10-29T21:33:21Z,2019-10-29T22:03:21Z,430701006,Resuscitation using intravenous fluid,procedure
+f1cbb7ac,1a773ba3,2019-10-29T22:03:21Z,2019-10-29T22:33:21Z,449214001,Transfer to stepdown unit,procedure
+f1cbb7ac,1a773ba3,2019-11-06T23:33:21Z,2019-11-07T00:03:21Z,305351004,Admission to intensive care unit,procedure
+f1cbb7ac,1a773ba3,2019-11-07T00:03:21Z,2019-11-07T00:33:21Z,430701006,Resuscitation using intravenous fluid,procedure
+f1cbb7ac,1a773ba3,2019-11-08T16:33:21Z,2019-11-08T17:03:21Z,449214001,Transfer to stepdown unit,procedure
+25a686d0,bfe662c0,2025-03-13T11:28:33Z,2025-03-13T11:58:33Z,430701006,Resuscitation using intravenous fluid,procedure
+25a686d0,bfe662c0,2025-03-13T11:58:33Z,2025-03-13T12:28:33Z,449214001,Transfer to stepdown unit,procedure
+2542187b,a4ef7f10,2017-01-30T01:01:17Z,2017-01-30T01:31:17Z,430701006,Resuscitation using intravenous fluid,procedure
+2542187b,a4ef7f10,2017-01-30T01:31:17Z,2017-01-30T02:01:17Z,449214001,Transfer to stepdown unit,procedure
+7125e56f,290b889a,2022-07-27T06:21:17Z,2022-07-27T06:51:17Z,430701006,Resuscitation using intravenous fluid,procedure
+7125e56f,290b889a,2022-07-27T06:51:17Z,2022-07-27T07:21:17Z,449214001,Transfer to stepdown unit,procedure
+7125e56f,290b889a,2022-08-02T02:21:17Z,2022-08-02T02:51:17Z,305351004,Admission to intensive care unit,procedure
+7125e56f,290b889a,2022-08-02T02:51:17Z,2022-08-02T03:21:17Z,430701006,Resuscitation using intravenous fluid,procedure
+7125e56f,290b889a,2022-08-03T15:21:17Z,2022-08-03T15:51:17Z,449214001,Transfer to stepdown unit,procedure
+9c99987d,9dc56e74,2019-11-14T19:59:03Z,2019-11-14T20:29:03Z,430701006,Resuscitation using intravenous fluid,procedure
+9c99987d,9dc56e74,2019-11-14T20:29:03Z,2019-11-14T20:59:03Z,305351004,Admission to intensive care unit,procedure
+9c99987d,9dc56e74,2019-11-14T20:59:03Z,2019-11-14T21:29:03Z,430701006,Resuscitation using intravenous fluid,procedure
+9c99987d,9dc56e74,2019-11-16T15:29:03Z,2019-11-16T15:59:03Z,449214001,Transfer to stepdown unit,procedure
+da10e568,c89318ed,2023-06-30T09:27:27Z,2023-06-30T09:57:27Z,430701006,Resuscitation using intravenous fluid,procedure
+da10e568,c89318ed,2023-06-30T09:57:27Z,2023-06-30T10:27:27Z,449214001,Transfer to stepdown unit,procedure
+da10e568,c89318ed,2023-07-04T23:27:27Z,2023-07-04T23:57:27Z,305351004,Admission to intensive care unit,procedure
+da10e568,c89318ed,2023-07-04T23:57:27Z,2023-07-05T00:27:27Z,430701006,Resuscitation using intravenous fluid,procedure
+6368ce76,601b3d42,2021-06-03T08:52:44Z,2021-06-03T09:22:44Z,430701006,Resuscitation using intravenous fluid,procedure
+6368ce76,601b3d42,2021-06-03T09:22:44Z,2021-06-03T09:52:44Z,449214001,Transfer to stepdown unit,procedure
+6368ce76,601b3d42,2021-06-12T17:52:44Z,2021-06-12T18:22:44Z,305351004,Admission to intensive care unit,procedure
+6368ce76,601b3d42,2021-06-12T18:22:44Z,2021-06-12T18:52:44Z,430701006,Resuscitation using intravenous fluid,procedure
+6368ce76,601b3d42,2021-06-14T15:52:44Z,2021-06-14T16:22:44Z,449214001,Transfer to stepdown unit,procedure
+6368ce76,601b3d42,2021-06-23T03:22:44Z,2021-06-23T03:52:44Z,305351004,Admission to intensive care unit,procedure
+6368ce76,601b3d42,2021-06-23T03:52:44Z,2021-06-23T04:22:44Z,430701006,Resuscitation using intravenous fluid,procedure
+6368ce76,601b3d42,2021-06-24T10:22:44Z,2021-06-24T10:52:44Z,449214001,Transfer to stepdown unit,procedure
+e65a4348,1009b541,2010-02-06T18:49:43Z,2010-02-06T19:19:43Z,430701006,Resuscitation using intravenous fluid,procedure
+e65a4348,1009b541,2010-02-06T19:19:43Z,2010-02-06T19:49:43Z,449214001,Transfer to stepdown unit,procedure
+e65a4348,1009b541,2010-02-11T01:49:43Z,2010-02-11T02:19:43Z,305351004,Admission to intensive care unit,procedure
+e65a4348,1009b541,2010-02-11T02:19:43Z,2010-02-11T02:49:43Z,430701006,Resuscitation using intravenous fluid,procedure
+a4ecd825,8fe59214,2024-09-15T19:52:24Z,2024-09-15T20:22:24Z,430701006,Resuscitation using intravenous fluid,procedure
+a4ecd825,8fe59214,2024-09-15T20:22:24Z,2024-09-15T20:52:24Z,449214001,Transfer to stepdown unit,procedure
+a4ecd825,8fe59214,2024-09-22T08:52:24Z,2024-09-22T09:22:24Z,305351004,Admission to intensive care unit,procedure
+a4ecd825,8fe59214,2024-09-22T09:22:24Z,2024-09-22T09:52:24Z,430701006,Resuscitation using intravenous fluid,procedure
+a4ecd825,8fe59214,2024-09-23T10:52:24Z,2024-09-23T11:22:24Z,449214001,Transfer to stepdown unit,procedure
+ecc1116b,1cc10cad,2024-10-23T10:49:25Z,2024-10-23T11:19:25Z,430701006,Resuscitation using intravenous fluid,procedure
+ecc1116b,1cc10cad,2024-10-23T11:19:25Z,2024-10-23T11:49:25Z,305351004,Admission to intensive care unit,procedure
+ecc1116b,1cc10cad,2024-10-23T11:49:25Z,2024-10-23T12:19:25Z,430701006,Resuscitation using intravenous fluid,procedure
+ecc1116b,1cc10cad,2024-10-24T22:19:25Z,2024-10-24T22:49:25Z,449214001,Transfer to stepdown unit,procedure
+ecc1116b,1cc10cad,2024-10-30T12:49:25Z,2024-10-30T13:19:25Z,305351004,Admission to intensive care unit,procedure
+ecc1116b,1cc10cad,2024-10-30T13:19:25Z,2024-10-30T13:49:25Z,430701006,Resuscitation using intravenous fluid,procedure
+ecc1116b,1cc10cad,2024-10-31T15:49:25Z,2024-10-31T16:19:25Z,449214001,Transfer to stepdown unit,procedure
+7f5e856d,a8c4dc18,2015-12-22T19:32:54Z,2015-12-22T20:02:54Z,430701006,Resuscitation using intravenous fluid,procedure
+7f5e856d,a8c4dc18,2015-12-22T20:02:54Z,2015-12-22T20:32:54Z,449214001,Transfer to stepdown unit,procedure
+2e13c482,5486fd6e,2015-01-31T02:28:19Z,2015-01-31T02:58:19Z,430701006,Resuscitation using intravenous fluid,procedure
+2e13c482,5486fd6e,2015-01-31T02:58:19Z,2015-01-31T03:28:19Z,305351004,Admission to intensive care unit,procedure
+2e13c482,5486fd6e,2015-01-31T03:28:19Z,2015-01-31T03:58:19Z,430701006,Resuscitation using intravenous fluid,procedure
+2e13c482,5486fd6e,2015-02-01T03:58:19Z,2015-02-01T04:28:19Z,449214001,Transfer to stepdown unit,procedure
+ffff6ea6,0135f96c,2001-06-11T15:57:28Z,2001-06-11T16:27:28Z,430701006,Resuscitation using intravenous fluid,procedure
+ffff6ea6,0135f96c,2001-06-11T16:27:28Z,2001-06-11T16:57:28Z,449214001,Transfer to stepdown unit,procedure
+ffff6ea6,0135f96c,2001-06-15T03:57:28Z,2001-06-15T04:27:28Z,305351004,Admission to intensive care unit,procedure
+ffff6ea6,0135f96c,2001-06-15T04:27:28Z,2001-06-15T04:57:28Z,430701006,Resuscitation using intravenous fluid,procedure
+ffff6ea6,0135f96c,2001-06-15T04:57:28Z,2001-06-15T05:27:28Z,40617009,Artificial ventilation,regime/therapy
+ffff6ea6,0135f96c,2001-06-15T05:27:28Z,2001-06-20T08:27:28Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+ffff6ea6,0135f96c,2001-06-22T01:27:28Z,2001-06-22T01:57:28Z,449214001,Transfer to stepdown unit,procedure
+ffff6ea6,0135f96c,2001-06-26T02:57:28Z,2001-06-26T03:27:28Z,305351004,Admission to intensive care unit,procedure
+ffff6ea6,0135f96c,2001-06-26T03:27:28Z,2001-06-26T03:57:28Z,430701006,Resuscitation using intravenous fluid,procedure
+ffff6ea6,0135f96c,2001-06-27T10:57:28Z,2001-06-27T11:27:28Z,449214001,Transfer to stepdown unit,procedure
+ffff6ea6,0135f96c,2001-07-04T08:27:28Z,2001-07-04T08:57:28Z,305351004,Admission to intensive care unit,procedure
+ffff6ea6,0135f96c,2001-07-04T08:57:28Z,2001-07-04T09:27:28Z,430701006,Resuscitation using intravenous fluid,procedure
+ffff6ea6,0135f96c,2001-07-04T09:27:28Z,2001-07-04T09:57:28Z,40617009,Artificial ventilation,regime/therapy
+ffff6ea6,0135f96c,2001-07-04T09:57:28Z,2001-07-07T13:57:28Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+06184432,70952998,2022-08-06T10:02:53Z,2022-08-06T10:32:53Z,430701006,Resuscitation using intravenous fluid,procedure
+06184432,70952998,2022-08-06T10:32:53Z,2022-08-06T11:02:53Z,449214001,Transfer to stepdown unit,procedure
+87c79748,77cc6e18,2002-07-01T04:14:12Z,2002-07-01T04:44:12Z,430701006,Resuscitation using intravenous fluid,procedure
+87c79748,77cc6e18,2002-07-01T04:44:12Z,2002-07-01T05:14:12Z,449214001,Transfer to stepdown unit,procedure
+87c79748,77cc6e18,2002-07-08T00:14:12Z,2002-07-08T00:44:12Z,305351004,Admission to intensive care unit,procedure
+87c79748,77cc6e18,2002-07-08T00:44:12Z,2002-07-08T01:14:12Z,430701006,Resuscitation using intravenous fluid,procedure
+87c79748,77cc6e18,2002-07-09T12:14:12Z,2002-07-09T12:44:12Z,449214001,Transfer to stepdown unit,procedure
+87c79748,77cc6e18,2002-07-14T10:44:12Z,2002-07-14T11:14:12Z,305351004,Admission to intensive care unit,procedure
+87c79748,77cc6e18,2002-07-14T11:14:12Z,2002-07-14T11:44:12Z,430701006,Resuscitation using intravenous fluid,procedure
+87c79748,77cc6e18,2002-07-15T22:44:12Z,2002-07-15T23:14:12Z,449214001,Transfer to stepdown unit,procedure
+87c79748,77cc6e18,2002-07-20T22:14:12Z,2002-07-20T22:44:12Z,305351004,Admission to intensive care unit,procedure
+87c79748,77cc6e18,2002-07-20T22:44:12Z,2002-07-20T23:14:12Z,430701006,Resuscitation using intravenous fluid,procedure
+87c79748,77cc6e18,2002-07-20T23:14:12Z,2002-07-20T23:44:12Z,40617009,Artificial ventilation,regime/therapy
+87c79748,77cc6e18,2002-07-20T23:44:12Z,2002-07-28T10:44:12Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+87c79748,77cc6e18,2002-07-29T18:44:12Z,2002-07-29T19:14:12Z,449214001,Transfer to stepdown unit,procedure
+bfaeedd7,384692e2,2022-04-16T05:38:48Z,2022-04-16T06:08:48Z,430701006,Resuscitation using intravenous fluid,procedure
+bfaeedd7,384692e2,2022-04-16T06:08:48Z,2022-04-16T06:38:48Z,449214001,Transfer to stepdown unit,procedure
+430fb7b9,e55db8b8,2015-10-18T02:28:19Z,2015-10-18T02:58:19Z,430701006,Resuscitation using intravenous fluid,procedure
+430fb7b9,e55db8b8,2015-10-18T02:58:19Z,2015-10-18T03:28:19Z,305351004,Admission to intensive care unit,procedure
+430fb7b9,e55db8b8,2015-10-18T03:28:19Z,2015-10-18T03:58:19Z,430701006,Resuscitation using intravenous fluid,procedure
+430fb7b9,e55db8b8,2015-10-19T22:58:19Z,2015-10-19T23:28:19Z,449214001,Transfer to stepdown unit,procedure
+ef00e6c3,efd374b3,2015-12-24T08:16:57Z,2015-12-24T08:46:57Z,430701006,Resuscitation using intravenous fluid,procedure
+ef00e6c3,efd374b3,2015-12-24T08:46:57Z,2015-12-24T09:16:57Z,449214001,Transfer to stepdown unit,procedure
+625513a8,3239a33e,2019-03-16T13:05:17Z,2019-03-16T13:35:17Z,430701006,Resuscitation using intravenous fluid,procedure
+625513a8,3239a33e,2019-03-16T13:35:17Z,2019-03-16T14:05:17Z,449214001,Transfer to stepdown unit,procedure
+1edfd2ed,5e39759b,2016-02-21T04:24:13Z,2016-02-21T04:54:13Z,430701006,Resuscitation using intravenous fluid,procedure
+1edfd2ed,5e39759b,2016-02-21T04:54:13Z,2016-02-21T05:24:13Z,449214001,Transfer to stepdown unit,procedure
+5dc02baf,0c80874d,2018-12-07T00:11:21Z,2018-12-07T00:41:21Z,430701006,Resuscitation using intravenous fluid,procedure
+5dc02baf,0c80874d,2018-12-07T00:41:21Z,2018-12-07T01:11:21Z,449214001,Transfer to stepdown unit,procedure
+2f9ecca5,dc05bae8,2024-11-15T15:54:55Z,2024-11-15T16:24:55Z,430701006,Resuscitation using intravenous fluid,procedure
+2f9ecca5,dc05bae8,2024-11-15T16:24:55Z,2024-11-15T16:54:55Z,449214001,Transfer to stepdown unit,procedure
+153bf60f,3faa5071,2002-01-22T04:14:12Z,2002-01-22T04:44:12Z,430701006,Resuscitation using intravenous fluid,procedure
+153bf60f,3faa5071,2002-01-22T04:44:12Z,2002-01-22T05:14:12Z,305351004,Admission to intensive care unit,procedure
+153bf60f,3faa5071,2002-01-22T05:14:12Z,2002-01-22T05:44:12Z,430701006,Resuscitation using intravenous fluid,procedure
+153bf60f,3faa5071,2002-01-22T05:44:12Z,2002-01-22T06:14:12Z,40617009,Artificial ventilation,regime/therapy
+153bf60f,3faa5071,2002-01-22T06:14:12Z,2002-01-30T06:14:12Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+22711cf4,1ae003f9,2004-12-14T00:57:14Z,2004-12-14T01:27:14Z,430701006,Resuscitation using intravenous fluid,procedure
+22711cf4,1ae003f9,2004-12-14T01:27:14Z,2004-12-14T01:57:14Z,305351004,Admission to intensive care unit,procedure
+22711cf4,1ae003f9,2004-12-14T01:57:14Z,2004-12-14T02:27:14Z,430701006,Resuscitation using intravenous fluid,procedure
+22711cf4,1ae003f9,2004-12-15T22:27:14Z,2004-12-15T22:57:14Z,449214001,Transfer to stepdown unit,procedure
+22711cf4,1ae003f9,2004-12-20T23:57:14Z,2004-12-21T00:27:14Z,305351004,Admission to intensive care unit,procedure
+22711cf4,1ae003f9,2004-12-21T00:27:14Z,2004-12-21T00:57:14Z,430701006,Resuscitation using intravenous fluid,procedure
+22711cf4,1ae003f9,2004-12-22T03:57:14Z,2004-12-22T04:27:14Z,449214001,Transfer to stepdown unit,procedure
+22711cf4,1ae003f9,2004-12-27T17:27:14Z,2004-12-27T17:57:14Z,305351004,Admission to intensive care unit,procedure
+22711cf4,1ae003f9,2004-12-27T17:57:14Z,2004-12-27T18:27:14Z,430701006,Resuscitation using intravenous fluid,procedure
+22711cf4,1ae003f9,2004-12-29T01:27:14Z,2004-12-29T01:57:14Z,449214001,Transfer to stepdown unit,procedure
+22711cf4,1ae003f9,2005-01-06T22:57:14Z,2005-01-06T23:27:14Z,305351004,Admission to intensive care unit,procedure
+22711cf4,1ae003f9,2005-01-06T23:27:14Z,2005-01-06T23:57:14Z,430701006,Resuscitation using intravenous fluid,procedure
+13077eca,08482cde,2013-12-12T01:30:14Z,2013-12-12T02:00:14Z,430701006,Resuscitation using intravenous fluid,procedure
+13077eca,08482cde,2013-12-12T02:00:14Z,2013-12-12T02:30:14Z,449214001,Transfer to stepdown unit,procedure
+13077eca,08482cde,2013-12-19T06:30:14Z,2013-12-19T07:00:14Z,305351004,Admission to intensive care unit,procedure
+13077eca,08482cde,2013-12-19T07:00:14Z,2013-12-19T07:30:14Z,430701006,Resuscitation using intravenous fluid,procedure
+8407f6cc,470b0a8f,2023-10-01T18:37:54Z,2023-10-01T19:07:54Z,430701006,Resuscitation using intravenous fluid,procedure
+8407f6cc,470b0a8f,2023-10-01T19:07:54Z,2023-10-01T19:37:54Z,449214001,Transfer to stepdown unit,procedure
+8407f6cc,470b0a8f,2023-10-09T20:37:54Z,2023-10-09T21:07:54Z,305351004,Admission to intensive care unit,procedure
+8407f6cc,470b0a8f,2023-10-09T21:07:54Z,2023-10-09T21:37:54Z,430701006,Resuscitation using intravenous fluid,procedure
+8407f6cc,470b0a8f,2023-10-11T17:37:54Z,2023-10-11T18:07:54Z,449214001,Transfer to stepdown unit,procedure
+8407f6cc,470b0a8f,2023-10-21T04:07:54Z,2023-10-21T04:37:54Z,305351004,Admission to intensive care unit,procedure
+8407f6cc,470b0a8f,2023-10-21T04:37:54Z,2023-10-21T05:07:54Z,430701006,Resuscitation using intravenous fluid,procedure
+8407f6cc,470b0a8f,2023-10-21T05:07:54Z,2023-10-21T05:37:54Z,40617009,Artificial ventilation,regime/therapy
+8407f6cc,470b0a8f,2023-10-21T05:37:54Z,2023-10-29T21:37:54Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+8407f6cc,470b0a8f,2023-10-31T09:37:54Z,2023-10-31T10:07:54Z,449214001,Transfer to stepdown unit,procedure
+4ea672a4,4ba09b9d,2017-05-14T12:10:15Z,2017-05-14T12:40:15Z,430701006,Resuscitation using intravenous fluid,procedure
+4ea672a4,4ba09b9d,2017-05-14T12:40:15Z,2017-05-14T13:10:15Z,449214001,Transfer to stepdown unit,procedure
+9c20d7a8,53e96a2e,2023-01-21T11:49:49Z,2023-01-21T12:19:49Z,430701006,Resuscitation using intravenous fluid,procedure
+9c20d7a8,53e96a2e,2023-01-21T12:19:49Z,2023-01-21T12:49:49Z,449214001,Transfer to stepdown unit,procedure
+c657bce5,0420a06d,2020-10-26T10:12:42Z,2020-10-26T10:42:42Z,430701006,Resuscitation using intravenous fluid,procedure
+c657bce5,0420a06d,2020-10-26T10:42:42Z,2020-10-26T11:12:42Z,449214001,Transfer to stepdown unit,procedure
+f4b84687,e3c0c217,2024-03-17T04:35:56Z,2024-03-17T05:05:56Z,430701006,Resuscitation using intravenous fluid,procedure
+f4b84687,e3c0c217,2024-03-17T05:05:56Z,2024-03-17T05:35:56Z,305351004,Admission to intensive care unit,procedure
+f4b84687,e3c0c217,2024-03-17T05:35:56Z,2024-03-17T06:05:56Z,430701006,Resuscitation using intravenous fluid,procedure
+f4b84687,e3c0c217,2024-03-19T01:05:56Z,2024-03-19T01:35:56Z,449214001,Transfer to stepdown unit,procedure
+7f5c9743,3f72fe14,2016-06-22T01:28:12Z,2016-06-22T01:58:12Z,430701006,Resuscitation using intravenous fluid,procedure
+7f5c9743,3f72fe14,2016-06-22T01:58:12Z,2016-06-22T02:28:12Z,449214001,Transfer to stepdown unit,procedure
+7f5c9743,3f72fe14,2016-06-28T16:28:12Z,2016-06-28T16:58:12Z,305351004,Admission to intensive care unit,procedure
+7f5c9743,3f72fe14,2016-06-28T16:58:12Z,2016-06-28T17:28:12Z,430701006,Resuscitation using intravenous fluid,procedure
+7f5c9743,3f72fe14,2016-06-30T04:28:12Z,2016-06-30T04:58:12Z,449214001,Transfer to stepdown unit,procedure
+7f5c9743,3f72fe14,2016-07-07T16:58:12Z,2016-07-07T17:28:12Z,305351004,Admission to intensive care unit,procedure
+7f5c9743,3f72fe14,2016-07-07T17:28:12Z,2016-07-07T17:58:12Z,430701006,Resuscitation using intravenous fluid,procedure
+7f5c9743,3f72fe14,2016-07-09T13:58:12Z,2016-07-09T14:28:12Z,449214001,Transfer to stepdown unit,procedure
+7f5c9743,3f72fe14,2016-07-13T15:28:12Z,2016-07-13T15:58:12Z,305351004,Admission to intensive care unit,procedure
+7f5c9743,3f72fe14,2016-07-13T15:58:12Z,2016-07-13T16:28:12Z,430701006,Resuscitation using intravenous fluid,procedure
+7f5c9743,3f72fe14,2016-07-14T21:28:12Z,2016-07-14T21:58:12Z,449214001,Transfer to stepdown unit,procedure
+7f5c9743,3f72fe14,2016-07-21T12:58:12Z,2016-07-21T13:28:12Z,305351004,Admission to intensive care unit,procedure
+7f5c9743,3f72fe14,2016-07-21T13:28:12Z,2016-07-21T13:58:12Z,430701006,Resuscitation using intravenous fluid,procedure
+7f5c9743,3f72fe14,2016-07-21T13:58:12Z,2016-07-21T14:28:12Z,40617009,Artificial ventilation,regime/therapy
+7f5c9743,3f72fe14,2016-07-21T14:28:12Z,2016-07-31T09:28:12Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+1f42bd10,d389779d,2014-06-19T02:31:10Z,2014-06-19T03:01:10Z,430701006,Resuscitation using intravenous fluid,procedure
+1f42bd10,d389779d,2014-06-19T03:01:10Z,2014-06-19T03:31:10Z,305351004,Admission to intensive care unit,procedure
+1f42bd10,d389779d,2014-06-19T03:31:10Z,2014-06-19T04:01:10Z,430701006,Resuscitation using intravenous fluid,procedure
+1f42bd10,d389779d,2014-06-19T04:01:10Z,2014-06-19T04:31:10Z,40617009,Artificial ventilation,regime/therapy
+1f42bd10,d389779d,2014-06-19T04:31:10Z,2014-06-26T05:31:10Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+6bc0ffc0,58db6624,2020-07-16T16:43:39Z,2020-07-16T17:13:39Z,430701006,Resuscitation using intravenous fluid,procedure
+6bc0ffc0,58db6624,2020-07-16T17:13:39Z,2020-07-16T17:43:39Z,449214001,Transfer to stepdown unit,procedure
+6bc0ffc0,58db6624,2020-07-24T13:43:39Z,2020-07-24T14:13:39Z,305351004,Admission to intensive care unit,procedure
+6bc0ffc0,58db6624,2020-07-24T14:13:39Z,2020-07-24T14:43:39Z,430701006,Resuscitation using intravenous fluid,procedure
+6bc0ffc0,58db6624,2020-07-26T07:43:39Z,2020-07-26T08:13:39Z,449214001,Transfer to stepdown unit,procedure
+6bc0ffc0,58db6624,2020-08-03T23:13:39Z,2020-08-03T23:43:39Z,305351004,Admission to intensive care unit,procedure
+6bc0ffc0,58db6624,2020-08-03T23:43:39Z,2020-08-04T00:13:39Z,430701006,Resuscitation using intravenous fluid,procedure
+6bc0ffc0,58db6624,2020-08-04T00:13:39Z,2020-08-04T00:43:39Z,40617009,Artificial ventilation,regime/therapy
+6bc0ffc0,58db6624,2020-08-04T00:43:39Z,2020-08-12T21:43:39Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+393e0682,866084d6,2020-02-13T02:31:10Z,2020-02-13T03:01:10Z,430701006,Resuscitation using intravenous fluid,procedure
+393e0682,866084d6,2020-02-13T03:01:10Z,2020-02-13T03:31:10Z,449214001,Transfer to stepdown unit,procedure
+393e0682,866084d6,2020-02-21T21:31:10Z,2020-02-21T22:01:10Z,305351004,Admission to intensive care unit,procedure
+393e0682,866084d6,2020-02-21T22:01:10Z,2020-02-21T22:31:10Z,430701006,Resuscitation using intravenous fluid,procedure
+393e0682,866084d6,2020-02-21T22:31:10Z,2020-02-21T23:01:10Z,40617009,Artificial ventilation,regime/therapy
+393e0682,866084d6,2020-02-21T23:01:10Z,2020-02-25T04:01:10Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+9d30795b,8e26c52b,2016-01-23T09:02:11Z,2016-01-23T09:32:11Z,430701006,Resuscitation using intravenous fluid,procedure
+9d30795b,8e26c52b,2016-01-23T09:32:11Z,2016-01-23T10:02:11Z,449214001,Transfer to stepdown unit,procedure
+9d30795b,8e26c52b,2016-02-01T23:02:11Z,2016-02-01T23:32:11Z,305351004,Admission to intensive care unit,procedure
+9d30795b,8e26c52b,2016-02-01T23:32:11Z,2016-02-02T00:02:11Z,430701006,Resuscitation using intravenous fluid,procedure
+9d30795b,8e26c52b,2016-02-02T00:02:11Z,2016-02-02T00:32:11Z,40617009,Artificial ventilation,regime/therapy
+9d30795b,8e26c52b,2016-02-02T00:32:11Z,2016-02-09T14:32:11Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+9d30795b,8e26c52b,2016-02-11T09:32:11Z,2016-02-11T10:02:11Z,449214001,Transfer to stepdown unit,procedure
+bd2f795b,c2fae3ff,2019-11-13T20:26:21Z,2019-11-13T20:56:21Z,430701006,Resuscitation using intravenous fluid,procedure
+bd2f795b,c2fae3ff,2019-11-13T20:56:21Z,2019-11-13T21:26:21Z,449214001,Transfer to stepdown unit,procedure
+bd2f795b,c2fae3ff,2019-11-19T20:26:21Z,2019-11-19T20:56:21Z,305351004,Admission to intensive care unit,procedure
+bd2f795b,c2fae3ff,2019-11-19T20:56:21Z,2019-11-19T21:26:21Z,430701006,Resuscitation using intravenous fluid,procedure
+bd2f795b,c2fae3ff,2019-11-21T13:26:21Z,2019-11-21T13:56:21Z,449214001,Transfer to stepdown unit,procedure
+7797fd99,e37bc422,2007-12-05T22:53:25Z,2007-12-05T23:23:25Z,430701006,Resuscitation using intravenous fluid,procedure
+7797fd99,e37bc422,2007-12-05T23:23:25Z,2007-12-05T23:53:25Z,449214001,Transfer to stepdown unit,procedure
+7797fd99,e37bc422,2007-12-10T16:53:25Z,2007-12-10T17:23:25Z,305351004,Admission to intensive care unit,procedure
+7797fd99,e37bc422,2007-12-10T17:23:25Z,2007-12-10T17:53:25Z,430701006,Resuscitation using intravenous fluid,procedure
+7797fd99,e37bc422,2007-12-10T17:53:25Z,2007-12-10T18:23:25Z,40617009,Artificial ventilation,regime/therapy
+7797fd99,e37bc422,2007-12-10T18:23:25Z,2007-12-15T23:23:25Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+2725bce2,f19bfa02,2006-11-03T07:57:27Z,2006-11-03T08:27:27Z,430701006,Resuscitation using intravenous fluid,procedure
+2725bce2,f19bfa02,2006-11-03T08:27:27Z,2006-11-03T08:57:27Z,449214001,Transfer to stepdown unit,procedure
+2725bce2,f19bfa02,2006-11-08T12:57:27Z,2006-11-08T13:27:27Z,305351004,Admission to intensive care unit,procedure
+2725bce2,f19bfa02,2006-11-08T13:27:27Z,2006-11-08T13:57:27Z,430701006,Resuscitation using intravenous fluid,procedure
+b059aefa,3fb835ee,2019-02-12T00:47:35Z,2019-02-12T01:17:35Z,430701006,Resuscitation using intravenous fluid,procedure
+b059aefa,3fb835ee,2019-02-12T01:17:35Z,2019-02-12T01:47:35Z,305351004,Admission to intensive care unit,procedure
+b059aefa,3fb835ee,2019-02-12T01:47:35Z,2019-02-12T02:17:35Z,430701006,Resuscitation using intravenous fluid,procedure
+b059aefa,3fb835ee,2019-02-13T15:17:35Z,2019-02-13T15:47:35Z,449214001,Transfer to stepdown unit,procedure
+9bc672a8,4b0cf772,2023-03-14T05:45:48Z,2023-03-14T06:15:48Z,430701006,Resuscitation using intravenous fluid,procedure
+9bc672a8,4b0cf772,2023-03-14T06:15:48Z,2023-03-14T06:45:48Z,449214001,Transfer to stepdown unit,procedure
+9bc672a8,4b0cf772,2023-03-20T20:45:48Z,2023-03-20T21:15:48Z,305351004,Admission to intensive care unit,procedure
+9bc672a8,4b0cf772,2023-03-20T21:15:48Z,2023-03-20T21:45:48Z,430701006,Resuscitation using intravenous fluid,procedure
+9bc672a8,4b0cf772,2023-03-22T09:45:48Z,2023-03-22T10:15:48Z,449214001,Transfer to stepdown unit,procedure
+9bc672a8,4b0cf772,2023-03-27T15:15:48Z,2023-03-27T15:45:48Z,305351004,Admission to intensive care unit,procedure
+9bc672a8,4b0cf772,2023-03-27T15:45:48Z,2023-03-27T16:15:48Z,430701006,Resuscitation using intravenous fluid,procedure
+9bc672a8,4b0cf772,2023-03-29T15:15:48Z,2023-03-29T15:45:48Z,449214001,Transfer to stepdown unit,procedure
+55d6f96c,2702d5ee,2019-03-15T07:57:27Z,2019-03-15T08:27:27Z,430701006,Resuscitation using intravenous fluid,procedure
+55d6f96c,2702d5ee,2019-03-15T08:27:27Z,2019-03-15T08:57:27Z,449214001,Transfer to stepdown unit,procedure
+55d6f96c,2702d5ee,2019-03-19T20:57:27Z,2019-03-19T21:27:27Z,305351004,Admission to intensive care unit,procedure
+55d6f96c,2702d5ee,2019-03-19T21:27:27Z,2019-03-19T21:57:27Z,430701006,Resuscitation using intravenous fluid,procedure
+55d6f96c,2702d5ee,2019-03-19T21:57:27Z,2019-03-19T22:27:27Z,40617009,Artificial ventilation,regime/therapy
+55d6f96c,2702d5ee,2019-03-19T22:27:27Z,2019-03-27T22:27:27Z,243174005,Weaning from mechanically assisted ventilation,regime/therapy
+55d6f96c,2702d5ee,2019-03-29T20:27:27Z,2019-03-29T20:57:27Z,449214001,Transfer to stepdown unit,procedure
+65dee9b4,8505ae3a,2014-10-03T08:12:36Z,2014-10-03T08:42:36Z,430701006,Resuscitation using intravenous fluid,procedure
+65dee9b4,8505ae3a,2014-10-03T08:42:36Z,2014-10-03T09:12:36Z,449214001,Transfer to stepdown unit,procedure
+65dee9b4,8505ae3a,2014-10-13T00:12:36Z,2014-10-13T00:42:36Z,305351004,Admission to intensive care unit,procedure
+65dee9b4,8505ae3a,2014-10-13T00:42:36Z,2014-10-13T01:12:36Z,430701006,Resuscitation using intravenous fluid,procedure
+65dee9b4,8505ae3a,2014-10-14T03:12:36Z,2014-10-14T03:42:36Z,449214001,Transfer to stepdown unit,procedure
+65dee9b4,8505ae3a,2014-10-22T12:42:36Z,2014-10-22T13:12:36Z,305351004,Admission to intensive care unit,procedure
+65dee9b4,8505ae3a,2014-10-22T13:12:36Z,2014-10-22T13:42:36Z,430701006,Resuscitation using intravenous fluid,procedure
+fd2d9c0b,5821d2c8,2017-11-08T12:36:26Z,2017-11-08T13:06:26Z,430701006,Resuscitation using intravenous fluid,procedure
+fd2d9c0b,5821d2c8,2017-11-08T13:06:26Z,2017-11-08T13:36:26Z,449214001,Transfer to stepdown unit,procedure
+fd2d9c0b,5821d2c8,2017-11-16T01:36:26Z,2017-11-16T02:06:26Z,305351004,Admission to intensive care unit,procedure
+fd2d9c0b,5821d2c8,2017-11-16T02:06:26Z,2017-11-16T02:36:26Z,430701006,Resuscitation using intravenous fluid,procedure
+fd2d9c0b,5821d2c8,2017-11-17T09:36:26Z,2017-11-17T10:06:26Z,449214001,Transfer to stepdown unit,procedure
+98aa9200,a3e235f3,2020-09-05T13:28:56Z,2020-09-05T13:58:56Z,430701006,Resuscitation using intravenous fluid,procedure
+98aa9200,a3e235f3,2020-09-05T13:58:56Z,2020-09-05T14:28:56Z,449214001,Transfer to stepdown unit,procedure
+98aa9200,a3e235f3,2020-09-10T09:28:56Z,2020-09-10T09:58:56Z,305351004,Admission to intensive care unit,procedure
+98aa9200,a3e235f3,2020-09-10T09:58:56Z,2020-09-10T10:28:56Z,430701006,Resuscitation using intravenous fluid,procedure
+98aa9200,a3e235f3,2020-09-12T02:28:56Z,2020-09-12T02:58:56Z,449214001,Transfer to stepdown unit,procedure
+6ffcce8c,9ac8bf8b,2017-04-02T03:45:05Z,2017-04-02T04:15:05Z,430701006,Resuscitation using intravenous fluid,procedure
+6ffcce8c,9ac8bf8b,2017-04-02T04:15:05Z,2017-04-02T04:45:05Z,449214001,Transfer to stepdown unit,procedure
+6ffcce8c,9ac8bf8b,2017-04-06T10:45:05Z,2017-04-06T11:15:05Z,305351004,Admission to intensive care unit,procedure
+6ffcce8c,9ac8bf8b,2017-04-06T11:15:05Z,2017-04-06T11:45:05Z,430701006,Resuscitation using intravenous fluid,procedure
+6ffcce8c,9ac8bf8b,2017-04-07T18:45:05Z,2017-04-07T19:15:05Z,449214001,Transfer to stepdown unit,procedure
+6ffcce8c,9ac8bf8b,2017-04-15T21:15:05Z,2017-04-15T21:45:05Z,305351004,Admission to intensive care unit,procedure
+6ffcce8c,9ac8bf8b,2017-04-15T21:45:05Z,2017-04-15T22:15:05Z,430701006,Resuscitation using intravenous fluid,procedure
+6ffcce8c,9ac8bf8b,2017-04-17T05:15:05Z,2017-04-17T05:45:05Z,449214001,Transfer to stepdown unit,procedure
+ac1a13e1,d407b3a3,2004-01-27T12:41:17Z,2004-01-27T13:11:17Z,430701006,Resuscitation using intravenous fluid,procedure
+ac1a13e1,d407b3a3,2004-01-27T13:11:17Z,2004-01-27T13:41:17Z,305351004,Admission to intensive care unit,procedure
+ac1a13e1,d407b3a3,2004-01-27T13:41:17Z,2004-01-27T14:11:17Z,430701006,Resuscitation using intravenous fluid,procedure
+9741d642,13faff7f,2017-08-04T17:27:01Z,2017-08-04T17:57:01Z,430701006,Resuscitation using intravenous fluid,procedure
+9741d642,13faff7f,2017-08-04T17:57:01Z,2017-08-04T18:27:01Z,449214001,Transfer to stepdown unit,procedure
+b3c4ba01,42b39e78,2000-09-30T05:14:54Z,2000-09-30T05:44:54Z,430701006,Resuscitation using intravenous fluid,procedure
+b3c4ba01,42b39e78,2000-09-30T05:44:54Z,2000-09-30T06:14:54Z,449214001,Transfer to stepdown unit,procedure
+e10b4d31,67e841d7,2020-03-28T04:50:30Z,2020-03-28T05:20:30Z,430701006,Resuscitation using intravenous fluid,procedure
+e10b4d31,67e841d7,2020-03-28T05:20:30Z,2020-03-28T05:50:30Z,449214001,Transfer to stepdown unit,procedure
+88135264,a01b0aaa,2022-10-10T00:33:50Z,2022-10-10T01:03:50Z,430701006,Resuscitation using intravenous fluid,procedure
+88135264,a01b0aaa,2022-10-10T01:03:50Z,2022-10-10T01:33:50Z,449214001,Transfer to stepdown unit,procedure
