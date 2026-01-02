@@ -4,6 +4,7 @@ variety of tags such as: "fun", "slab", "technical", "scenic", "warm up", as wel
 as less ideal attributes such as "scary", "rusty", "chossy", etc.
 
 The data for NC can be found [here](./NC/final_route_metadata.csv)
+and Red RIver Gorge [here](red-river-gorge/final-routes.csv)
 
 From, there, an analysis can be used to find areas that may appeal to you. 
 
