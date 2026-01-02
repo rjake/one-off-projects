@@ -32,18 +32,6 @@ route_info |>
   ggplot(aes(y = region_2)) +
   geom_bar(aes(fill = rating_simple, group = rating_simple))
 
-
-geom_bar(
-  data = ~filter(.x, jake_ind == 1),
-  fill = "orange",
-  position = position_dodge()
-) +
-  geom_bar(
-    data = ~filter(.x, adrienne_ind == 1),
-    position = position_dodge(),
-    fill = "purple"
-  )
-
 #
 route_metrics <-
   route_info |> 
@@ -70,9 +58,28 @@ route_metrics |>
   pivot_longer(
     ends_with("_ind")
   ) |> 
-  ggplot(aes(value, name, fill = name)) +
+  ggplot(
+    aes(
+      value, 
+      name, 
+      fill = case_when(
+        str_detect(name, "^(sport|tr)") ~ "type",
+        name == "bad_ind" ~ "bad",
+        .default = "good"
+      )
+    )
+  ) +
   facet_wrap(~region_3) +
-  geom_col()
+  geom_col() +
+  theme(
+    legend.position = "none"
+  )
 
-
-
+route_info |> 
+  filter(route_id == 107163191) |> 
+  select(
+    -c(rating_int, rating_simple, x_diff, y_diff)
+  ) |> 
+  as.list() |> 
+  yaml::as.yaml() |> 
+  cat()
