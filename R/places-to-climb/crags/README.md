@@ -2,7 +2,7 @@ This repo pulls the descriptions of routes on Mountain Project and identifies a
 variety of tags such as: "fun", "slab", "technical", "scenic", "warm up", as well 
 as less ideal attributes such as "scary", "rusty", "chossy", etc.
 
-The data for NC can be found [here]()
+The data for NC can be found [here](./NC/final_route_metadata.csv)
 
 ```yaml
 route_id: 1.0716319e+08
