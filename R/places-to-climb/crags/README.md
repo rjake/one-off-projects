@@ -4,6 +4,12 @@ as less ideal attributes such as "scary", "rusty", "chossy", etc.
 
 The data for NC can be found [here](./NC/final_route_metadata.csv)
 
+From, there, an analysis can be used to find areas that may appeal to you. 
+
+Here is a quick example of the routes at Linville Gorge
+
+![metrics at Linville Gorge](img/linville-gorge.png)
+
 Here is an example of the fields present in the data:
 ```yaml
 route_id: 1.0716319e+08
