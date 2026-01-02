@@ -1,3 +1,4 @@
+# Metadata for Climbing Routes
 This repo pulls the descriptions of routes on Mountain Project and identifies a 
 variety of tags such as: "fun", "slab", "technical", "scenic", "warm up", as well 
 as less ideal attributes such as "scary", "rusty", "chossy", etc.
