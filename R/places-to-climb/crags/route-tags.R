@@ -16,13 +16,12 @@ Download routes descriptions from mountain project:
 # Workspace ----
 setwd(dirname(.rs.api.getSourceEditorContext()$path))
 
-
 library(tidyverse)
 library(glue)
 
-output_folder <- "NC"
+output_folder <- "areas/WV"
 output_raw_routes <- glue("{output_folder}/all_routes.csv")
-output_descriptions <- glue("{output_folder}/raw/scrape_descriptions.csv")
+output_descriptions <- glue("{output_folder}/scrape_descriptions.csv")
 output_final_metadata <- glue("{output_folder}/final_route_metadata.csv")
 
 all_routes <- read_csv(output_raw_routes, col_types = c(route_id = "c"))
@@ -118,7 +117,7 @@ desc_wide <-
     field = tolower(field) |> str_remove_all(":")
   ) |> 
   filter(
-    str_detect(field, "description|location|protection")
+    str_detect(field, "^(description|location|protection)$")
   ) |> 
   # there is 1 route that has repeated sections
   slice(.by = c(route_id, field), 1) |> 
@@ -300,3 +299,31 @@ route_info <-
 
 write_csv(route_info, output_final_metadata)
 
+all_routes_all_areas <-
+  list.files(
+    "areas",
+    "final_route_metadata",
+    recursive = TRUE,
+    full.names = TRUE
+  ) |> 
+  read_csv()
+
+
+nc <- read_csv("areas/NC/final_route_metadata.csv")
+wv <- read_csv("areas/WV/final_route_metadata.csv")
+
+areas_together <-
+  bind_rows(
+    NC = nc,
+    WV = wv,
+    .id = "area"
+  ) |> 
+  rename(
+    grade = rating,
+    grade_simple = rating_simple,
+    grade_int = rating_int
+  )
+
+write_csv(areas_together, "areas/all_routes.csv")  
+
+names(areas_together) |> sort() |> glue_collapse("\n")

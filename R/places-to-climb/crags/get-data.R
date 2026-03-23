@@ -3,10 +3,10 @@ library(glue)
 library(tidyverse)
 library(rvest)
 
-area <- "105873282" # North Carolina
-output_folder <- "NC"
+area <- "105855459" # North Carolina
+output_folder <- "areas/WV"
 output_raw_routes <- glue("{output_folder}/all_routes.csv")
-output_descriptions <- glue("{output_folder}/raw_scrape_descriptions.csv")
+output_descriptions <- glue("{output_folder}/scrape_descriptions.csv")
 
 
 make_url <- function(export = TRUE,
@@ -56,7 +56,7 @@ make_url <- function(export = TRUE,
 }
 
 ## url_list ----
-make_url(type = "boulder", min_boulder = "20000", max_boulder = "20350", export = FALSE) |> browseURL()
+make_url(type = "boulder", min_boulder = "20000", max_boulder = "20350", export = FALSE)
 
 url_list <-
   list(
@@ -103,7 +103,8 @@ if (!file.exists(output_raw_routes)) {
 
 # Clean data ----
 raw_routes <-
-  list.files(output_folder, "^raw", full.names = TRUE) |> 
+  file.path(output_folder, "raw") |> 
+  list.files(full.names = TRUE) |> 
   map(
     ~read_csv(.x, id = "url_query") |> 
       mutate_all(as.character)
@@ -126,8 +127,16 @@ final_routes |>
 
 # Download Descriptions ----
 all_routes <- read_csv(output_raw_routes)
+# original_routes <- read_csv(output_raw_routes)
+# existing_routes <- read_csv("WV/raw_scrape_descriptions.csv")
+all_routes <-
+  original_routes |>
+  filter(!route_id %in% existing_routes$route_id) |> 
+  select(url)
+  #read_csv(output_raw_routes)
 
 scrape_mp <- function(route_url) {
+  file_exists <- file.exists(output_descriptions)
   # route_url <- all_routes$url[1]
   url_nodes <-
     route_url |>  
@@ -159,17 +168,17 @@ scrape_mp <- function(route_url) {
   write_csv(
     df,
     output_descriptions,
-    append = TRUE
+    append = file_exists
   )
 }
 
 if (FALSE) { 
-  # 0.3 * nrow(all_routes) / 60 #approx time (mins)
+  # 0.2 * nrow(all_routes) / 60 #approx time (mins)
   
   walk(
     all_routes$url,
     possibly({
-      Sys.sleep(0.3)
+      Sys.sleep(0.2)
       ~scrape_mp(.x)
     }),
     .progress = TRUE

@@ -5,7 +5,7 @@ setwd(dirname(.rs.api.getSourceEditorContext()$path))
 library(tidyverse)
 library(glue)
 
-output_folder <- "NC"
+output_folder <- "areas/WV"
 output_final_metadata <- glue("{output_folder}/final_route_metadata.csv")
 
 route_info <- read_csv(output_final_metadata)
@@ -72,7 +72,14 @@ route_metrics |>
   facet_wrap(~region_3) +
   geom_col() +
   theme(
+    plot.title.position = "plot",
+    panel.background = element_rect("white", "grey80"),
     legend.position = "none"
+  ) +
+  labs(
+    title = "Routes at Linville Gorge, NC",
+    y = "Metric",
+    x = "# Routes"
   )
 
 route_info |> 

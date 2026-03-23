@@ -1,0 +1,3 @@
+project:
+  resources:
+    - crags/areas/all_routes.csv

@@ -1,0 +1,567 @@
+---
+title: "Places to Climb"
+format:
+  dashboard:
+    theme: cosmo
+    orientation: columns
+    expandable: true
+server: shiny
+---
+
+```{r input_demo}
+#| eval: !expr interactive()
+
+shiny::reactiveConsole(enabled = TRUE)
+
+coords <- list(y = 37.87, x = -81.05) # NRG
+# coords <- list(y = 35.99, x = -78.90) # durham
+
+
+input <- list(
+  aggregate = TRUE,
+  bar_yaxis_click = 0,
+  climb_type = "boulder_ind",
+  data_table_rows_selected = 1:3,
+  grade = c(0, 2),
+  map_bounds =
+    list(
+      north = coords$y + 0.1,
+      south = coords$y - 0.1,
+      east = coords$x + 0.5,
+      west = coords$x - 0.5
+    ),
+  map_marker_click = list(id = "121675765"),
+  map_zoom = 12,
+  reset_all = TRUE,
+  stars = c(2, 4),
+  user_lat = "35.9956",
+  user_lng = "-78.9002"
+)
+```
+
+
+```{r}
+#| context: setup
+library(shiny)
+library(bslib)
+library(leaflet)
+library(DT)
+library(tidyverse)
+library(shinyWidgets)
+
+routes <- read_csv("crags/areas/all_routes.csv", show_col_types = FALSE)
+
+# pre-compute histogram counts used by the mini-bar charts in the sidebar
+stars_hist_data <- hist(routes$avg_stars, breaks = seq(1, 4, by = 0.5), plot = FALSE)
+grade_hist_data <- hist(routes$grade_int[!is.na(routes$grade_int)],
+                        breaks = seq(-0.5, 14.5, by = 1), plot = FALSE)
+
+shiny::shinyOptions(bootstrapTheme = bslib::bs_theme(version = 5L))
+
+grade_colors <- c(
+  ## Ropes ----
+  "5.3"   = "#1a6e1a", "5.4"   = "#1a6e1a", "5.5"   = "#1a6e1a", "5.7"   = "#1a6e1a",
+  "5.8"   = "#4caf50", "5.9"   = "#8bc34a",
+  "5.10"  = "#1565c0", "5.10a" = "#1565c0", "5.10b" = "#1976d2",
+  "5.10c" = "#64b5f6", "5.10d" = "#64b5f6",
+  "5.11"  = "#e65100", "5.11a" = "#e65100", "5.11b" = "#ef6c00",
+  "5.11c" = "#ffb74d", "5.11d" = "#ffb74d",
+  "5.12"  = "#c62828", "5.12b" = "#c62828", "5.14a" = "#c62828",
+  ## Bouldering ----
+  "v0"    = "#1a6e1a", "v1"    = "#4caf50", "v2"    = "#8bc34a",
+  "v3"    = "#1565c0", "v4"    = "#1976d2", "v5"    = "#64b5f6",
+  "v6"    = "#e65100", "v7"    = "#ef6c00", "v8"    = "#ffb74d",
+  "v9"    = "#c62828", "v10"   = "#c62828", "v11"   = "#c62828",
+  "v12"   = "#c62828", "v13"   = "#c62828"
+)
+
+
+grade_range <- range(routes$grade_int, na.rm = TRUE)
+star_range  <- range(routes$avg_stars,  na.rm = TRUE)
+
+# ── Helpers ───────────────────────────────────────────────────────────────────
+
+# Returns the column name to group by at the current drill depth
+get_group_col <- function(path) {
+  switch(as.character(length(path)),
+    "0" = "area", "1" = "region_1", "2" = "region_2", "3" = "region_3", "route"
+  )
+}
+
+# Filters df down to the rows matching the current drill path
+apply_drill <- function(df, path) {
+  if (length(path) >= 1) df <- df |> filter(area     == path[[1]]$value)
+  if (length(path) >= 2) df <- df |> filter(region_1 == path[[2]]$value)
+  if (length(path) >= 3) df <- df |> filter(region_2 == path[[3]]$value)
+  if (length(path) >= 4) df <- df |> filter(region_3 == path[[4]]$value)
+  df
+}
+```
+
+## Filters {.sidebar}
+
+```{r}
+# Ensure all vertical buttons share the same width
+tags$style(HTML("
+  /* Climbing type buttons */
+  .btn-group-vertical > .btn { width: 100% !important; text-align: left; }
+
+  /* Hide ionRangeSlider step-navigation arrows */
+  .irs-nav-block, .irs-controls, .irs-nav-left, .irs-nav-right { display: none !important; }
+
+  /* Prevent sidebar scrollbars – multiple selectors for different Quarto/bslib versions */
+  aside, nav.sidebar, .sidebar, .bslib-sidebar-layout aside,
+  .bslib-gap-spacing, .quarto-dashboard aside { overflow: hidden !important; }
+
+  /* Prevent sliders and their containers from exceeding sidebar width */
+  .shiny-input-container { max-width: 100% !important; box-sizing: border-box !important; }
+  .irs { max-width: 100% !important; }
+
+  /* Prevent page-level horizontal scroll */
+  body { overflow-x: hidden !important; }
+
+  /* Align tab panel content to the top instead of center */
+  .tab-content { display: block !important; }
+  .tab-content > .tab-pane { display: block !important; }
+"))
+
+checkboxGroupButtons(
+  "climb_type",
+  label     = "Climbing Type",
+  choices   = c(
+    "Boulder" = "boulder_ind",
+    "Sport"    = "sport_ind",
+    "Top Rope" = "tr_ind",
+    "Trad"     = "trad_ind"
+  ),
+  selected  = character(0),
+  direction = "vertical",
+  status    = "primary",
+  width     = "100%",
+  checkIcon = list(yes = tags$i(), no = tags$i())
+)
+
+tags$label("Stars", class = "control-label")
+uiOutput("stars_hist")
+sliderInput("stars", label = NULL,
+  min = 1, max = 4, value = c(1, 4), step = 0.5, ticks = FALSE, width = "100%")
+
+tags$label("Grade", class = "control-label")
+uiOutput("grade_hist")
+sliderInput("grade", label = NULL,
+  min = 0, max = 14, value = c(0, 14), step = 1, ticks = FALSE, width = "100%")
+
+switchInput("aggregate", label = "Aggregate Points", value = TRUE)
+
+actionButton(
+  "reset_all", 
+  "Reset All",
+  class = "btn-sm btn-secondary mt-3 w-100"
+)
+```
+
+## Column {width="50%"}
+
+```{r}
+#| title: Map
+leafletOutput("map", height = "100%")
+```
+
+## Column {width="50%"}
+
+```{r}
+tabsetPanel(
+  type = "tabs",
+  tabPanel(
+    "Route Frequency",
+    div(style = "padding:6px 2px 2px;", uiOutput("drill_breadcrumb", inline = TRUE)),
+    DTOutput("freq_table")
+  ),
+  tabPanel(
+    "Route List",
+    DTOutput("data_table")
+  )
+)
+```
+
+```{r}
+#| context: server
+
+# ── One-time JS ───────────────────────────────────────────────────────────────
+observe({
+  insertUI("body", "beforeEnd", immediate = TRUE, ui = tags$script(HTML('
+    // Geolocation
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(pos) {
+        Shiny.setInputValue("user_lat", pos.coords.latitude);
+        Shiny.setInputValue("user_lng", pos.coords.longitude);
+      });
+    }
+
+    // Force sidebar overflow hidden – jQuery finds the element regardless of exact class
+    $(document).ready(function() {
+      $("aside, nav").css({ overflow: "hidden", maxWidth: "100%" });
+      $("aside .shiny-input-container").css({ maxWidth: "100%" });
+    });
+
+    // Scroll DataTable to the row matching a route_id and highlight it
+    Shiny.addCustomMessageHandler("highlight_dt_row", function(msg) {
+      setTimeout(function() {
+        var tbl = $("#data_table").DataTable();
+        if (!tbl) return;
+        var lastCol = tbl.columns().count() - 1;
+        var found   = -1;
+        tbl.rows().every(function(i) {
+          if (String(this.data()[lastCol]) === String(msg.route_id)) found = i;
+        });
+        tbl.rows().nodes().to$().css("background-color", "");
+        if (found >= 0) {
+          var page = Math.floor(found / tbl.page.info().length);
+          tbl.page(page).draw(false);
+          $(tbl.row(found).node()).css("background-color", "#fff3cd");
+        }
+      }, 250);
+    });
+  ')))
+})
+
+# ── Reactive state ────────────────────────────────────────────────────────────
+drill_path        <- reactiveVal(list())
+bar_region_sel    <- reactiveVal(NULL)
+map_bounds_rv     <- reactiveVal(NULL)
+selected_route_id <- reactiveVal(NULL)
+
+map_bounds_deb <- reactive(input$map_bounds) |> debounce(300)
+observe({ map_bounds_rv(map_bounds_deb()) })
+
+observeEvent(input$reset_all, {
+  drill_path(list())
+  bar_region_sel(NULL)
+  selected_route_id(NULL)
+  leafletProxy("map") |> clearGroup("highlight")
+})
+
+# ── Sidebar filter ────────────────────────────────────────────────────────────
+filtered_data <- reactive({
+  df <- routes |>
+    mutate(color = map_chr(grade_simple, ~grade_colors[.x]))
+
+  if (length(input$climb_type) > 0) {
+    mask <- Reduce(`|`, lapply(input$climb_type, \(col) df[[col]] == 1))
+    df   <- df[mask, ]
+  }
+
+  df |> filter(
+    avg_stars  >= input$stars[1], avg_stars  <= input$stars[2],
+    !is.na(grade_int),
+    grade_int  >= input$grade[1], grade_int  <= input$grade[2]
+  )
+})
+
+# Route list: sidebar + map bounds + drill context
+display_data <- reactive({
+  df     <- filtered_data()
+  bounds <- map_bounds_rv()
+
+  if (!is.null(bounds)) {
+    df <- df |> filter(
+      !is.na(x), !is.na(y),
+      x >= bounds$west,  x <= bounds$east,
+      y >= bounds$south, y <= bounds$north
+    )
+  }
+
+  apply_drill(df, drill_path())
+})
+
+# ── Sidebar mini-histograms (HTML flex bars – no plotOutput sizing issues) ────
+make_hist_ui <- function(h, sel) {
+  max_count <- max(h$counts)
+  bars <- lapply(seq_along(h$counts), function(i) {
+    in_range <- h$mids[i] >= sel[1] & h$mids[i] <= sel[2]
+    color    <- if (in_range) "#5b9bd5" else "#d0d0d0"
+    h_pct    <- max(4, round(h$counts[i] / max_count * 100))
+    tags$div(style = sprintf(
+      "flex:1; height:%d%%; background:%s; margin:0 1px; border-radius:2px 2px 0 0;",
+      h_pct, color
+    ))
+  })
+  tags$div(
+    style = "width:100%; height:45px; display:flex; align-items:flex-end; margin-bottom:4px;",
+    tagList(bars)
+  )
+}
+
+output$stars_hist <- renderUI(make_hist_ui(stars_hist_data, input$stars))
+output$grade_hist <- renderUI(make_hist_ui(grade_hist_data, input$grade))
+
+# ── Map ───────────────────────────────────────────────────────────────────────
+output$map <- renderLeaflet({
+  leaflet() |> addProviderTiles("CartoDB.Positron") |> setView(lng = -82, lat = 37, zoom = 6)
+})
+
+observe({
+  zoom  <- input$map_zoom
+  df    <- filtered_data() |> filter(!is.na(x), !is.na(y))
+  proxy <- leafletProxy("map") |> clearGroup("routes")
+
+  if (input$aggregate) {
+    agg_col <- if (is.null(zoom) || zoom < 7) "region_1"
+               else if (zoom < 10)            "region_2"
+               else if (zoom < 13)            "region_3"
+               else                           NULL
+
+    if (!is.null(agg_col)) {
+      # Include parent columns so we can color by bar_region_sel at any level
+      # e.g. when sel = {col: "area", value: "WV"}, color all region_1 points in WV
+      group_cols <- switch(agg_col,
+        region_1 = c("area", "region_1"),
+        region_2 = c("area", "region_1", "region_2"),
+        region_3 = c("area", "region_1", "region_2", "region_3")
+      )
+
+      agg_df <- df |>
+        group_by(across(all_of(group_cols))) |>
+        summarise(cx = mean(x), cy = mean(y), n = n(), .groups = "drop") |>
+        mutate(
+          agg_label = .data[[agg_col]],
+          layer_id  = paste0("__agg__|", agg_col, "|", row_number())
+        )
+
+      # Color aggregated points: blue if they belong to the selected region, grey otherwise
+      sel <- bar_region_sel()
+      agg_colors <- if (!is.null(sel) && sel$col %in% names(agg_df)) {
+        ifelse(agg_df[[sel$col]] == sel$value, "#1565c0", "#aaaaaa")
+      } else {
+        rep("#aaaaaa", nrow(agg_df))
+      }
+
+      proxy |> addCircleMarkers(
+        data        = agg_df, lng = ~cx, lat = ~cy,
+        layerId     = ~layer_id, group = "routes",
+        radius      = ~pmin(8 + sqrt(n) * 2, 35),
+        color       = agg_colors,
+        fillColor   = agg_colors,
+        fillOpacity = 0.6, stroke = TRUE, weight = 2,
+        label       = ~paste0(agg_label, ": ", n, " routes")
+      )
+      return()
+    }
+  }
+
+  # Individual markers – always colored by grade
+  colors <- ifelse(is.na(df$color), "#888888", df$color)
+
+  popup_html <- paste0(
+    "<b>", df$route, "</b><br>",
+    "Grade: ", df$grade, " | Stars: ", df$avg_stars, "<br>",
+    df$region_1, " › ", df$region_2, " › ", df$region_3,
+    "<br><a href='", df$url, "' target='_blank'>Mountain Project ↗</a>"
+  )
+
+  proxy |> addCircleMarkers(
+    data        = df, lng = ~x, lat = ~y,
+    layerId     = ~as.character(route_id), group = "routes",
+    radius      = 6,
+    color       = colors, fillColor = colors,
+    fillOpacity = 0.85, stroke = TRUE, weight = 1,
+    popup       = popup_html
+  )
+})
+
+# Map clicks only zoom in – selection state is driven by the freq table
+observeEvent(input$map_marker_click, {
+  click <- input$map_marker_click
+  lid   <- click$id
+
+  if (startsWith(lid, "__agg__|")) {
+    parts   <- strsplit(lid, "\\|")[[1]]
+    agg_col <- parts[2]
+    zoom_in <- switch(agg_col, region_1 = 8, region_2 = 10, region_3 = 12, 8)
+    leafletProxy("map") |> flyTo(lng = click$lng, lat = click$lat, zoom = zoom_in)
+  } else {
+    leafletProxy("map") |> flyTo(lng = click$lng, lat = click$lat, zoom = 14)
+  }
+})
+
+# User location – separate group so clearGroup("routes") leaves it intact
+observeEvent(list(input$user_lat, input$user_lng), {
+  req(input$user_lat, input$user_lng)
+  leafletProxy("map") |>
+    setView(lng = input$user_lng, lat = input$user_lat, zoom = 8) |>
+    addCircleMarkers(
+      lng = input$user_lng, lat = input$user_lat,
+      layerId = "user_location", group = "user",
+      radius = 10, color = "black", fillColor = "black",
+      fillOpacity = 0.9, stroke = TRUE, weight = 3,
+      popup = "You are here"
+    )
+})
+
+# ── Route Frequency table (DT) ────────────────────────────────────────────────
+all_types <- c(boulder_ind = "Boulder", sport_ind = "Sport",
+               tr_ind = "Top Rope",    trad_ind  = "Trad")
+
+# Freq table data: no bounds filter so map pan/zoom never resets it
+freq_table_df <- reactive({
+  path       <- drill_path()
+  df         <- apply_drill(filtered_data(), path)
+  col        <- get_group_col(path)
+  shown_cols <- if (length(input$climb_type) == 0) names(all_types)
+                else intersect(input$climb_type, names(all_types))
+  friendly   <- unname(all_types[shown_cols])
+
+  df |>
+    group_by(Region = .data[[col]]) |>
+    summarise(
+      Boulder    = sum(boulder_ind, na.rm = TRUE),
+      Sport      = sum(sport_ind,   na.rm = TRUE),
+      `Top Rope` = sum(tr_ind,      na.rm = TRUE),
+      Trad       = sum(trad_ind,    na.rm = TRUE),
+      Total      = n(),
+      .groups    = "drop"
+    ) |>
+    arrange(Region) |>
+    select(Region, all_of(friendly), Total)
+})
+
+output$freq_table <- renderDT({
+  df        <- freq_table_df()
+  path      <- drill_path()
+  col       <- get_group_col(path)
+  can_drill <- !col %in% c("region_3", "route")
+
+  datatable(
+    df,
+    rownames  = FALSE,
+    selection = "single",
+    caption   = if (can_drill) tags$caption(
+      style = "caption-side:bottom; font-size:0.78em; color:#888;",
+      "Click to highlight on map  \u2022  Double-click to drill in"
+    ) else NULL,
+    options = list(
+      pageLength   = 20,
+      dom          = "tip",
+      initComplete = JS("function(settings, json) {
+        var api = this.api();
+        $(api.table().body()).on('dblclick', 'tr', function() {
+          var data = api.row(this).data();
+          if (data) Shiny.setInputValue('freq_table_dblclick', data[0], {priority: 'event'});
+        });
+      }")
+    )
+  )
+})
+
+# Clickable breadcrumb: each segment navigates back to that drill depth
+output$drill_breadcrumb <- renderUI({
+  path   <- drill_path()
+  labels <- c("Area", sapply(path, `[[`, "value"))
+  n      <- length(labels)
+
+  parts <- lapply(seq_len(n), function(i) {
+    if (i == n) {
+      tags$span(style = "font-size:0.8em; font-weight:600;", labels[i])
+    } else {
+      depth <- i - 1L
+      tags$a(
+        href    = "#",
+        style   = "font-size:0.8em; color:#0d6efd; text-decoration:none;",
+        onclick = sprintf(
+          "Shiny.setInputValue('bc_click', %d, {priority:'event'}); return false;", depth),
+        labels[i]
+      )
+    }
+  })
+
+  seps <- rep(list(tags$span(style = "color:#888; margin:0 4px;", "\u203a")), n - 1)
+  interleaved <- vector("list", 2 * n - 1)
+  for (i in seq_len(n)) {
+    interleaved[[2 * i - 1]] <- parts[[i]]
+    if (i < n) interleaved[[2 * i]] <- seps[[i]]
+  }
+  div(style = "display:inline;", tagList(interleaved))
+})
+
+observeEvent(input$bc_click, {
+  depth <- as.integer(input$bc_click)
+  drill_path(drill_path()[seq_len(depth)])
+  bar_region_sel(NULL)
+})
+
+# Single-click: highlight matching aggregated points on the map (no drill)
+observeEvent(input$freq_table_rows_selected, {
+  sel <- input$freq_table_rows_selected
+  if (length(sel) == 0) { bar_region_sel(NULL); return() }
+  row <- isolate(freq_table_df())[sel[1], ]
+  col <- get_group_col(isolate(drill_path()))
+  bar_region_sel(list(col = col, value = row$Region))
+})
+
+# Double-click: highlight + advance drill (if not at region_3) + zoom map to centroid
+# At region_3 level: zoom to 13 to reveal individual routes without drilling further
+observeEvent(input$freq_table_dblclick, {
+  val  <- input$freq_table_dblclick
+  if (is.null(val) || val == "") return()
+  path <- isolate(drill_path())
+  col  <- get_group_col(path)
+  if (col == "route") return()
+
+  bar_region_sel(list(col = col, value = val))
+
+  if (col != "region_3") {
+    drill_path(c(path, list(list(level = col, value = val))))
+  }
+
+  routes_in <- isolate(filtered_data()) |>
+    filter(!is.na(x), !is.na(y), .data[[col]] == val)
+  if (nrow(routes_in) > 0) {
+    zoom <- switch(col, area = 7, region_1 = 9, region_2 = 10, region_3 = 13, 14)
+    leafletProxy("map") |>
+      flyTo(lng = mean(routes_in$x), lat = mean(routes_in$y), zoom = zoom)
+  }
+})
+
+# ── Data table ────────────────────────────────────────────────────────────────
+table_df <- reactive({
+  display_data() |> arrange(desc(avg_stars))
+})
+
+output$data_table <- renderDT({
+  df <- table_df() |>
+    mutate(Route = paste0('<a href="', url, '" target="_blank">', route, '</a>')) |>
+    select(Route, Grade = grade, Stars = avg_stars,
+           `Region 1` = region_1, `Region 2` = region_2, `Region 3` = region_3,
+           route_id)
+
+  datatable(
+    df,
+    escape    = FALSE,
+    rownames  = FALSE,
+    selection = "single",
+    options   = list(
+      pageLength  = 8,
+      scrollX     = TRUE,
+      columnDefs  = list(list(visible = FALSE, targets = ncol(df) - 1))
+    )
+  ) |> formatRound("Stars", digits = 1)
+})
+
+# Table row click → highlight ring only, no zoom
+observeEvent(input$data_table_rows_selected, {
+  sel <- input$data_table_rows_selected
+  leafletProxy("map") |> clearGroup("highlight")
+  if (length(sel) == 0) return()
+
+  row <- isolate(table_df())[sel[1], ]
+  req(!is.na(row$x), !is.na(row$y))
+
+  leafletProxy("map") |>
+    addCircleMarkers(
+      lng = row$x, lat = row$y,
+      layerId = "highlight_marker", group = "highlight",
+      radius = 18, color = "black", fillColor = "transparent",
+      fillOpacity = 0, stroke = TRUE, weight = 3
+    )
+})
+```
