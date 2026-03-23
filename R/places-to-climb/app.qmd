@@ -565,3 +565,20 @@ observeEvent(input$data_table_rows_selected, {
     )
 })
 ```
+
+```{r}
+#| eval: false
+#| include: false
+
+Sys.setenv(
+  PATH = 
+    paste(
+      "C:/Users/foxtr/AppData/Local/Programs/Quarto/bin", Sys.getenv("PATH"), sep = ";"
+    )
+)
+
+rsconnect::writeManifest(
+  appPrimaryDoc = "app.qmd",
+  appFiles = c("app.qmd", "crags/areas/all_routes.csv")
+)
+```
