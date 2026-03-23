@@ -5,6 +5,7 @@ format:
     theme: cosmo
     orientation: columns
     expandable: true
+    scrolling: true
 server: shiny
 ---
 
@@ -123,6 +124,24 @@ tags$style(HTML("
   /* Align tab panel content to the top instead of center */
   .tab-content { display: block !important; }
   .tab-content > .tab-pane { display: block !important; }
+
+  /* ── Mobile layout ── */
+  @media (max-width: 767px) {
+    /* Stack the two main columns vertically: map on top, tabs below */
+    .bslib-column-wrap, .bslib-columns {
+      flex-direction: column !important;
+    }
+    .bslib-column-wrap > *, .bslib-columns > * {
+      width: 100% !important;
+      flex: none !important;
+      height: auto !important;
+      min-height: 0 !important;
+    }
+    /* Fixed map height so it doesn't collapse */
+    #map { height: 60vh !important; min-height: 250px !important; }
+    /* Prevent browser double-tap zoom on the freq table */
+    #freq_table { touch-action: manipulation; }
+  }
 "))
 
 checkboxGroupButtons(
@@ -444,9 +463,25 @@ output$freq_table <- renderDT({
       dom          = "tip",
       initComplete = JS("function(settings, json) {
         var api = this.api();
+
+        // Desktop: double-click to drill
         $(api.table().body()).on('dblclick', 'tr', function() {
           var data = api.row(this).data();
           if (data) Shiny.setInputValue('freq_table_dblclick', data[0], {priority: 'event'});
+        });
+
+        // Mobile: double-tap to drill (prevents browser zoom via e.preventDefault)
+        var lastTap = 0;
+        $(api.table().body()).on('touchend', 'tr', function(e) {
+          var now = Date.now();
+          if (now - lastTap < 300 && now - lastTap > 0) {
+            var data = api.row(this).data();
+            if (data) {
+              Shiny.setInputValue('freq_table_dblclick', data[0], {priority: 'event'});
+              e.preventDefault();
+            }
+          }
+          lastTap = now;
         });
       }")
     )
