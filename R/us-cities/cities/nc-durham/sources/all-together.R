@@ -379,10 +379,16 @@ prep_map |>
     zcol = "years_owned",
     #zcol = "cat",
     layer.name = "years_owned"    
+  ) +
+  mapview(
+    points_of_interest[1,],
+    color = "black", 
+    alpha.regions = 1,
+    col.regions = "orange"
   )
 
 my_neighborhood <- .Last.value
-mapshot(my_neighborhood, url = "output/my_neighborhood.html", selfcontained = TRUE)
+export_map(my_neighborhood, "output/my-neighborhood.html")
 
 
 prep_map |>
@@ -415,12 +421,14 @@ iso_map |>
     alpha = 0.5,
     lwd = 1, 
     zcol = "isomin"
-  ) + m
+  ) +
+  map_roads +
+  m
 
 i <- .Last.value
 
 library(webshot)
-mapshot(i, url = "output/my_map.html", selfcontained = TRUE)
+export_map(i, "output/my-map.html")
 
 m@map |> leaflet::setView(lng = -78.915, lat = 35.97, zoom = 12)
 
