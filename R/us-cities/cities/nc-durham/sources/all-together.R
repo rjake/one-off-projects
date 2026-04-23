@@ -64,7 +64,7 @@ map_home <-
     points_of_interest,
     color = "black", 
     alpha.regions = 1,
-    col.regions = "#FF00FF"
+    col.regions = "orange"
   )
 
 fill_scale <-
@@ -131,6 +131,7 @@ map_census <-
   inner_join(block_groups) |> 
   st_as_sf() |> 
   #filter(cat == "other") |> 
+  st_crop(map_limits) |> 
   left_join(neighborhood) |> 
   st_as_sf() |> 
   mapview(zcol = "cat", alpha.regions = 0.5, color = "white", layer.name = "demographics")
@@ -215,8 +216,8 @@ map_census +
   map_home
 
 m_census <- .Last.value
-#export_map(m_census, "output/census-category.html")
-mapshot(m_census, url = "output/census-category.html", selfcontained = TRUE)
+export_map(m_census, "output/census-category.html")
+#mapshot(m_census, url = "output/census-category.html", selfcontained = TRUE)
 #
 #  
 
