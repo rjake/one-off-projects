@@ -1,14 +1,17 @@
 library(tidyverse)
 library(sf)
 library(mapview)
+library(leaflet)
 library(glue)
+library(htmltools)
+library(htmlwidgets)
 setwd(dirname(.rs.api.getSourceEditorContext()$path))
 
 map_limits <- 
   st_bbox(
     c(
-      xmin = -78.85, xmax = -78.99, 
-      ymin =  35.89, ymax =  36.05
+      xmin = -78.85, xmax = -79.10, 
+      ymin =  35.90, ymax =  36.06
     ), 
     crs = st_crs(4326)
   )
@@ -21,25 +24,47 @@ points_of_interest <-
   )|> 
   st_as_sf(coords = c("x", "y"), crs = 4326)
 
-
-property        <- read_rds("output/sf-property-metadata.Rds")
-iso_map         <- read_rds("output/sf-isochrone-gym.Rds")
-block_groups    <- read_rds("output/sf-block-groups.Rds")
+roads <- read_rds("output/roads.Rds")
+property <- read_rds("output/sf-property-metadata.Rds")
+iso_map <- read_rds("output/sf-isochrone-gym.Rds")
+block_groups <- read_rds("output/sf-block-groups.Rds")
 
 census_poverty  <- read_csv("output/census-poverty.csv", col_types = c(geoid = "c")) |> mutate(estimate = round(estimate, 2))
-census_demo     <- 
-  read_csv("output/census-demo.csv", col_types = c(geoid = "c")) |> 
+census_shift    <- read_csv("output/census-demo.csv", col_types = c(geoid = "c")) 
+
+census_demo <-
+  census_shift |> 
   left_join(
     census_poverty |> select(geoid, pop = total, income_ratio = estimate)
   ) |> 
-  relocate(pop, income_ratio, .after = geoid)
+  relocate(pop, income_ratio, .after = geoid) |> 
+  mutate(
+    white_pct = round(current_white / (current_black + current_white) * 100),
+    black_pct = round(current_black / (current_black + current_white) * 100),
+    gentrifying = as.integer(shift_white > 50 & shift_black < -50 & black_pct > 40),
+    gentrification_shift = ifelse(gentrifying == 1, shift_white + abs(shift_black), 0),
+    cat =
+      case_when(
+        gentrifying == 1 ~ "gentrifying",
+        black_pct > 60 ~ "historically black",
+        income_ratio < 2 ~ "higher poverty",
+        .default = "other"
+      )
+  ) 
+
+
+
+# Combine and create line
+
+
+census_demo |> filter(geoid == "370630006003") |> .show_n()
 
 map_home <-
   mapview(
     points_of_interest,
     color = "black", 
     alpha.regions = 1,
-    col.regions = "orange"
+    col.regions = "#FF00FF"
   )
 
 fill_scale <-
@@ -73,14 +98,125 @@ my_map <- function(df, var, fill_type = NULL, ...) {
     map_home
 }
 
-census_demo |> 
+export_map <- function(mv, html_name) {
+  # buffer_dist <- 200 # meters
+  # 
+  # buffered_bbox <-
+  #   map_limits |>
+  #   st_as_sfc() |>
+  #   st_transform(3857) |>
+  #   st_buffer(dist = buffer_dist) |>
+  #   st_transform(4326) |>
+  #   st_bbox() |> 
+  #   as.list()
+  # 
+  leaflet_map <- 
+    mv@map |>
+    # fitBounds(
+    #   lng1 = map_limits["xmin"], lat1 = map_limits["ymin"],
+    #   lng2 = map_limits["xmax"], lat2 = map_limits["ymax"]
+    # ) |>
+    # setMaxBounds(
+    #   lng1 = buffered_bbox["xmin"], lat1 = buffered_bbox["ymin"],
+    #   lng2 = buffered_bbox["xmax"], lat2 = buffered_bbox["ymax"]
+    # ) #|>
+    appendContent(htmltools::HTML(paste(readLines("www/geo.js"), collapse = "\n")))
+  
+  htmlwidgets::saveWidget(leaflet_map, html_name, selfcontained = TRUE)
+}
+
+
+map_census <- 
+  census_demo |> 
   inner_join(block_groups) |> 
   st_as_sf() |> 
-  #st_crop(map_limits) |> 
+  #filter(cat == "other") |> 
   left_join(neighborhood) |> 
   st_as_sf() |> 
-  my_map("income_ratio", "c") +
+  mapview(zcol = "cat", alpha.regions = 0.5, color = "white", layer.name = "demographics")
+
+local_roads <-
+  roads$osm_lines |> 
+  filter(
+    highway != "tertiary"
+  ) |> 
+  select(osm_id, name, type = highway, lanes) 
+
+
+extra_road <-
+  tibble(
+    type = "motorway",
+    geometry = 
+      rbind(
+        st_point(c(-78.999, 35.951)), 
+        st_point(c(-78.966, 35.967))
+      ) |> 
+      st_linestring() |> 
+      st_sfc(crs = 4326) # Match the CRS of your other table
+  ) |>
+  bind_rows(
+    tibble(
+      type = "secondary",
+      geometry = 
+        rbind(
+          st_point(c(-78.905, 36.02)), 
+          st_point(c(-78.905, 36.05))
+        ) |> 
+        st_linestring() |> 
+        st_sfc(crs = 4326) # Match the CRS of your other table
+    )
+  ) |> 
+  bind_rows(
+    tibble(
+      type = "secondary",
+      geometry = 
+        rbind(
+          st_point(c(-78.903, 36.059)), 
+          st_point(c(-78.905, 36.05))
+        ) |> 
+        st_linestring() |> 
+        st_sfc(crs = 4326) # Match the CRS of your other table
+    ) 
+  ) |> 
+  st_as_sf()
+
+prep_roads <- 
+  bind_rows(
+    local_roads,
+    extra_road
+  ) |> 
+  st_transform(crs = 32618) |>  # project to meters first
+  mutate(
+    buffer_width = 
+      case_when(
+        #is.na(osm_id) ~ 30,
+        type == "motorway" ~ 75,
+        type == "primary" ~ 50,
+        TRUE ~ 20
+      )
+  ) |>
+  (\(x) st_buffer(x, dist = x$buffer_width))() |> 
+  group_by(type) |> 
+  summarise(
+    buffer_width = mean(buffer_width)
+  ) |> 
+  ungroup() |> 
+  st_simplify(preserveTopology = TRUE, dTolerance = 1) |>  # 1 meter
+  st_transform(crs = 4326) |>
+  st_crop(map_limits) 
+  
+
+map_roads <- mapview(prep_roads, col.regions = "black", alpha.regions = 1)
+
+map_roads
+
+map_census +
+  map_roads +
   map_home
+
+m_census <- .Last.value
+#export_map(m_census, "output/census-category.html")
+mapshot(m_census, url = "output/census-category.html", selfcontained = TRUE)
 #
 #  
 
@@ -113,14 +249,11 @@ ideal_property <-
         & cost_total_value < 400000
         & bldg_sqft < 1600
         #& f_of_bedrooms == 2
-        & geoid %in% non_gentrifying_areas$geoid
+        & !geoid %in% gentrifying_areas$geoid
       ) 
     )
       
-  
-
-p <-
-  ggplot() +
+ggplot() +
   stat_summary_hex(
     data = ideal_property,
     aes(x, y, z = ideal_ind),
@@ -128,21 +261,17 @@ p <-
   ) +
   scale_fill_binned(type = "viridis", n.breaks = 7)
 
-p
+# 
+# library(ggmap)
+# # basemap <- get_map(location = c(lon = -78.9, lat = 35.97), zoom = 12, maptype = 'roadmap')
+# ggmap(basemap) +
+#   stat_summary_hex(
+#     data = ideal_property |> filter(ideal_ind == 1),
+#     aes(x, y, z = ideal_ind),
+#     fun = sum, bins = 20, alpha = 0.5
+#   ) +
+#   scale_fill_binned(type = "viridis", n.breaks = 4)
 
-library(ggmap)
-# basemap <- get_map(location = c(lon = -78.9, lat = 35.97), zoom = 12, maptype = 'roadmap')
-ggmap(basemap) +
-  stat_summary_hex(
-    data = ideal_property |> filter(ideal_ind == 1),
-    aes(x, y, z = ideal_ind),
-    fun = sum, bins = 20, alpha = 0.5
-  ) +
-  scale_fill_binned(type = "viridis", n.breaks = 4)
-
-
-
-library(mapview)
 ideal_property_sf <-
   ideal_property |> 
   st_centroid()
@@ -150,37 +279,23 @@ ideal_property_sf <-
  # st_set_crs(st_crs(4326))
 
 
-mapviewOptions(
-  basemaps = c("OpenStreetMap", "CartoDB.Positron", "Esri.WorldImagery","OpenTopoMap")
-)
-
-
-
-m <-
+prep_map <-
   ideal_property_sf |> 
-  filter(total_prop_value < 400000) |> 
-  mutate(
-    cat =
-      case_when(
-        gentrifying == 1 ~ "gentrifying",
-        income_ratio < 2 ~ "poverty",
-        black_pct > 40 ~ "black",
-        .default = "other"
-      )
-  ) |> 
   select(
     parcel_id,
     geoid,
     cat,
     black_pct,
+    ideal_ind,
     gentrifying,
     gentrification_shift,
     neighborhood,
     address = full_address,
+    total_prop_value,
+    deed_date,
     years_owned,
     f_of_bedrooms,
     state_of_repair_code,
-    total_prop_value,
     bldg_sqft,
     desc_built_use,
     acreage,
@@ -199,22 +314,113 @@ m <-
           address_search = str_replace_all(address, " ", "+"),
           '<a href="https://www.google.com/search?q={address_search}+durham+nc" target="_blank">{address}</a>'
         )    
-  ) |> 
-  mapview(
-    zcol = "cat",
-    layer.name = "cat",
-    map.types =  c("OpenStreetMap","CartoDB.Positron", "Esri.WorldImagery","OpenTopoMap")
-  ) +
-  mapview(
-    points_of_interest,    
-    color = "black", 
-    alpha.regions = 1,
-    col.regions = "orange"
   )
 
-m
-census_demo |> filter(geoid == "370630014002") |> .show_n()
-iso_map |> st_crop(map_limits) |> mapview(alpha.regions = 0, color = "black", lwd = 1.5) + m
+mapviewOptions(
+  # see examples: https://leaflet-extras.github.io/leaflet-providers/preview/
+  basemaps = 
+    c(
+      #"Thunderforest.Transport",
+      #"Thunderforest.MobileAtlas",
+      #"Jawg.Streets",
+      #"Stadia.StamenToner"
+      "CartoDB.Positron", 
+      "OpenStreetMap",
+      "Esri.WorldImagery",
+      "OpenTopoMap"
+    )
+)
+
+
+
+
+prep_map |>
+  filter(
+    geoid == "370630006003",
+    bldg_sqft < 1300,
+    total_prop_value > 0,
+    total_prop_value < 500000,
+    actual_year_built < 2000,
+    years_owned < 3
+  ) |> 
+  mutate(
+    color = between(month(deed_date), 4, 7)
+  ) |> #view()
+  ggplot(
+    aes(
+      x = floor_date(deed_date, "month"), 
+      total_prop_value, 
+      color = color,
+      alpha = total_prop_value < 350000
+    )
+  ) +
+  geom_hline(yintercept = 350000) +
+  #geom_col(position = "dodge", width = 1) +
+  geom_point(aes(size = bldg_sqft)) +
+  scale_x_date(
+    date_breaks = "1 month",
+    date_labels = "%m\n%y"
+  ) +
+  scale_alpha(range = c(0.3, 1))
+
+prep_map |>
+  filter(geoid == "370630006003") |> 
+  #filter(total_prop_value < 400000) |>   
+  filter(
+    ideal_ind == 1,
+    cat == "other",
+    total_prop_value > 200000
+    #between(years_owned, 5, 7) | 
+    #  years_owned > 20
+  ) |> 
+  select(deed_date, years_owned, total_prop_value, address, bldg_sqft, bldg_age, zillow, f_of_bedrooms) |> 
+  mapview(
+    zcol = "years_owned",
+    #zcol = "cat",
+    layer.name = "years_owned"    
+  )
+
+my_neighborhood <- .Last.value
+mapshot(my_neighborhood, url = "output/my_neighborhood.html", selfcontained = TRUE)
+
+
+prep_map |>
+  # filter(geoid == "370630006003") |> 
+  #filter(total_prop_value < 400000) |>   
+  filter(
+    ideal_ind == 1,
+    cat == "other",
+    total_prop_value > 200000
+    #between(years_owned, 5, 7) | 
+    #  years_owned > 20
+  ) |> 
+  st_crop(map_limits) |> 
+  mapview(
+    zcol = "total_prop_value",
+    #zcol = "cat",
+    layer.name = "total_prop_value"    
+  ) +
+  map_home
+
+m <- .Last.value
+census_demo |> filter(geoid == "370630006003") |> .show_n()
+
+iso_map |> 
+  filter(isomax <= 20) |> 
+  mapview(
+    alpha.regions = 0.25, 
+    layer.name = "time to gym",
+    color = "white", 
+    alpha = 0.5,
+    lwd = 1, 
+    zcol = "isomin"
+  ) + m
+
+i <- .Last.value
+
+library(webshot)
+mapshot(i, url = "output/my_map.html", selfcontained = TRUE)
+
 m@map |> leaflet::setView(lng = -78.915, lat = 35.97, zoom = 12)
 
 relevant_data |> 
