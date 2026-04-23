@@ -2,7 +2,7 @@
 
 Maps:
 
-* [home][home]
+* [index.html][home]
 * [house-level][main]
 * [lakewood][neighborhood]
 * [census blocks][census]
