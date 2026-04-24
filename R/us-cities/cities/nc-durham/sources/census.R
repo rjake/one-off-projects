@@ -1,9 +1,58 @@
 library(tidyverse)
 library(tidycensus)
 setwd(dirname(.rs.api.getSourceEditorContext()$path))
+options(tigris_use_cache = TRUE)
+census_blocks <- 
+  get_decennial(
+    geography = "block",
+    year = 2020,
+    variables = 
+      c(
+        total_pop = "P1_001N",
+        race_white = "P1_003N",
+        race_black = "P1_004N"
+      ), 
+    state = 37,
+    county = 063,
+    cache_table = TRUE,
+    geometry = TRUE
+  ) |> 
+  rename_all(tolower)
+
+census_blocks |> 
+  st_transform(4326) |> 
+  transmute(
+    block_geoid = geoid,
+    geoid = substr(block_geoid, 1, 12),
+    block_id = substr(block_geoid, 13, 15) |> as.integer(),
+    geometry
+  ) |> 
+  distinct() |> 
+  saveRDS("output/sf-blocks.Rds")
+  
+census_blocks |> 
+  rename_all(tolower) |> 
+  pivot_wider(
+    names_from = variable,
+    values_from = value
+  ) |> 
+  filter(total_pop > 0) |> 
+  transmute(
+    block_geoid = geoid,
+    geoid = substr(geoid, 1, 12),
+    block_id = substr(block_geoid, 13, 15) |> as.integer(),
+    total_pop,
+    race_white,
+    race_black,
+    pct_white = round(race_white / total_pop * 100),
+    pct_black = round(race_black / total_pop * 100)
+  ) |>  
+  write_csv("output/census-race-blocks.csv")
 
 acs_vars <- load_variables(2023, "acs5", cache = TRUE)
-table(acs_vars$geography)
+decenial_vars <- load_variables(2020, "pl", cache = TRUE)
+decenial_vars_sf <- load_variables(2020, "sf1", cache = TRUE)
+tidycensus::acs5_geography |> view()
 
 use_vars <-
   c(

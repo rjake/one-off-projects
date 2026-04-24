@@ -1,3 +1,4 @@
+# workspace ----
 library(tidyverse)
 library(sf)
 library(mapview)
@@ -10,7 +11,9 @@ setwd(dirname(.rs.api.getSourceEditorContext()$path))
 map_limits <- 
   st_bbox(
     c(
-      xmin = -78.85, xmax = -79.10, 
+      # xmin = -78.86, xmax = -78.95, 
+      # ymin =  35.95, ymax =  36.00
+      xmin = -78.85, xmax = -79.10,
       ymin =  35.90, ymax =  36.06
     ), 
     crs = st_crs(4326)
@@ -28,35 +31,53 @@ roads <- read_rds("output/roads.Rds")
 property <- read_rds("output/sf-property-metadata.Rds")
 iso_map <- read_rds("output/sf-isochrone-gym.Rds")
 block_groups <- read_rds("output/sf-block-groups.Rds")
+blocks <- read_rds("output/sf-blocks.Rds")
 
+census_race  <- read_csv("output/census-race-blocks.csv", col_types = c(block_geoid = "c", geoid = "c"))
 census_poverty  <- read_csv("output/census-poverty.csv", col_types = c(geoid = "c")) |> mutate(estimate = round(estimate, 2))
 census_shift    <- read_csv("output/census-demo.csv", col_types = c(geoid = "c")) 
 
 census_demo <-
-  census_shift |> 
-  left_join(
-    census_poverty |> select(geoid, pop = total, income_ratio = estimate)
+  census_race |> 
+  select(
+    block_geoid,
+    geoid, block_id,
+    total_pop,
+    starts_with("pct")
   ) |> 
-  relocate(pop, income_ratio, .after = geoid) |> 
   mutate(
-    white_pct = round(current_white / (current_black + current_white) * 100),
-    black_pct = round(current_black / (current_black + current_white) * 100),
-    gentrifying = as.integer(shift_white > 50 & shift_black < -50 & black_pct > 40),
+    # block_white_pct = round(total_white / (total_black + current_white) * 100),
+    # block_black_pct = round(total_black / (total_black + current_white) * 100)
+  ) |> 
+  left_join(
+    census_shift |> select(geoid, shift_white, shift_black)
+  ) |> 
+  left_join(
+    census_poverty |> select(geoid, income_ratio = estimate)
+  ) |> 
+  mutate(
+    gentrifying = 
+      as.integer(
+        shift_white > 50 & shift_black < -50 & pct_black > 40
+      )
+      ,
     gentrification_shift = ifelse(gentrifying == 1, shift_white + abs(shift_black), 0),
     cat =
       case_when(
+        income_ratio > 1.25 & income_ratio < 2 & pct_white > 50 ~ "working class white?",
         gentrifying == 1 ~ "gentrifying",
-        black_pct > 60 ~ "historically black",
+        pct_black > 60 ~ "historically black",
         income_ratio < 2 ~ "higher poverty",
         .default = "other"
       )
-  ) 
+  ) |> 
+  left_join(blocks) |> 
+  st_as_sf() |> 
+  st_transform(crs = 4326)
 
 
 
 # Combine and create line
-
-
 census_demo |> filter(geoid == "370630006003") |> .show_n()
 
 map_home <-
@@ -126,15 +147,73 @@ export_map <- function(mv, html_name) {
 }
 
 
-map_census <- 
+crop_census <-
+  census <- 
   census_demo |> 
-  inner_join(block_groups) |> 
-  st_as_sf() |> 
+  #filter(geoid  |> str_detect("37063000600")) |> 
   #filter(cat == "other") |> 
-  st_crop(map_limits) |> 
-  left_join(neighborhood) |> 
-  st_as_sf() |> 
-  mapview(zcol = "cat", alpha.regions = 0.5, color = "white", layer.name = "demographics")
+  st_crop(map_limits)
+
+demo_colors <- 
+  mapviewColors(
+    x=crop_census,
+    zcol = "district", 
+    colors = c(
+      "#4B0055", 
+      "#944500", 
+      "#007094",
+      "#c5c5c5",
+      "#FDE333"
+    ),
+    at = c(
+      "gentrifying",
+      "higher poverty", 
+      "historically black",
+      "other",
+      "working class white?"
+    )
+  )
+
+
+# map_census ----
+crop_census |> 
+  mapView(
+    zcol = "cat", 
+    alpha.regions = 0.5,
+    color = "white",
+    lwd = 0.5,
+    layer.name = "demo",
+    col.regions = demo_colors
+  )
+
+map_census <- .Last.value
+
+if (FALSE) {
+  census_block_info <-
+    census_demo |> 
+    filter(geoid  |> str_detect("37063000600")) |> 
+    st_transform(4326) |> 
+    st_crop(map_limits) |> 
+    left_join(neighborhood) |> 
+    st_as_sf()
+  
+  mapview(
+    census_block_info,
+    zcol = "geoid", 
+    alpha.regions = 0.5, 
+    color = "red", 
+    layer.name = "demographics"
+  )
+  .Last.value |> 
+    leafem::addStaticLabels(
+      label = census_block_info$block_id,
+      noHide = TRUE,
+      direction = 'top',
+      textOnly = TRUE,
+      textsize = "20px"
+    )
+}
+
 
 local_roads <-
   roads$osm_lines |> 
@@ -238,14 +317,20 @@ property_metrics <-
 gentrifying_areas <-
   census_demo |> 
   filter(
-    gentrifying == 1 | black_pct >= 60
+    gentrifying == 1 | pct_black >= 60
   )
+
+mapview(gentrifying_areas)
 
 ideal_property <-
   property_metrics |> 
-  left_join(census_demo) |> 
+  left_join(
+    census_demo |>
+      select(block_geoid, gentrifying, cat) |>
+      st_drop_geometry()
+  ) |>
   mutate(
-    ideal_ind = (
+    ideal_ind = as.integer(
         between(acreage, 0.15, 0.3)
         & cost_total_value < 400000
         & bldg_sqft < 1600
@@ -286,10 +371,10 @@ prep_map <-
     parcel_id,
     geoid,
     cat,
-    black_pct,
+    #pct_black,
     ideal_ind,
     gentrifying,
-    gentrification_shift,
+    #gentrification_shift,
     neighborhood,
     address = full_address,
     total_prop_value,
@@ -301,7 +386,8 @@ prep_map <-
     desc_built_use,
     acreage,
     actual_year_built,
-    bldg_age
+    bldg_age,
+    block_geoid
   ) |> 
   mutate(
       neighborhood = str_trunc(neighborhood, 20),
@@ -365,20 +451,23 @@ prep_map |>
   scale_alpha(range = c(0.3, 1))
 
 prep_map |>
-  filter(geoid == "370630006003") |> 
+  filter(geoid |> str_detect("37063000600")) |> 
   #filter(total_prop_value < 400000) |>   
-  filter(
-    ideal_ind == 1,
-    cat == "other",
-    total_prop_value > 200000
-    #between(years_owned, 5, 7) | 
-    #  years_owned > 20
+  mutate(
+    ideal_ind = (
+      total_prop_value > 200000
+      & total_prop_value < 400000
+      & between(acreage, 0.15, 0.3)
+      & bldg_sqft < 1600
+      #& f_of_bedrooms == 2
+      & !block_geoid %in% gentrifying_areas$block_geoid
+    )
   ) |> 
-  select(deed_date, years_owned, total_prop_value, address, bldg_sqft, bldg_age, zillow, f_of_bedrooms) |> 
+  select(ideal_ind, deed_date, years_owned, total_prop_value, address, bldg_sqft, bldg_age, zillow, f_of_bedrooms) |> 
   mapview(
-    zcol = "years_owned",
+    zcol = "ideal_ind",
     #zcol = "cat",
-    layer.name = "years_owned"    
+    layer.name = "ideal"    
   ) +
   mapview(
     points_of_interest[1,],
@@ -392,11 +481,21 @@ export_map(my_neighborhood, "output/my-neighborhood.html")
 
 
 prep_map |>
+  mutate(
+    ideal_ind = (
+      total_prop_value > 200000
+      & total_prop_value < 400000
+      & between(acreage, 0.15, 0.3)
+      & bldg_sqft < 1600
+      #& f_of_bedrooms == 2
+      & !block_geoid %in% gentrifying_areas$block_geoid
+    )
+  ) |> 
   # filter(geoid == "370630006003") |> 
   #filter(total_prop_value < 400000) |>   
   filter(
     ideal_ind == 1,
-    cat == "other",
+    !str_detect(cat, "gent|pov|black"),
     total_prop_value > 200000
     #between(years_owned, 5, 7) | 
     #  years_owned > 20
@@ -410,25 +509,28 @@ prep_map |>
   map_home
 
 m <- .Last.value
+map_census + m
 census_demo |> filter(geoid == "370630006003") |> .show_n()
 
 iso_map |> 
   filter(isomax <= 20) |> 
+  st_crop(map_limits) |> 
   mapview(
-    alpha.regions = 0.25, 
-    layer.name = "time to gym",
-    color = "white", 
+    alpha.regions = 0,#0.25, 
+    color = "orange", 
+    lwd = 3, 
     alpha = 0.5,
-    lwd = 1, 
-    zcol = "isomin"
-  ) +
-  map_roads +
+    zcol = NULL, #"isomin",
+    layer.name = "time to gym"
+  )
+
+map_iso <- .Last.value
+map_census +
+  map_iso +
   m
 
-i <- .Last.value
-
-library(webshot)
-export_map(i, "output/my-map.html")
+full_map <- .Last.value
+export_map(full_map, "output/my-map.html")
 
 m@map |> leaflet::setView(lng = -78.915, lat = 35.97, zoom = 12)
 

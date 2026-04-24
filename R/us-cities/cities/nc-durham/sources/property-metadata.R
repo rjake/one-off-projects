@@ -4,14 +4,7 @@ library(glue)
 library(mapview)
 setwd(dirname(.rs.api.getSourceEditorContext()$path))
 
-block_groups <- 
-  st_read("input/census-block-group-nc/tl_2025_37_bg.shp") |>
-  rename_all(tolower) |> 
-  filter(countyfp == "063") |> # Durham county
-  select(geoid, geometry) |>
-  st_transform(4326)
-
-saveRDS(block_groups, "output/sf-block-groups.Rds")
+blocks <- read_rds("output/sf-blocks.Rds")
 
 raw_parcel_info <-
   st_read("input/Parcels/Parcels_NEW.shp") |> 
@@ -150,7 +143,8 @@ join_all_metadata <-
 
 property_metadata <-
   join_all_metadata |> 
-  st_join(block_groups, join = st_within) |>
+  # st_transform(crs = 4326) |> 
+  st_join(blocks, join = st_within) |>
   relocate(
     geometry, .after = everything()
   )
