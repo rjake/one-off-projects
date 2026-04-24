@@ -1,4 +1,4 @@
-# workspace ----
+# Workspace ----
 library(tidyverse)
 library(sf)
 library(mapview)
@@ -8,35 +8,24 @@ library(htmltools)
 library(htmlwidgets)
 setwd(dirname(.rs.api.getSourceEditorContext()$path))
 
-map_limits <- 
-  st_bbox(
-    c(
-      # xmin = -78.86, xmax = -78.95, 
-      # ymin =  35.95, ymax =  36.00
-      xmin = -78.85, xmax = -79.10,
-      ymin =  35.90, ymax =  36.06
-    ), 
-    crs = st_crs(4326)
-  )
-
-points_of_interest <-
-  data.table::fread(
-    "location, x, y
-    home, -78.9257, 35.9810
-    gym , -78.9245, 35.9507"
-  )|> 
-  st_as_sf(coords = c("x", "y"), crs = 4326)
-
+# Data ----
+## shp ----
 roads <- read_rds("output/roads.Rds")
-property <- read_rds("output/sf-property-metadata.Rds")
+property <- 
+  read_rds("output/sf-property-metadata.Rds") |> 
+  rename(craftsmanship = state_of_repair) # see end
+
 iso_map <- read_rds("output/sf-isochrone-gym.Rds")
 block_groups <- read_rds("output/sf-block-groups.Rds")
 blocks <- read_rds("output/sf-blocks.Rds")
 
+## csv ----
 census_race  <- read_csv("output/census-race-blocks.csv", col_types = c(block_geoid = "c", geoid = "c"))
 census_poverty  <- read_csv("output/census-poverty.csv", col_types = c(geoid = "c")) |> mutate(estimate = round(estimate, 2))
 census_shift    <- read_csv("output/census-demo.csv", col_types = c(geoid = "c")) 
 
+# Prep ----
+## census_demo ----
 census_demo <-
   census_race |> 
   select(
@@ -55,22 +44,6 @@ census_demo <-
   left_join(
     census_poverty |> select(geoid, income_ratio = estimate)
   ) |> 
-  mutate(
-    gentrifying = 
-      as.integer(
-        shift_white > 50 & shift_black < -50 & pct_black > 40
-      )
-      ,
-    gentrification_shift = ifelse(gentrifying == 1, shift_white + abs(shift_black), 0),
-    cat =
-      case_when(
-        income_ratio > 1.25 & income_ratio < 2 & pct_white > 50 ~ "working class white?",
-        gentrifying == 1 ~ "gentrifying",
-        pct_black > 60 ~ "historically black",
-        income_ratio < 2 ~ "higher poverty",
-        .default = "other"
-      )
-  ) |> 
   left_join(blocks) |> 
   st_as_sf() |> 
   st_transform(crs = 4326)
@@ -80,6 +53,9 @@ census_demo <-
 # Combine and create line
 census_demo |> filter(geoid == "370630006003") |> .show_n()
 
+# Map Features ----
+
+## map_home ----
 map_home <-
   mapview(
     points_of_interest,
@@ -88,11 +64,29 @@ map_home <-
     col.regions = "orange"
   )
 
-fill_scale <-
-  list(
-    c = RColorBrewer::brewer.pal(4, "PuBu"),
-    d = RColorBrewer::brewer.pal(4, "RdBu")
+## points of interest ----
+points_of_interest <-
+  data.table::fread(
+    "location, x, y
+    home, -78.9257, 35.9810
+    gym , -78.9245, 35.9507"
+  )|> 
+  st_as_sf(coords = c("x", "y"), crs = 4326)
+
+## map_limits ----
+map_limits <- 
+  st_bbox(
+    c(
+      # xmin = -78.86, xmax = -78.95, 
+      # ymin =  35.95, ymax =  36.00
+      xmin = -78.85, xmax = -79.10,
+      ymin =  35.90, ymax =  36.06
+    ), 
+    crs = st_crs(4326)
   )
+
+
+
 
 neighborhood <-
   property |> 
@@ -108,7 +102,14 @@ neighborhood <-
     neighborhood = str_extract(neighborhood, "^[^;]+") |> str_trunc(20)
   )
   
-my_map <- function(df, var, fill_type = NULL, ...) {
+# Functions ----
+my_map <- function(df, var, fill_type = NULL, n_col = 4, ...) {
+  fill_scale <-
+    list(
+      c = RColorBrewer::brewer.pal(n_col, "PuBu"),
+      d = RColorBrewer::brewer.pal(n_col, "RdBu")
+    )
+  
   df |> 
     mapview(
       zcol = var, 
@@ -146,37 +147,83 @@ export_map <- function(mv, html_name) {
   htmlwidgets::saveWidget(leaflet_map, html_name, selfcontained = TRUE)
 }
 
+# Make Maps ----
 
+## crop_census ----
 crop_census <-
   census <- 
   census_demo |> 
   #filter(geoid  |> str_detect("37063000600")) |> 
   #filter(cat == "other") |> 
-  st_crop(map_limits)
+  st_crop(map_limits) 
 
+block_housing_price <-
+  property |> 
+  st_drop_geometry() |> 
+  summarise(
+    .by = c(block_geoid),
+    x = mean(x),
+    y = mean(y),
+    n = n(),
+    housing_p25 = quantile(total_prop_value, probs = 0.25, na.rm = TRUE),
+    housing_med = median(total_prop_value),
+    housing_mean = mean(total_prop_value),
+    housing_p75 = quantile(total_prop_value, probs = 0.75, na.rm = TRUE)
+  )
+
+
+
+census_metrics <-
+  crop_census |> 
+  left_join(
+    block_housing_price |> select(block_geoid, housing_p25, housing_med)
+  ) |> 
+  mutate(
+    gentrifying = 
+      as.integer(
+        shift_white > 50 & shift_black < -50 & pct_black > 40
+      ),
+    gentrification_shift = ifelse(gentrifying == 1, shift_white + abs(shift_black), 0),
+    cat =
+      case_when(
+        gentrifying == 1 ~ "gentrifying",
+        pct_black >= 60 ~ "historically black",
+        housing_p25 >= 500000 ~ "high income",
+        #income_ratio > 1.25 & income_ratio < 2 ~ "working class?",
+        income_ratio < 2.1 & housing_p25 < 250000 ~ "higher poverty",
+        .default = "other"
+      )
+  )
+
+census_metrics |> 
+  filter(str_detect(block_geoid, "37063000600")) |> 
+  mapview(zcol = "housing_p25", layer.name = "p25")
+
+## demo_colors ----
 demo_colors <- 
   mapviewColors(
-    x=crop_census,
-    zcol = "district", 
+    x=census_metrics,
+    zcol = "cat", 
     colors = c(
       "#4B0055", 
+      "#FDE333",
       "#944500", 
       "#007094",
-      "#c5c5c5",
-      "#FDE333"
+      "#c5c5c5"
     ),
     at = c(
       "gentrifying",
-      "higher poverty", 
+      "high income",
       "historically black",
-      "other",
-      "working class white?"
+      "higher poverty", 
+      "other"
     )
   )
 
 
-# map_census ----
-crop_census |> 
+## > map_census ----
+census_metrics |> 
+  #filter(str_detect(block_geoid, "37063000600|3706300130")) |>
   mapView(
     zcol = "cat", 
     alpha.regions = 0.5,
@@ -187,6 +234,7 @@ crop_census |>
   )
 
 map_census <- .Last.value
+map_census + map_home
 
 if (FALSE) {
   census_block_info <-
@@ -315,7 +363,7 @@ property_metrics <-
   )
 
 gentrifying_areas <-
-  census_demo |> 
+  census_metrics |> 
   filter(
     gentrifying == 1 | pct_black >= 60
   )
@@ -325,8 +373,8 @@ mapview(gentrifying_areas)
 ideal_property <-
   property_metrics |> 
   left_join(
-    census_demo |>
-      select(block_geoid, gentrifying, cat) |>
+    census_metrics |>
+      select(block_geoid, housing_p25, gentrifying, cat) |>
       st_drop_geometry()
   ) |>
   mutate(
@@ -381,7 +429,7 @@ prep_map <-
     deed_date,
     years_owned,
     f_of_bedrooms,
-    state_of_repair_code,
+    craftsmanship,
     bldg_sqft,
     desc_built_use,
     acreage,
@@ -390,17 +438,17 @@ prep_map <-
     block_geoid
   ) |> 
   mutate(
-      neighborhood = str_trunc(neighborhood, 20),
-      zillow = 
-        glue(
-          link = glue("https://www.zillow.com/homes/{address}, Durham, NC_rb/"),
-          '<a href="{link}" target="_blank">{address}</a>'
-        ),
-      google =
-        glue(
-          address_search = str_replace_all(address, " ", "+"),
-          '<a href="https://www.google.com/search?q={address_search}+durham+nc" target="_blank">{address}</a>'
-        )    
+    neighborhood = str_trunc(neighborhood, 20),
+    zillow = 
+      glue(
+        link = glue("https://www.zillow.com/homes/{address}, Durham, NC_rb/"),
+        '<a href="{link}" target="_blank">{address}</a>'
+      ),
+    google =
+      glue(
+        address_search = str_replace_all(address, " ", "+"),
+        '<a href="https://www.google.com/search?q={address_search}+durham+nc" target="_blank">{address}</a>'
+      )    
   )
 
 mapviewOptions(
@@ -526,6 +574,7 @@ iso_map |>
 
 map_iso <- .Last.value
 map_census +
+  map_roads +
   map_iso +
   m
 
@@ -539,3 +588,15 @@ relevant_data |>
   select(phyaddr_zi) |> 
   plot()
 
+# NOTES #######################
+## * craftsmanship / state_of_repair ----
+"
+The hierarchy typically follows this pattern from highest to lowest quality:
+XX / XX-: Excellent+ / Custom Luxury. These are exceptionally high-end, custom-built homes with premium materials (e.g., heavy slate roofs, extensive masonry, high-end architectural details).
+X / X+ / X-: Extra / Luxury. Higher than 'A' grade, these properties feature superior construction and many custom architectural features.
+A+ / A / A-: Excellent. High-quality construction, often seen in upscale developments or high-end custom homes.
+B+ / B / B-: Good. Better than average materials and workmanship. This is common in many modern professional subdivisions.
+C+ / C / C-: Average. The standard for most mass-produced or 'tract' housing. 'C' represents the base level for average construction quality in the region.
+D+ / D / D-: Below Average / Fair. Economy-grade construction with basic materials and little to no architectural detail.
+E+ / E: Poor. Minimal construction quality, often associated with very old or basic utility structures. 
+"
