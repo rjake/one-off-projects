@@ -8,71 +8,6 @@ library(htmltools)
 library(htmlwidgets)
 setwd(dirname(.rs.api.getSourceEditorContext()$path))
 
-# Data ----
-## shp ----
-roads <- read_rds("output/roads.Rds")
-property <- 
-  read_rds("output/sf-property-metadata.Rds") |> 
-  rename(craftsmanship = state_of_repair) # see end
-
-iso_map <- read_rds("output/sf-isochrone-gym.Rds")
-block_groups <- read_rds("output/sf-block-groups.Rds")
-blocks <- read_rds("output/sf-blocks.Rds")
-
-## csv ----
-census_race  <- read_csv("output/census-race-blocks.csv", col_types = c(block_geoid = "c", geoid = "c"))
-census_poverty  <- read_csv("output/census-poverty.csv", col_types = c(geoid = "c")) |> mutate(estimate = round(estimate, 2))
-census_shift    <- read_csv("output/census-demo.csv", col_types = c(geoid = "c")) 
-
-# Prep ----
-## census_demo ----
-census_demo <-
-  census_race |> 
-  select(
-    block_geoid,
-    geoid, block_id,
-    total_pop,
-    starts_with("pct")
-  ) |> 
-  mutate(
-    # block_white_pct = round(total_white / (total_black + current_white) * 100),
-    # block_black_pct = round(total_black / (total_black + current_white) * 100)
-  ) |> 
-  left_join(
-    census_shift |> select(geoid, shift_white, shift_black)
-  ) |> 
-  left_join(
-    census_poverty |> select(geoid, income_ratio = estimate)
-  ) |> 
-  left_join(blocks) |> 
-  st_as_sf() |> 
-  st_transform(crs = 4326)
-
-
-
-# Combine and create line
-census_demo |> filter(geoid == "370630006003") |> .show_n()
-
-# Map Features ----
-
-## map_home ----
-map_home <-
-  mapview(
-    points_of_interest,
-    color = "black", 
-    alpha.regions = 1,
-    col.regions = "orange"
-  )
-
-## points of interest ----
-points_of_interest <-
-  data.table::fread(
-    "location, x, y
-    home, -78.9257, 35.9810
-    gym , -78.9245, 35.9507"
-  )|> 
-  st_as_sf(coords = c("x", "y"), crs = 4326)
-
 ## map_limits ----
 map_limits <- 
   st_bbox(
@@ -86,183 +21,25 @@ map_limits <-
   )
 
 
-
-
-neighborhood <-
-  property |> 
-  st_drop_geometry() |> 
-  count(geoid, neighborhood) |> 
-  #filter(geoid == "370630002001") |> 
-  group_by(geoid) |> 
-  #arrange(desc(n)) |>
-  fill(neighborhood, .direction = "downup") |> 
-  slice_max(order_by = n, n = 1, with_ties = FALSE) |> 
-  ungroup() |> 
-  mutate(
-    neighborhood = str_extract(neighborhood, "^[^;]+") |> str_trunc(20)
-  )
-  
-# Functions ----
-my_map <- function(df, var, fill_type = NULL, n_col = 4, ...) {
-  fill_scale <-
-    list(
-      c = RColorBrewer::brewer.pal(n_col, "PuBu"),
-      d = RColorBrewer::brewer.pal(n_col, "RdBu")
-    )
-  
-  df |> 
-    mapview(
-      zcol = var, 
-      layer.name = var,
-      ...,
-      col.regions = fill_scale[[fill_type]]
-    ) +
-    map_home
-}
-
-export_map <- function(mv, html_name) {
-  # buffer_dist <- 200 # meters
-  # 
-  # buffered_bbox <-
-  #   map_limits |>
-  #   st_as_sfc() |>
-  #   st_transform(3857) |>
-  #   st_buffer(dist = buffer_dist) |>
-  #   st_transform(4326) |>
-  #   st_bbox() |> 
-  #   as.list()
-  # 
-  leaflet_map <- 
-    mv@map |>
-    # fitBounds(
-    #   lng1 = map_limits["xmin"], lat1 = map_limits["ymin"],
-    #   lng2 = map_limits["xmax"], lat2 = map_limits["ymax"]
-    # ) |>
-    # setMaxBounds(
-    #   lng1 = buffered_bbox["xmin"], lat1 = buffered_bbox["ymin"],
-    #   lng2 = buffered_bbox["xmax"], lat2 = buffered_bbox["ymax"]
-    # ) #|>
-    appendContent(htmltools::HTML(paste(readLines("www/geo.js"), collapse = "\n")))
-  
-  htmlwidgets::saveWidget(leaflet_map, html_name, selfcontained = TRUE)
-}
-
-# Make Maps ----
-
-## crop_census ----
-crop_census <-
-  census <- 
-  census_demo |> 
-  #filter(geoid  |> str_detect("37063000600")) |> 
-  #filter(cat == "other") |> 
-  st_crop(map_limits) 
-
-block_housing_price <-
-  property |> 
-  st_drop_geometry() |> 
-  summarise(
-    .by = c(block_geoid),
-    x = mean(x),
-    y = mean(y),
-    n = n(),
-    housing_p25 = quantile(total_prop_value, probs = 0.25, na.rm = TRUE),
-    housing_med = median(total_prop_value),
-    housing_mean = mean(total_prop_value),
-    housing_p75 = quantile(total_prop_value, probs = 0.75, na.rm = TRUE)
+# Data ----
+## shp ----
+roads <- read_rds("output/roads.Rds")
+property <- 
+  read_rds("output/sf-property-metadata.Rds") |> 
+  rename(
+    style = desc_built_use
   )
 
+iso_map <- read_rds("output/sf-isochrone-gym.Rds")
+block_groups <- read_rds("output/sf-block-groups.Rds")
+blocks <- read_rds("output/sf-blocks.Rds")
 
+## csv ----
+census_block_demo <- read_csv("output/census-race-blocks.csv", col_types = c(block_geoid = "c", geoid = "c"))
+census_block_group_demo <- read_csv("output/census-demo.csv", col_types = c(geoid = "c")) 
 
-census_metrics <-
-  crop_census |> 
-  left_join(
-    block_housing_price |> select(block_geoid, housing_p25, housing_med)
-  ) |> 
-  mutate(
-    gentrifying = 
-      as.integer(
-        shift_white > 50 & shift_black < -50 & pct_black > 40
-      ),
-    gentrification_shift = ifelse(gentrifying == 1, shift_white + abs(shift_black), 0),
-    cat =
-      case_when(
-        gentrifying == 1 ~ "gentrifying",
-        pct_black >= 60 ~ "historically black",
-        housing_p25 >= 500000 ~ "high income",
-        #income_ratio > 1.25 & income_ratio < 2 ~ "working class?",
-        income_ratio < 2.1 & housing_p25 < 250000 ~ "higher poverty",
-        .default = "other"
-      )
-  )
-
-census_metrics |> 
-  filter(str_detect(block_geoid, "37063000600")) |> 
-  mapview(zcol = "housing_p25", layer.name = "p25")
-
-## demo_colors ----
-demo_colors <- 
-  mapviewColors(
-    x=census_metrics,
-    zcol = "cat", 
-    colors = c(
-      "#4B0055", 
-      "#FDE333",
-      "#944500", 
-      "#007094",
-      "#c5c5c5"
-    ),
-    at = c(
-      "gentrifying",
-      "high income",
-      "historically black",
-      "higher poverty", 
-      "other"
-    )
-  )
-
-
-## > map_census ----
-census_metrics |> 
-  #filter(str_detect(block_geoid, "37063000600|3706300130")) |>
-  mapView(
-    zcol = "cat", 
-    alpha.regions = 0.5,
-    color = "white",
-    lwd = 0.5,
-    layer.name = "demo",
-    col.regions = demo_colors
-  )
-
-map_census <- .Last.value
-map_census + map_home
-
-if (FALSE) {
-  census_block_info <-
-    census_demo |> 
-    filter(geoid  |> str_detect("37063000600")) |> 
-    st_transform(4326) |> 
-    st_crop(map_limits) |> 
-    left_join(neighborhood) |> 
-    st_as_sf()
-  
-  mapview(
-    census_block_info,
-    zcol = "geoid", 
-    alpha.regions = 0.5, 
-    color = "red", 
-    layer.name = "demographics"
-  )
-  .Last.value |> 
-    leafem::addStaticLabels(
-      label = census_block_info$block_id,
-      noHide = TRUE,
-      direction = 'top',
-      textOnly = TRUE,
-      textsize = "20px"
-    )
-}
-
-
+# Prep ----
+## Roads ----
 local_roads <-
   roads$osm_lines |> 
   filter(
@@ -332,9 +109,421 @@ prep_roads <-
   st_simplify(preserveTopology = TRUE, dTolerance = 1) |>  # 1 meter
   st_transform(crs = 4326) |>
   st_crop(map_limits) 
-  
+
 
 map_roads <- mapview(prep_roads, col.regions = "black", alpha.regions = 1)
+
+# Functions ----
+my_map <- function(df, overlay_groups = NULL) {
+  #df <- neighborhood
+  df |> 
+    leaflet() |> 
+    addProviderTiles(providers$CartoDB.Positron, group = "CartoDB.Positron") |> 
+    addProviderTiles(providers$OpenTopoMap, group = "OpenTopoMap") |> 
+    addLayersControl(
+      baseGroups = c("CartoDB.Positron", "OpenTopoMap"),
+      overlayGroups = overlay_groups,
+      options = layersControlOptions(collapsed = TRUE) # Keep menu open
+    ) |> 
+    #addProviderTiles(providers$CartoDB.Positron) |> 
+    setView(lng = -78.9257, lat = 35.981, zoom = 13)
+}
+# my_map <- function(df, var, fill_type = NULL, n_col = 4, ...) {
+#   #df <- neighborhood
+#   df |> 
+#     leaflet() |> 
+#     addTiles(providers$CartoDB.Positron)
+#   
+#   fill_scale <-
+#     list(
+#       c = RColorBrewer::brewer.pal(n_col, "PuBu"),
+#       d = RColorBrewer::brewer.pal(n_col, "RdBu")
+#     )
+#   df |> 
+#     leaflet()
+#   addProviderTiles(providers$CartoDB.Positron) %>%
+#     setView(lng = -0.09, lat = 51.505, zoom = 13)
+#   
+#   df |> 
+#     mapview(
+#       zcol = var, 
+#       layer.name = var,
+#       ...,
+#       col.regions = fill_scale[[fill_type]]
+#     ) +
+#     map_home
+# }
+
+export_map <- function(mv, html_name) {
+  # leaflet_map <-
+  #   mv@map |>
+  #   fitBounds(
+  #     lng1 = map_limits[["xmin"]], lat1 = map_limits[["ymin"]],
+  #     lng2 = map_limits[["xmax"]], lat2 = map_limits[["ymax"]]
+  #   ) |>
+  #   setMaxBounds(
+  #     lng1 = map_limits[["xmin"]], lat1 = map_limits[["ymin"]],
+  #     lng2 = map_limits[["xmax"]], lat2 = map_limits[["ymax"]]
+  #   ) |>
+  m <-  
+    mv |> 
+    appendContent(htmltools::HTML(paste(readLines("www/geo.html"), collapse = "\n")))
+  
+  htmlwidgets::saveWidget(m, html_name, selfcontained = TRUE)
+}
+
+## census_demo ----
+census_demo <-
+  census_block_demo |> 
+  select(
+    block_geoid,
+    geoid, block_id,
+    total_pop,
+    biggest_group,
+    biggest_pct,
+    pct_white,
+    pct_black,
+    pct_latino
+  ) |> 
+  left_join(
+    census_block_group_demo |> 
+      select(geoid, shift_white, shift_black, est_poverty_ratio, med_hh_income)
+  ) |> 
+  left_join(blocks) |> 
+  st_as_sf() |> 
+  st_transform(crs = 4326)
+
+
+
+# Combine and create line
+census_demo |> filter(geoid == "370630006003") |> .show_n()
+
+census_demo |> 
+  ggplot(aes(x = biggest_pct, color = biggest_group)) +
+  geom_density()
+
+census_demo |> 
+  #filter(geoid == "370630006003") |> 
+  st_crop(map_limits) |> 
+  ggplot() +
+  geom_sf(aes(fill = biggest_group, alpha = biggest_pct), color = NA) +
+  geom_sf(data = prep_roads, color = "black", fill = "black") +
+  theme_void() +
+  guides()
+
+library(leaflet)
+library(scales)
+
+# 1. pre-calculate hex colors with alpha embedded
+prep_census_color <-
+  census_demo |> 
+  st_crop(map_limits) |> 
+  mutate(
+    # generate base colors for the groups
+    base_col = case_when(
+      biggest_group == "latino" ~ "#1b9e77",
+      biggest_group == "black" ~ "#7570b3",
+      biggest_group == "asian" ~ "#d95f02",
+      .default = "#b2b2b2"
+    ),
+    # combine base color with alpha (biggest_pct)
+    fill_rgba = alpha(base_col, biggest_pct /100)
+  )
+
+popup_strings <- 
+  prep_census_color |> 
+  select(
+    -c(base_col, fill_rgba),
+    -one_of("popup_text")
+  ) |> 
+  st_drop_geometry() |> 
+  apply(1, function(x) {
+    paste0(
+      "<b>", names(x), ":</b> ", as.character(x), 
+      collapse = "<br/>"
+    )
+  })
+
+# 2. convert to a list of individual HTML objects
+prep_census_color$popup_text <- map_chr(popup_strings, HTML) |> unname()
+
+# 2. build the leaflet map
+leaflet() |> 
+  addProviderTiles("CartoDB.Positron") |> 
+  addPolygons(
+    data = prep_census_color,
+    fillColor = ~fill_rgba,
+    fillOpacity = 1, # use 1 because transparency is now baked into the hex code
+    weight = 0,
+    popup = ~popup_text,
+    group = "demo"
+  ) |> 
+  addPolygons(
+    data = prep_roads,
+    color = "black",
+    fillColor = "black",
+    weight = 1,
+    fillOpacity = 1,
+    group = "roads"
+  ) |> 
+  addControl(
+    html = "Durham Census Blocks by biggest race group", 
+    position = "bottomleft"
+  ) |> 
+  addLayersControl(
+    overlayGroups = c("demo", "roads"),
+    options = layersControlOptions(collapsed = FALSE)
+  )
+
+export_map(.Last.value, html_name = "output/race-group.html")
+
+
+census_demo |> 
+  #st_crop(map_limits) |> 
+  mapview( 
+    zcol = "biggest_group", 
+    alpha.regions = census_demo$biggest_pct/100, 
+    layer.name = "census demographics",
+    lwd = 0
+  ) + 
+  mapview(
+    prep_roads, 
+    #color = "black", 
+    alpha.regions = 1,
+    col.regions = "black", 
+    layer.name = "roads"
+  )
+  # scale_fill_manual(
+  #   values = c(
+  #     "asian" = "purple",
+  #     "black",
+  #     "latino",
+  #     "white"
+  #   )
+  # )
+
+# Map Features ----
+## points of interest ----
+points_of_interest <-
+  data.table::fread(
+    "location, x, y
+    home, -78.9257, 35.9810
+    gym , -78.9245, 35.9507"
+  )|> 
+  st_as_sf(coords = c("x", "y"), crs = 4326)
+
+## map_home ----
+map_home <-
+  mapview(
+    points_of_interest,
+    color = "black", 
+    alpha.regions = 1,
+    col.regions = "orange"
+  )
+
+
+neighborhood <-
+  property |> 
+  st_drop_geometry() |> 
+  count(geoid, neighborhood) |> 
+  #filter(geoid == "370630002001") |> 
+  group_by(geoid) |> 
+  #arrange(desc(n)) |>
+  fill(neighborhood, .direction = "downup") |> 
+  slice_max(order_by = n, n = 1, with_ties = FALSE) |> 
+  ungroup() |> 
+  mutate(
+    neighborhood = str_extract(neighborhood, "^[^;]+") |> str_trunc(20)
+  )
+  
+
+
+# Make Maps ----
+
+## crop_census ----
+crop_census <-
+  census <- 
+  census_demo |> 
+  #filter(geoid  |> str_detect("37063000600")) |> 
+  #filter(cat == "other") |> 
+  st_crop(map_limits) 
+
+
+block_housing_price <-
+  property |> 
+  st_drop_geometry() |> 
+  filter(cost_total_value > 0 & bldg_sqft > 0) |> 
+  summarize(
+    .by = block_geoid,
+    x = mean(x),
+    y = mean(y),
+    n = n(),
+    housing_p25 = quantile(cost_total_value, probs = 0.25, na.rm = TRUE),
+    housing_med = median(cost_total_value, na.rm = TRUE),
+    housing_mean = mean(cost_total_value, na.rm = TRUE),
+    housing_p75 = quantile(cost_total_value, probs = 0.75, na.rm = TRUE),
+    avg_acreage = median(acreage, na.rm = TRUE),
+    avg_sqft = median(bldg_sqft, na.rm = TRUE),
+    avg_price_foot = median(price_per_foot, na.rm = TRUE),
+    # Blight Flag: % of parcels where the building is worth very little per foot
+    pct_distressed = mean(bldg_val_per_foot < 75, na.rm = TRUE),
+    # Tear-down Flag: % of parcels where the land is worth more than 70% of the total
+    pct_land_heavy = mean(improvement_ratio < 0.3, na.rm = TRUE)
+  )
+
+
+census_metrics <-
+  crop_census |> 
+  left_join(
+    block_housing_price |> select(block_geoid, housing_p25, housing_med)
+  ) |> 
+  mutate(
+    # Gentrification: Combining your shift logic with an "eligibility" check (low starting income)
+    gentrifying = as.integer(
+      shift_white > 20 
+      & shift_black < -50 
+      & pct_black > 40 
+      #& med_hh_income < 90000
+    )
+  ) |> 
+  # https://share.google/aimode/8ZJxRjPA16SXmO6mQ  <---- GEMINI
+  # https://share.google/aimode/KpteXp85Cungdon2s
+  mutate(
+    price_to_income = housing_med / med_hh_income,
+    cat =
+      case_when(
+        gentrifying == 1 ~ "gentrifying",
+        pct_black >= 60 | (pct_black > 40 & shift_black < -200) ~ "historically black",
+        housing_p25 >= 500000 ~ "high income",
+        est_poverty_ratio < 2.1 | med_hh_income <= 75000 ~ "higher poverty",
+        #est_poverty_ratio > 1.25 & income_ratio < 2 ~ "working class?",
+        .default = "other"
+      )
+  )
+
+mapview(census_metrics, zcol = "cat")# + map_roads + map_home
+mapview(census_metrics, zcol = "housing_stability") + map_home
+
+census_metrics |> st_drop_geometry() |>  count(housing_stability, cat)
+  # mutate(
+  #   # A wide gap (Median >> p25) suggests diversity; 
+  #   # A narrow gap (Median ≈ p25) suggests the "floor" has been raised (Gentrification)
+  #   price_spread = housing_med - housing_p25,
+  #   
+  #   cat = case_when(
+  #     pct_black >= 60 ~ "Historically Black",
+  #     # gentrifying == 1 & housing_p25 > 350000 ~ "Gentrified / High Turnover",
+  #     gentrifying == 1 ~ "Gentrifying", # & housing_med > 350000/ High Turnover",
+  #     housing_med >= 600000 ~ "Upper Middle Class",
+  #     med_hh_income < 55000 | est_poverty_ratio < 1.5 ~ "HIgh Poverty",
+  #     med_hh_income < 75000 & housing_med > 400000 ~ "Emerging / Market Gap",
+  #     housing_med >= 400000 ~ "Established Middle Class",
+  #     .default = "Working Class"
+  #   )
+  # )
+source("~/.active-rstudio-document", echo = TRUE)
+
+census_metrics |> mapview(zcol = "cat", layer.name = "x")
+
+  # mutate(
+  #   gentrifying = 
+  #     as.integer(
+  #       shift_white > 50 & shift_black < -50 & pct_black > 40
+  #     ),
+  #   gentrification_shift = ifelse(gentrifying == 1, shift_white + abs(shift_black), 0),
+  #   cat =
+  #     case_when(
+  #       gentrifying == 1 ~ "gentrifying",
+  #       pct_black >= 60 ~ "historically black",
+  #       housing_p25 >= 500000 ~ "high income",
+  #       #est_poverty_ratio > 1.25 & est_poverty_ratio < 2 ~ "working class?",
+  #       #est_poverty_ratio < 2.1 & housing_med < 300000 ~ "higher poverty",
+  #       med_hh_income < 50000 | est_poverty_ratio < 2 ~ "deep poverty",
+  #       med_hh_income < 75000 ~ "some poverty",
+  #       .default = "other"
+  #     )
+  # )
+
+census_metrics |> 
+  filter(str_detect(block_geoid, "37063000600")) |> 
+  # my_map(
+  #   overlay_groups = "x"
+  # ) |> 
+  # leaflet::addPolygons(
+  #   group = "x",
+  #   color = "white",
+  #   weight = 0.5,
+  #   opacity = 1,
+  #   fillColor = "blue"
+  # )
+  mapview(zcol = "housing_p25", layer.name = "p25")
+
+## demo_colors ----
+demo_colors <- 
+  mapviewColors(
+    x=census_metrics,
+    zcol = "cat", 
+    colors = c(
+      "black",
+      "#FDE333",
+      "#944500", 
+      "#007094",
+      "#4B0055", 
+      "#c5c5c5"
+    ),
+    at = c(
+      "gentrifying",
+      "high income",
+      "higher poverty",
+      "historically black",
+      "some poverty",
+      "other"
+    )
+  )
+
+
+## > map_census ----
+census_metrics |> 
+  #filter(str_detect(block_geoid, "37063000600|3706300130")) |>
+  mapView(
+    zcol = "cat", 
+    alpha.regions = 0.5,
+    color = "white",
+    lwd = 0.5,
+    layer.name = "demo",
+    col.regions = demo_colors
+  )
+
+map_census <- .Last.value
+map_census + map_home
+
+if (FALSE) {
+  census_block_info <-
+    census_demo |> 
+    filter(geoid  |> str_detect("37063000600")) |> 
+    st_transform(4326) |> 
+    st_crop(map_limits) |> 
+    left_join(neighborhood) |> 
+    st_as_sf()
+  
+  mapview(
+    census_block_info,
+    zcol = "geoid", 
+    alpha.regions = 0.5, 
+    color = "red", 
+    layer.name = "demographics"
+  )
+  .Last.value |> 
+    leafem::addStaticLabels(
+      label = census_block_info$block_id,
+      noHide = TRUE,
+      direction = 'top',
+      textOnly = TRUE,
+      textsize = "20px"
+    )
+}
+
+
 
 map_roads
 
@@ -362,13 +551,13 @@ property_metrics <-
     bldg_age = year(today()) - actual_year_built
   )
 
-gentrifying_areas <-
+ideal_areas <-
   census_metrics |> 
   filter(
-    gentrifying == 1 | pct_black >= 60
+    !str_detect(cat, "gentrif|hist|poverty") 
   )
 
-mapview(gentrifying_areas)
+mapview(ideal_areas)
 
 ideal_property <-
   property_metrics |> 
@@ -381,9 +570,9 @@ ideal_property <-
     ideal_ind = as.integer(
         between(acreage, 0.15, 0.3)
         & cost_total_value < 400000
-        & bldg_sqft < 1600
+        & bldg_sqft < 1500
         #& f_of_bedrooms == 2
-        & !geoid %in% gentrifying_areas$geoid
+        & geoid %in% ideal_areas$geoid
       ) 
     )
       
@@ -425,13 +614,13 @@ prep_map <-
     #gentrification_shift,
     neighborhood,
     address = full_address,
-    total_prop_value,
+    cost_total_value,
     deed_date,
     years_owned,
     f_of_bedrooms,
     craftsmanship,
     bldg_sqft,
-    desc_built_use,
+    style,
     acreage,
     actual_year_built,
     bldg_age,
@@ -469,70 +658,144 @@ mapviewOptions(
 
 
 
-prep_map |>
+ 
+local_geoid <-
+  block_groups |> 
   filter(
-    geoid == "370630006003",
-    bldg_sqft < 1300,
-    total_prop_value > 0,
-    total_prop_value < 500000,
-    actual_year_built < 2000,
-    years_owned < 3
-  ) |> 
-  mutate(
-    color = between(month(deed_date), 4, 7)
-  ) |> #view()
-  ggplot(
-    aes(
-      x = floor_date(deed_date, "month"), 
-      total_prop_value, 
-      color = color,
-      alpha = total_prop_value < 350000
+    as.logical(
+      st_distance(
+        geometry, 
+        st_sfc(st_point(c(-78.9257, 35.981)), crs = 4326)
+      ) <= units::set_units(1, "miles")
+      | st_distance(
+        geometry, 
+        st_sfc(st_point(c(-78.9245, 35.9507)), crs = 4326)
+      ) <= units::set_units(1, "miles")
     )
-  ) +
-  geom_hline(yintercept = 350000) +
-  #geom_col(position = "dodge", width = 1) +
-  geom_point(aes(size = bldg_sqft)) +
-  scale_x_date(
-    date_breaks = "1 month",
-    date_labels = "%m\n%y"
-  ) +
-  scale_alpha(range = c(0.3, 1))
+  ) |> 
+  pull(geoid)
+#mapview(legend = FALSE)
 
-prep_map |>
-  filter(geoid |> str_detect("37063000600")) |> 
-  #filter(total_prop_value < 400000) |>   
+# breakdown of sqft by # of rooms
+property$improvement_ratio[property$f_of_bedrooms == 2] |> 
+  quantile(1:10/10, na.rm = TRUE)
+
+ideal_only <-
+  prep_map |>
+  #filter(geoid %in% local_geoid) |> 
+  #filter(geoid |> str_detect("3706300060")) |> 
   mutate(
     ideal_ind = (
-      total_prop_value > 200000
-      & total_prop_value < 400000
+      between(cost_total_value, 200000, 400000)
       & between(acreage, 0.15, 0.3)
-      & bldg_sqft < 1600
+      & between(bldg_sqft, 900, 1500)
       #& f_of_bedrooms == 2
-      & !block_geoid %in% gentrifying_areas$block_geoid
+      & block_geoid %in% ideal_areas$block_geoid
+      & replace_na(actual_year_built, 1900) < 1990
     )
   ) |> 
-  select(ideal_ind, deed_date, years_owned, total_prop_value, address, bldg_sqft, bldg_age, zillow, f_of_bedrooms) |> 
+  filter(
+    ideal_ind == 1
+  ) |> 
+  mutate(
+    month_bought = month(deed_date),
+    type_abbr = 
+      case_when(
+        str_detect(style, "CAPE") ~ "D",
+        str_detect(style, "COLONIAL") ~ "L",
+        str_detect(style, "CONTEMP") ~ "T",
+        str_detect(style, "RANCH") ~ "R"
+      ),
+    age_color = ifelse(years_owned < 10, '5-8', '20+'),
+    house_no = str_extract(address, "^\\d+")
+  )
+
+
+
+
+ideal_only |> 
+  filter(
+    (
+      between(years_owned, 5, 8)
+      | years_owned > 20
+    )
+  ) |> 
+  filter(
+    geoid %in% local_geoid
+  ) |> 
+  select(
+    deed_date, 
+    age_color,
+    years_owned, 
+    cost_total_value, 
+    house_no,
+    address,
+    bldg_sqft, 
+    acreage,
+    f_of_bedrooms,
+    zillow, 
+    style
+  ) |> 
   mapview(
-    zcol = "ideal_ind",
-    #zcol = "cat",
-    layer.name = "ideal"    
+    zcol = "age_color",
+    layer.name = "years_owned",
+    col.regions =  c("#944500", "#007094")
   ) +
   mapview(
-    points_of_interest[1,],
+    points_of_interest,
     color = "black", 
     alpha.regions = 1,
     col.regions = "orange"
   )
 
+
+
 my_neighborhood <- .Last.value
 export_map(my_neighborhood, "output/my-neighborhood.html")
+
+ideal_only |> 
+  st_drop_geometry() |> 
+  filter(years_owned < 5) |> 
+  mutate(
+    year = year(deed_date),
+    color = between(month_bought, 4, 7)
+  ) |> #view()
+  summarise(
+    .by = c(year, month_bought),
+    n = n()
+  ) |> 
+  summarise(
+    .by = month_bought,
+    avg= mean(n)
+  ) |> 
+  arrange(month_bought)
+
+
+property_metrics |> 
+  st_drop_geometry() |> 
+  select(
+    years_owned,
+    actual_year_built,
+    cost_total_value,
+    acreage,
+    bldg_sqft
+  ) |> 
+  summarise_all(~sum(is.na(.x))) |> 
+  ggplot(
+    aes(
+      x = month_bought, 
+      y = n, 
+      fill = as.factor(year)
+    )
+  ) +
+  geom_col() #+facet_grid(rows = "year")
 
 
 prep_map |>
   mutate(
     ideal_ind = (
-      total_prop_value > 200000
-      & total_prop_value < 400000
+      cost_total_value > 200000
+      & cost_total_value < 400000
       & between(acreage, 0.15, 0.3)
       & bldg_sqft < 1600
       #& f_of_bedrooms == 2
@@ -540,19 +803,19 @@ prep_map |>
     )
   ) |> 
   # filter(geoid == "370630006003") |> 
-  #filter(total_prop_value < 400000) |>   
+  #filter(cost_total_value < 400000) |>   
   filter(
     ideal_ind == 1,
     !str_detect(cat, "gent|pov|black"),
-    total_prop_value > 200000
+    cost_total_value > 200000
     #between(years_owned, 5, 7) | 
     #  years_owned > 20
   ) |> 
   st_crop(map_limits) |> 
   mapview(
-    zcol = "total_prop_value",
+    zcol = "cost_total_value",
     #zcol = "cat",
-    layer.name = "total_prop_value"    
+    layer.name = "cost_total_value"    
   ) +
   map_home
 
@@ -564,9 +827,9 @@ iso_map |>
   filter(isomax <= 20) |> 
   st_crop(map_limits) |> 
   mapview(
-    alpha.regions = 0,#0.25, 
-    color = "orange", 
-    lwd = 3, 
+    alpha.regions = 0,#0.25,
+    color = "orange",
+    lwd = 3,
     alpha = 0.5,
     zcol = NULL, #"isomin",
     layer.name = "time to gym"
@@ -579,9 +842,9 @@ map_census +
   m
 
 full_map <- .Last.value
+full_map@map |> leaflet::setView(lng = -78.915, lat = 35.97, zoom = 12)
 export_map(full_map, "output/my-map.html")
 
-m@map |> leaflet::setView(lng = -78.915, lat = 35.97, zoom = 12)
 
 relevant_data |> 
   filter(phyaddr_zi == "27517") |>

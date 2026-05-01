@@ -47,6 +47,12 @@ relevant_data <-
   raw_parcel_info |> 
   st_transform(crs = st_crs(4326))
 
+relevant_cols |> 
+  st_drop_geometry() |> 
+  select(
+    where(is.numeric)
+  ) |> 
+  head()
 
 relevant_cols <-
   relevant_data |> 
@@ -58,18 +64,29 @@ relevant_cols <-
     neighborhood,
     land_class = land_class,
     deed_date = ymd(deed_date),
-    year = year(deed_date),
-    month = month(deed_date),
+    deed_year = year(deed_date),
+    deed_month = month(deed_date),
     acreage,
     bldg_sqft = heated_are,
-    total_prop_value = total_prop,
-    cost_total_value = cost_total,
-    pkg_sale_d,
-    land_sale_,
-    land_use_v,
-    pkg_sale_d,
-    pkg_sale_p
-  )
+    cost_building_value = total_bldg,
+    #cost_land_value = total_land,
+    cost_total_value = cost_total
+  ) |> 
+  mutate(
+    price_per_foot = cost_total_value / bldg_sqft,
+    bldg_val_per_foot = cost_building_value / bldg_sqft,
+    # Improvement Ratio: < 0.3 often means the house is a liability/tear-down
+    improvement_ratio = cost_building_value / cost_total_value
+  ) |> 
+  relocate(geometry, .after = everything())
+
+relevant_cols |> 
+  st_drop_geometry() |> 
+  select(
+    where(is.numeric)
+  ) |> 
+  head(15) |> 
+  arrange(desc(bldg_sqft))
 
 as_points <-
   relevant_cols |> 
@@ -91,8 +108,12 @@ property_cols <-
   mutate(
     .keep = "unused",
     property_id = object_id,
-    address = paste(street, street_name)
-  ) |> 
+    street_no = street,
+    street_name,
+    address = paste(street, street_name),
+    craftsmanship = state_of_repair_code
+  ) |>
+  relocate(property_id, address, street_no, street_name) |> 
   add_count(address, name = "n_address")
 
 parcel_xref <-

@@ -6,8 +6,10 @@ Maps:
 * [house-level][main]
 * [lakewood][neighborhood]
 * [census blocks][census]
+* [race groups][race]
 
 [home]: https://rjake.github.io/one-off-projects/R/us-cities/cities/nc-durham/index.html
 [main]: https://rjake.github.io/one-off-projects/R/us-cities/cities/nc-durham/sources/output/my-map.html
 [neighborhood]: https://rjake.github.io/one-off-projects/R/us-cities/cities/nc-durham/sources/output/my-neighborhood.html
 [census]: https://rjake.github.io/one-off-projects/R/us-cities/cities/nc-durham/sources/output/census-category.html
+[race]: https://rjake.github.io/one-off-projects/R/us-cities/cities/nc-durham/sources/output/race-group.html

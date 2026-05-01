@@ -1,0 +1,139 @@
+<style>
+  .house-label { display: none; }
+  .show-house-labels .house-label { display: block; }
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var map = window.HTMLWidgets.getInstance(document.querySelector('.leaflet')).getMap();
+
+  // Patch tile loading to cache in IndexedDB — tiles served from cache when offline
+  var DB_NAME = 'leaflet-tile-cache';
+  var STORE   = 'tiles';
+
+  var dbPromise = new Promise(function(resolve, reject) {
+    var req = indexedDB.open(DB_NAME, 1);
+    req.onupgradeneeded = function(e) { e.target.result.createObjectStore(STORE); };
+    req.onsuccess = function(e) { resolve(e.target.result); };
+    req.onerror   = function(e) { reject(e.target.error); };
+  });
+
+  L.TileLayer.prototype.createTile = function(coords, done) {
+    var tile = document.createElement('img');
+    tile.alt = '';
+    tile.setAttribute('role', 'presentation');
+    var url = this.getTileUrl(coords);
+
+    dbPromise.then(function(db) {
+      var req = db.transaction(STORE, 'readonly').objectStore(STORE).get(url);
+      req.onsuccess = function(e) {
+        if (e.target.result) {
+          tile.src = URL.createObjectURL(e.target.result);
+          done(null, tile);
+        } else {
+          fetch(url).then(function(res) {
+            if (!res.ok) throw new Error();
+            return res.blob();
+          }).then(function(blob) {
+            dbPromise.then(function(db) {
+              db.transaction(STORE, 'readwrite').objectStore(STORE).put(blob, url);
+            });
+            tile.src = URL.createObjectURL(blob);
+            done(null, tile);
+          }).catch(function() {
+            tile.onload  = function() { done(null, tile); };
+            tile.onerror = function(e) { done(e, tile); };
+            tile.src = url;
+          });
+        }
+      };
+      req.onerror = function() {
+        tile.onload  = function() { done(null, tile); };
+        tile.onerror = function(e) { done(e, tile); };
+        tile.src = url;
+      };
+    }).catch(function() {
+      tile.onload  = function() { done(null, tile); };
+      tile.onerror = function(e) { done(e, tile); };
+      tile.src = url;
+    });
+
+    return tile;
+  };
+
+  // Create a dedicated pane for the location marker
+  var locationPane = map.createPane('locationPane');
+  locationPane.style.zIndex = 650; // above overlayPane (400) and markerPane (600)
+
+  if (navigator.geolocation) {
+    var locationMarker = null;
+    navigator.geolocation.watchPosition(function(pos) {
+      var lat = pos.coords.latitude;
+      var lng = pos.coords.longitude;
+      if (locationMarker) {
+        locationMarker.setLatLng([lat, lng]);
+      } else {
+        locationMarker = L.circleMarker([lat, lng], {
+          pane: 'locationPane',
+          radius: 6,
+          color: 'white',
+          fillColor: 'blue',
+          fillOpacity: 1,
+          weight: 1
+        }).addTo(map).bindPopup('You are here');
+        map.setView([lat, lng], 15);
+      }
+    }, null, { enableHighAccuracy: true, maximumAge: 0 });
+  }
+
+  // Disable pointer events on the isochrone so clicks fall through to points below
+  map.eachLayer(function(layer) {
+    if (layer.options && layer.options.group === 'time to gym') {
+      if (layer._container) layer._container.style.pointerEvents = 'none';
+      layer.eachLayer && layer.eachLayer(function(l) {
+        if (l._path)      l._path.style.pointerEvents      = 'none';
+        if (l._container) l._container.style.pointerEvents = 'none';
+      });
+    }
+  });
+
+  // --- Swap CircleMarkers to geographic Circles ---
+  map.eachLayer(function(layer) {
+    if (layer instanceof L.CircleMarker && !(layer instanceof L.Circle)) {
+      var latlng = layer.getLatLng();
+      var opts   = layer.options;
+      var popup  = layer.getPopup();
+
+      var circle = L.circle(latlng, {
+        radius: 20,        // meters — adjust to taste
+        color:       opts.color,
+        fillColor:   opts.fillColor,
+        fillOpacity: opts.fillOpacity,
+        weight:      opts.weight
+      });
+
+      if (popup) circle.bindPopup(popup.getContent());
+
+      // Get house_no from GeoJSON feature properties (set by leaflet R binding)
+      var houseNo = layer.feature && layer.feature.properties && layer.feature.properties.house_no;
+      if (houseNo != null) {
+        circle.bindTooltip(String(houseNo), {
+          permanent:  true,
+          className:  'house-label',
+          direction:  'center',
+          offset:     [0, 0]
+        });
+      }
+
+      circle.addTo(map);
+      map.removeLayer(layer);
+    }
+  });
+
+  // Show house numbers only when zoomed in to ~50m scale (zoom 18)
+  function updateHouseLabels() {
+    map.getContainer().classList.toggle('show-house-labels', map.getZoom() >= 16);
+  }
+  map.on('zoomend', updateHouseLabels);
+  updateHouseLabels();
+});
+</script>
