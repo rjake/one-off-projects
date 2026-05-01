@@ -70,7 +70,11 @@ relevant_cols <-
     bldg_sqft = heated_are,
     cost_building_value = total_bldg,
     #cost_land_value = total_land,
-    cost_total_value = cost_total
+    cost_total_value = cost_total,
+    owner_far = 
+      (owner_ma_5 != phyaddr_zi) |> 
+      as.integer() |> 
+      replace_na(0)
   ) |> 
   mutate(
     price_per_foot = cost_total_value / bldg_sqft,

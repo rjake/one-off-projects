@@ -24,7 +24,8 @@ hud_rent <- # https://www.huduser.gov/portal/datasets/50per.html#year2024
     county_fips = paste0(state_code, county_code),
     hud_mean_1_br = rent_50_1,
     hud_mean_2_br = rent_50_2
-  )
+  ) |> 
+  distinct()
 
 # geo spatial
 geo_climbing_gyms <- 
@@ -179,11 +180,14 @@ subcounty_final <-
     subcounty_gym |> 
       st_drop_geometry() |> 
       select(subcounty_fips, gym_x, gym_y, gym_name, rating, n_votes)
+  ) |> 
+  left_join(
+    hud_rent,
+    relationship = "many-to-many"
   )
 
 
 subcounty_final |> 
-  #rename_all(tolower) |> 
   write_csv("county-subdivision-info.csv")
 
 
@@ -317,8 +321,8 @@ subcounty_filter <-
     #n_population > 10000,
     n_lgbt > 20,
     n_gym_10mi > 0,
-    pct_dem > 0.60,
-    pct_poverty < 0.30
+    pct_dem > 0.70,
+    #pct_poverty < 0.30
   ) |> 
   select(
     #-matches("^.$|_[xy]$"),
