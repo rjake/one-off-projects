@@ -1,0 +1,94 @@
+---
+title: Durham
+---
+
+```{r}
+setwd(dirname(.rs.api.getSourceEditorContext()$path))
+library(tidyverse)
+library(sf)
+```
+
+
+# Data Prep
+
+* topographic raster [tiff - sdd.nc.gov](https://sdd.nc.gov/DownloadFiles.aspx?path=DEMMosaicsbyCounty/DEM50_CountywideRasters)
+* biking [https://live-durhamnc.opendata.arcgis.com/search?layout=grid&q=road]
+* walking [https://live-durhamnc.opendata.arcgis.com/datasets/316348df26a04722ace983a093dc36de_5/explore?location=36.050367%2C-78.858100%2C9.67]
+* zoning [https://live-durhamnc.opendata.arcgis.com/search?q=zoning]
+* roads [https://live-durhamnc.opendata.arcgis.com/datasets/c2dc3223eae3489b914fb12552b0551d_6/explore]
+* parcels [https://live-durhamnc.opendata.arcgis.com/datasets/DurhamNC::parcels/explore?location=36.031584%2C-78.881074%2C15.20]
+* census []
+* crime [https://live-durhamnc.opendata.arcgis.com/documents/623d73fa151b4206b4467cdc1f903ed4/about]
+* street tree inventory []
+* water [https://www.census.gov/cgi-bin/geo/shapefiles/index.php?year=2024&layergroup=Water]
+* flood zones [https://live-durhamnc.opendata.arcgis.com/datasets/e3a4ecbba9f3418cbca32005786e4e68_7/explore?location=36.016695%2C-78.902899%2C14.80]
+
+* tree canopy [https://www.geoplatform.gov/metadata/7dae463c-c2d7-4faf-98b1-bf2ad7b4c020]
+
+```{r}
+library(stars)
+library(sf)
+
+tc <- read_stars("layers/DNC_Conn_tif/DNC_Conn_tif/DNC_Conn.tif")
+
+tc_sf <-
+  tc |> 
+  sf::st_set_crs(4326) |> 
+  sf::st_as_sf()
+
+ggplot() +
+  geom_sf(tc)
+
+```
+
+```{r}
+setwd(dirname(.rs.api.getSourceEditorContext()$path))
+library(tidyverse)
+library(sf)
+library(geosphere)
+
+find_within_n_miles <- function(x, y, n) {
+  st_is_within_distance(
+    x = x, 
+    y = y, 
+    dist = units::set_units(n, "miles")
+  ) |> 
+    lengths()
+}
+
+# Raw data ----
+# census
+census_county <- read_csv("sources/output/census-county-2024.csv")
+
+hud_rent <- # https://www.huduser.gov/portal/datasets/50per.html#year2024
+  read_csv("sources/input/apartment-cost/FY2024_FMR_50_county_revised.csv") |> 
+  transmute(
+    county_fips = paste0(state_code, county_code),
+    hud_mean_1_br = rent_50_1,
+    hud_mean_2_br = rent_50_2
+  ) |> 
+  distinct()
+
+# geo spatial
+geo_climbing_gyms <- 
+  read_csv("sources/output/climbing-gyms.csv") |> 
+  st_as_sf(coords = c("x", "y"), crs = 4326, remove  = FALSE) |> 
+  rename(
+    gym_x = x,
+    gym_y = y
+  )
+
+geo_routes <- 
+  read_csv("sources/output/mountain-project-popular-routes.csv") |> 
+  st_as_sf(coords = c("x", "y"), crs = 4326, remove  = FALSE)
+
+geo_subcounty <-
+  read_csv("sources/output/subcounty-geo.csv") |> 
+  st_as_sf(coords = c("x", "y"), crs = 4326, remove  = FALSE)
+
+geo_county <-
+  read_csv("sources/output/county-geo.csv") |> 
+  st_as_sf(coords = c("x", "y"), crs = 4326, remove  = FALSE)
+
+```
+

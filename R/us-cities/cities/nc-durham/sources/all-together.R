@@ -14,8 +14,10 @@ map_limits <-
     c(
       # xmin = -78.86, xmax = -78.95, 
       # ymin =  35.95, ymax =  36.00
-      xmin = -78.85, xmax = -79.10,
-      ymin =  35.90, ymax =  36.06
+      # xmin = -78.85, xmax = -79.10,
+      # ymin =  35.90, ymax =  36.06
+      xmin = -78.74, xmax = -79.10,
+      ymin =  35.81, ymax =  36.064
     ), 
     crs = st_crs(4326)
   )
@@ -28,15 +30,42 @@ property <-
   read_rds("output/sf-property-metadata.Rds") |> 
   rename(
     style = desc_built_use
+  ) |> 
+  mutate(
+    full_address =
+      full_address |>
+      str_replace_all(
+        c(
+          "\\bE\\b" = "EAST",
+          "\\bW\\b" = "WEST",
+          " HWY" = ""
+        )
+      )
   )
+
 
 iso_map <- read_rds("output/sf-isochrone-gym.Rds")
 block_groups <- read_rds("output/sf-block-groups.Rds")
 blocks <- read_rds("output/sf-blocks.Rds")
 
+# https://www.redfin.com/city/4909/NC/Durham/filter/sort=lo-days,property-type=house+other,max-price=400k,max-sqft=1.5k-sqft,min-lot-size=4.5k-sqft,viewport=36.16242:35.81573:-78.70434:-79.20216,no-outline
+redfin <- 
+  read_csv("input/realestate/redfin_2026-05-09-04-29-47.csv") |> 
+  rename_with(
+    ~str_replace(.x, "^URL.*", "url") |> tolower()
+  ) |> 
+  janitor::clean_names() |> 
+  drop_na(address) |> 
+  st_as_sf(coords = c("longitude", "latitude")) |> 
+  st_set_crs(st_crs(4326)) |> 
+  st_join(blocks, join = st_within)
+
+raw_mls <- read_csv("output/mls-clean.csv")
+
 ## csv ----
 census_block_demo <- read_csv("output/census-race-blocks.csv", col_types = c(block_geoid = "c", geoid = "c"))
 census_block_group_demo <- read_csv("output/census-demo.csv", col_types = c(geoid = "c")) 
+
 
 # Prep ----
 ## Roads ----
@@ -83,6 +112,18 @@ extra_road <-
         st_sfc(crs = 4326) # Match the CRS of your other table
     ) 
   ) |> 
+  bind_rows(
+    tibble(
+      type = "primary",
+      geometry = 
+        rbind(
+          st_point(c(-78.854, 35.976)), 
+          st_point(c(-78.837, 35.949))
+        ) |> 
+        st_linestring() |> 
+        st_sfc(crs = 4326) # Match the CRS of your other table
+    ) 
+  ) |> 
   st_as_sf()
 
 prep_roads <- 
@@ -107,11 +148,12 @@ prep_roads <-
   ) |> 
   ungroup() |> 
   st_simplify(preserveTopology = TRUE, dTolerance = 1) |>  # 1 meter
-  st_transform(crs = 4326) |>
-  st_crop(map_limits) 
+  st_transform(crs = 4326) #|> st_crop(map_limits) 
 
 
 map_roads <- mapview(prep_roads, col.regions = "black", alpha.regions = 1)
+
+map_roads
 
 # Functions ----
 my_map <- function(df, overlay_groups = NULL) {
@@ -128,43 +170,15 @@ my_map <- function(df, overlay_groups = NULL) {
     #addProviderTiles(providers$CartoDB.Positron) |> 
     setView(lng = -78.9257, lat = 35.981, zoom = 13)
 }
-# my_map <- function(df, var, fill_type = NULL, n_col = 4, ...) {
-#   #df <- neighborhood
-#   df |> 
-#     leaflet() |> 
-#     addTiles(providers$CartoDB.Positron)
-#   
-#   fill_scale <-
-#     list(
-#       c = RColorBrewer::brewer.pal(n_col, "PuBu"),
-#       d = RColorBrewer::brewer.pal(n_col, "RdBu")
-#     )
-#   df |> 
-#     leaflet()
-#   addProviderTiles(providers$CartoDB.Positron) %>%
-#     setView(lng = -0.09, lat = 51.505, zoom = 13)
-#   
-#   df |> 
-#     mapview(
-#       zcol = var, 
-#       layer.name = var,
-#       ...,
-#       col.regions = fill_scale[[fill_type]]
-#     ) +
-#     map_home
-# }
 
-export_map <- function(mv, html_name) {
+export_map <- function(x, html_name) {
+  if (inherits(x, "mapview")) {
+    use_map <- x@map
+  } else {
+    use_map <- x
+  }
   leaflet_map <-
-    mv@map |>
-  #   fitBounds(
-  #     lng1 = map_limits[["xmin"]], lat1 = map_limits[["ymin"]],
-  #     lng2 = map_limits[["xmax"]], lat2 = map_limits[["ymax"]]
-  #   ) |>
-  #   setMaxBounds(
-  #     lng1 = map_limits[["xmin"]], lat1 = map_limits[["ymin"]],
-  #     lng2 = map_limits[["xmax"]], lat2 = map_limits[["ymax"]]
-  #   ) |>
+    use_map |>
     appendContent(htmltools::HTML(paste(readLines("www/geo.html"), collapse = "\n")))
   
   htmlwidgets::saveWidget(leaflet_map, html_name, selfcontained = TRUE)
@@ -183,39 +197,6 @@ census_demo <-
     pct_black,
     pct_latino
   ) |> 
-  left_join(
-    census_block_group_demo |> 
-      select(geoid, shift_white, shift_black, est_poverty_ratio, med_hh_income)
-  ) |> 
-  left_join(blocks) |> 
-  st_as_sf() |> 
-  st_transform(crs = 4326)
-
-
-
-# Combine and create line
-census_demo |> filter(geoid == "370630006003") |> .show_n()
-
-census_demo |> 
-  ggplot(aes(x = biggest_pct, color = biggest_group)) +
-  geom_density()
-
-census_demo |> 
-  #filter(geoid == "370630006003") |> 
-  st_crop(map_limits) |> 
-  ggplot() +
-  geom_sf(aes(fill = biggest_group, alpha = biggest_pct), color = NA) +
-  geom_sf(data = prep_roads, color = "black", fill = "black") +
-  theme_void() +
-  guides()
-
-library(leaflet)
-library(scales)
-
-# 1. pre-calculate hex colors with alpha embedded
-prep_census_color <-
-  census_demo |> 
-  st_crop(map_limits) |> 
   mutate(
     # generate base colors for the groups
     base_col = case_when(
@@ -226,10 +207,33 @@ prep_census_color <-
     ),
     # combine base color with alpha (biggest_pct)
     fill_rgba = alpha(base_col, biggest_pct /100)
-  )
+  ) |> 
+  left_join(
+    census_block_group_demo |> 
+      select(geoid, shift_white, shift_black, est_poverty_ratio, med_hh_income)
+  ) |> 
+  left_join(blocks) |> 
+  st_as_sf() |> 
+  st_transform(crs = 4326)
 
+if (FALSE) {
+  census_demo |> 
+    #filter(geoid == "370630006003") |> 
+    st_crop(map_limits) |> 
+    ggplot() +
+    geom_sf(aes(fill = biggest_group, alpha = biggest_pct), color = NA) +
+    geom_sf(data = prep_roads, color = "black", fill = "black") +
+    theme_void() +
+    guides()
+  
+}
+
+library(leaflet)
+library(scales)
+
+# 1. pre-calculate hex colors with alpha embedded
 popup_strings <- 
-  prep_census_color |> 
+  census_demo |> 
   select(
     -c(base_col, fill_rgba),
     -one_of("popup_text")
@@ -243,13 +247,13 @@ popup_strings <-
   })
 
 # 2. convert to a list of individual HTML objects
-prep_census_color$popup_text <- map_chr(popup_strings, HTML) |> unname()
+census_demo$popup_text <- map_chr(popup_strings, HTML) |> unname()
 
 # 2. build the leaflet map
 leaflet() |> 
   addProviderTiles("CartoDB.Positron") |> 
   addPolygons(
-    data = prep_census_color,
+    data = census_demo,
     fillColor = ~fill_rgba,
     fillOpacity = 1, # use 1 because transparency is now baked into the hex code
     weight = 0,
@@ -275,30 +279,6 @@ leaflet() |>
 
 export_map(.Last.value, html_name = "output/race-group.html")
 
-
-census_demo |> 
-  #st_crop(map_limits) |> 
-  mapview( 
-    zcol = "biggest_group", 
-    alpha.regions = census_demo$biggest_pct/100, 
-    layer.name = "census demographics",
-    lwd = 0
-  ) + 
-  mapview(
-    prep_roads, 
-    #color = "black", 
-    alpha.regions = 1,
-    col.regions = "black", 
-    layer.name = "roads"
-  )
-  # scale_fill_manual(
-  #   values = c(
-  #     "asian" = "purple",
-  #     "black",
-  #     "latino",
-  #     "white"
-  #   )
-  # )
 
 # Map Features ----
 ## points of interest ----
@@ -342,11 +322,10 @@ neighborhood <-
 
 ## crop_census ----
 crop_census <-
-  census <- 
-  census_demo |> 
+  census_demo# |> 
   #filter(geoid  |> str_detect("37063000600")) |> 
-  #filter(cat == "other") |> 
-  st_crop(map_limits) 
+  #filter(cat == "other") #|> 
+  #st_crop(map_limits) 
 
 
 block_housing_price <-
@@ -446,16 +425,6 @@ census_metrics |> mapview(zcol = "cat", layer.name = "x")
 
 census_metrics |> 
   filter(str_detect(block_geoid, "37063000600")) |> 
-  # my_map(
-  #   overlay_groups = "x"
-  # ) |> 
-  # leaflet::addPolygons(
-  #   group = "x",
-  #   color = "white",
-  #   weight = 0.5,
-  #   opacity = 1,
-  #   fillColor = "blue"
-  # )
   mapview(zcol = "housing_p25", layer.name = "p25")
 
 ## demo_colors ----
@@ -523,10 +492,6 @@ if (FALSE) {
     )
 }
 
-
-
-map_roads
-
 map_census +
   map_roads +
   map_home
@@ -578,24 +543,13 @@ ideal_property <-
       ideal_ind == 1 & owner_far == 1 & years_owned > 5
   )
       
-ggplot() +
-  stat_summary_hex(
-    data = ideal_property,
-    aes(x, y, z = eligible_ind),
-    fun = sum, bins = 20
-  ) +
-  scale_fill_binned(type = "viridis", n.breaks = 7)
-
-# 
-# library(ggmap)
-# # basemap <- get_map(location = c(lon = -78.9, lat = 35.97), zoom = 12, maptype = 'roadmap')
-# ggmap(basemap) +
+# ggplot() +
 #   stat_summary_hex(
-#     data = ideal_property |> filter(ideal_ind == 1),
-#     aes(x, y, z = ideal_ind),
-#     fun = sum, bins = 20, alpha = 0.5
+#     data = ideal_property,
+#     aes(x, y, z = eligible_ind),
+#     fun = sum, bins = 20
 #   ) +
-#   scale_fill_binned(type = "viridis", n.breaks = 4)
+#   scale_fill_binned(type = "viridis", n.breaks = 7)
 
 ideal_property_sf <-
   ideal_property |> 
@@ -606,8 +560,13 @@ ideal_property_sf <-
 
 prep_map <-
   ideal_property_sf |> 
+  inner_join(
+    raw_mls |>
+      select(parcel_id, mls_number, list_price, status)
+  ) |> 
   select(
     parcel_id,
+    mls_number, list_price, status,
     geoid,
     cat,
     #pct_black,
@@ -662,8 +621,7 @@ mapviewOptions(
 
 
 
- 
-local_geoid <-
+ local_geoid <-
   block_groups |> 
   filter(
     as.logical(
@@ -687,20 +645,19 @@ property$improvement_ratio[property$f_of_bedrooms == 2] |>
 ideal_only <-
   prep_map |>
   #filter(geoid %in% local_geoid) |> 
-  #filter(geoid |> str_detect("3706300060")) |> 
+  # filter(geoid |> str_detect("3706300060")) |>
   mutate(
     ideal_ind = (
-      between(cost_total_value, 200000, 400000)
-      & between(acreage, 0.15, 0.3)
-      & between(bldg_sqft, 900, 1500)
-      #& f_of_bedrooms == 2
-      & block_geoid %in% ideal_areas$block_geoid
-      & replace_na(actual_year_built, 1900) < 1990
+      block_geoid %in% ideal_areas$block_geoid
+      # & between(cost_total_value, 200000, 400000)
+      & acreage>= 0.15
+      # & between(bldg_sqft, 900, 1500)
+      # & replace_na(actual_year_built, 1900) < 1990
     )
-  ) |> 
-  filter(
-    ideal_ind == 1
-  ) |> 
+  ) |>
+  # filter(
+  #   ideal_ind == 1
+  # ) |>
   mutate(
     month_bought = month(deed_date),
     type_abbr = 
@@ -718,18 +675,20 @@ ideal_only <-
 
 
 ideal_only |> 
-  filter(
-    (
-      # between(years_owned, 5, 8)
-      # | 
-        years_owned > 20
-    )
-  ) |> 
+  # filter(
+  #   (
+  #     # between(years_owned, 5, 8)
+  #     # | 
+  #       years_owned > 20
+  #   )
+  # ) |> 
   # filter(
   #   geoid %in% local_geoid
   # ) |> 
   #filter(eligible_ind == 1) |> 
   select(
+    #mls_number, list_price, status,
+    cost_total_value,
     deed_date, 
     age_color,
     years_owned, 
@@ -740,24 +699,26 @@ ideal_only |>
     bldg_sqft, 
     acreage,
     f_of_bedrooms,
-    zillow, 
+    # zillow, 
+    google,
     style
   ) |> 
   mapview(
-    zcol = "owner_far",
-    layer.name = "owner-far",
-    col.regions =  c("#944500", "#007094")
+    zcol = "cost_total_value",
+    alpha.regions = 1,
+    layer.name = "cost_total_value"#,col.regions =  c("#944500", "#007094")
   ) +
   mapview(
     points_of_interest,
     color = "black", 
+    cex = 4,
     alpha.regions = 1,
     col.regions = "orange"
   )
 
 
 m_ideal_only <- .Last.value
-export_map(m_ideal_only, "output/older-homes.html")
+export_map(m_ideal_only, "output/expired-homes.html")
 
 #my_neighborhood <- .Last.value
 # export_map(my_neighborhood, "output/my-neighborhood.html")
@@ -803,11 +764,11 @@ prep_map |>
   filter(
     ideal_ind == 1,
     !str_detect(cat, "gent|pov|black"),
-    cost_total_value > 200000
+    #cost_total_value > 200000
     #between(years_owned, 5, 7) | 
     #  years_owned > 20
   ) |> 
-  st_crop(map_limits) |> 
+  #st_crop(map_limits) |> 
   mapview(
     zcol = "cost_total_value",
     #zcol = "cat",
@@ -821,7 +782,7 @@ census_demo |> filter(geoid == "370630006003") |> .show_n()
 
 iso_map |> 
   filter(isomax <= 20) |> 
-  st_crop(map_limits) |> 
+  #st_crop(map_limits) |> 
   mapview(
     alpha.regions = 0,#0.25,
     color = "orange",
@@ -832,14 +793,49 @@ iso_map |>
   )
 
 map_iso <- .Last.value
+
+prep_redfin <-
+  redfin |> 
+  st_join(
+    census_metrics |> select(biggest_group, shift_white, est_poverty_ratio, cat), 
+    join = st_within
+  ) |>
+  filter(
+    is.na(cat) | str_detect(cat, "other|high income") | favorite == "Y",
+    interested == "Y"
+  ) |> 
+  mutate(
+    url = glue('<a href="{url}" target="_blank">{address}</a>')
+  ) |> 
+  select(
+    url,
+    cat,
+    price,
+    favorite,
+    square_feet,
+    lot_size,
+    year_built,
+    days_on_market,
+    hoa_month,
+    biggest_group, shift_white, est_poverty_ratio
+  ) |> 
+  relocate(
+    geometry, .after = everything()
+  )
+
+mapview(prep_redfin, zcol = "price", layer.name = "redfin - favorite", alpha.regions = 1)
+map_redfin <- .Last.value
+
 map_census +
   map_roads +
   map_iso +
-  m
+  map_home +
+  map_redfin
+  
 
 full_map <- .Last.value
-full_map@map |> leaflet::setView(lng = -78.915, lat = 35.97, zoom = 12)
-export_map(full_map, "output/my-map.html")
+#full_map@map |> leaflet::setView(lng = -78.915, lat = 35.97, zoom = 12)
+export_map(.Last.value, "output/my-map.html")
 
 
 relevant_data |> 

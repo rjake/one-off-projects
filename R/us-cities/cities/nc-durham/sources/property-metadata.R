@@ -11,7 +11,7 @@ raw_parcel_info <-
   rename(neighborhood = NEIGHBORHO) |> 
   rename_all(tolower) |> 
   filter(
-    land_class == "RES/ 1-FAMILY",
+    #land_class == "RES/ 1-FAMILY",
     city == "DURHAM"
   )
 
@@ -47,12 +47,6 @@ relevant_data <-
   raw_parcel_info |> 
   st_transform(crs = st_crs(4326))
 
-relevant_cols |> 
-  st_drop_geometry() |> 
-  select(
-    where(is.numeric)
-  ) |> 
-  head()
 
 relevant_cols <-
   relevant_data |> 
@@ -61,6 +55,7 @@ relevant_cols <-
     parcel_ref = as.numeric(reid),
     address = paste(phyaddr_st, phyaddr__1),
     full_address = paste(location_a),
+    zip = phyaddr_zi,
     neighborhood,
     land_class = land_class,
     deed_date = ymd(deed_date),
@@ -89,11 +84,23 @@ relevant_cols |>
   select(
     where(is.numeric)
   ) |> 
+  head()
+
+relevant_cols |> 
+  st_drop_geometry() |> 
+  select(
+    where(is.numeric)
+  ) |> 
   head(15) |> 
   arrange(desc(bldg_sqft))
 
 as_points <-
-  relevant_cols |> 
+  relevant_cols |>
+  mutate(
+    .after = parcel_ref,
+    street_no = str_extract(full_address, "^[^ ]+"),
+    street_name = str_remove(full_address, "^[^ ]+ ")
+  ) |> 
   st_centroid() %>%
   mutate(
     x = st_coordinates(.)[,1],
@@ -101,6 +108,10 @@ as_points <-
   ) |> 
   st_drop_geometry() |> 
   as_tibble()
+
+saveRDS(as_points, "output/parcel-metadata.Rds")
+
+
 
 
 parcel_cols <-
@@ -115,6 +126,7 @@ property_cols <-
     street_no = street,
     street_name,
     address = paste(street, street_name),
+    style = desc_built_use,
     craftsmanship = state_of_repair_code
   ) |>
   relocate(property_id, address, street_no, street_name) |> 
@@ -155,7 +167,18 @@ join_all_metadata <-
   parcel_cols |> 
   select(-n_address) |> 
   left_join(parcel_xref) |> 
-  left_join(property_cols |> select(-c(address, n_address))) |> 
+  #slice(16307)
+  left_join({
+    property_cols |> 
+      select(
+        parcel_ref, 
+        address,
+        property_id,
+        actual_year_built,
+        style,
+        craftsmanship
+      ) 
+  }) |> 
   mutate(
     .after = parcel_ref,
     extra_metadata_ind = as.integer(!is.na(property_id)) 
