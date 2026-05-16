@@ -9,6 +9,7 @@ blocks <- read_rds("output/sf-blocks.Rds")
 raw_parcel_info <-
   st_read("input/Parcels/Parcels_NEW.shp") |> 
   rename(neighborhood = NEIGHBORHO) |> 
+  #read_csv("input/Parcels_NEW_4547873805091360708.csv") |> 
   rename_all(tolower) |> 
   filter(
     #land_class == "RES/ 1-FAMILY",
@@ -42,19 +43,21 @@ raw_property_info <-
   ) |> 
   janitor::clean_names()
   
-
-relevant_data <-
-  raw_parcel_info |> 
-  st_transform(crs = st_crs(4326))
-
-
 relevant_cols <-
-  relevant_data |> 
+  raw_parcel_info |> 
+  #head(100) |> 
+  filter(
+    str_detect(land_class, "RES"),
+    location_a != "0 NO ADDRESS"
+  ) |> 
   transmute(
     parcel_id = objectid_1,
     parcel_ref = as.numeric(reid),
-    address = paste(phyaddr_st, phyaddr__1),
-    full_address = paste(location_a),
+    #x, y,
+    street_no = str_extract(location_a, "^\\w+"),
+    street_name = str_remove(location_a, "^\\w+ "),
+    address = location_a,
+    full_address = paste0(location_a, ", DURHAM, NC, ", phyaddr_zi),
     zip = phyaddr_zi,
     neighborhood,
     land_class = land_class,
@@ -63,60 +66,76 @@ relevant_cols <-
     deed_month = month(deed_date),
     acreage,
     bldg_sqft = heated_are,
-    cost_building_value = total_bldg,
-    #cost_land_value = total_land,
     cost_total_value = cost_total,
+    cost_building_value = replace_na(total_bldg, 0),
     owner_far = 
       (owner_ma_5 != phyaddr_zi) |> 
       as.integer() |> 
-      replace_na(0)
-  ) |> 
-  mutate(
+      replace_na(0),
     price_per_foot = cost_total_value / bldg_sqft,
     bldg_val_per_foot = cost_building_value / bldg_sqft,
     # Improvement Ratio: < 0.3 often means the house is a liability/tear-down
-    improvement_ratio = cost_building_value / cost_total_value
-  ) |> 
-  relocate(geometry, .after = everything())
+    improvement_ratio = cost_building_value / cost_total_value,
+    geometry
+  ) 
 
-relevant_cols |> 
-  st_drop_geometry() |> 
-  select(
-    where(is.numeric)
-  ) |> 
-  head()
-
-relevant_cols |> 
-  st_drop_geometry() |> 
-  select(
-    where(is.numeric)
-  ) |> 
-  head(15) |> 
-  arrange(desc(bldg_sqft))
-
-as_points <-
-  relevant_cols |>
-  mutate(
-    .after = parcel_ref,
-    street_no = str_extract(full_address, "^[^ ]+"),
-    street_name = str_remove(full_address, "^[^ ]+ ")
-  ) |> 
+parcel_as_points <-
+  relevant_cols |> 
+  st_transform(crs = 4326) |> 
+  st_make_valid() |> 
   st_centroid() %>%
   mutate(
     x = st_coordinates(.)[,1],
     y  = st_coordinates(.)[,2]
-  ) |> 
+  )
+
+parcel_as_points |> 
+  head(15) |> 
+  select(where(is.numeric)) |> 
+  arrange(desc(bldg_sqft))
+
+saveRDS(parcel_as_points, "output/parcel-metadata.Rds")
+
+
+parcel_as_points |> 
   st_drop_geometry() |> 
-  as_tibble()
-
-saveRDS(as_points, "output/parcel-metadata.Rds")
-
-
-
+  as_tibble() |> 
+  filter(
+    .by = address,
+    n() > 1
+  ) |> 
+  summarise(
+    .by = address,
+    n = n(),
+    classes = unique(land_class) |> sort() |> paste(collapse = "; ")
+  ) |> 
+  view()
 
 parcel_cols <-
-  as_points |> 
+  parcel_as_points |> 
+  as_tibble() |> 
+  filter(
+    street_no != 0
+  ) |> 
+  add_count(address, name = "n_address") |> 
+  filter(
+    neighborhood != "DUKE TOWER CONDOS",
+    !str_detect(land_class, "^(COM|IND|PRESENT|VAC)")
+  ) |> 
+  filter(
+    .by = address,
+    max(
+      str_detect(land_class, "CONDO|TWNH|RES/LT|RES/ LOT")
+    ) == FALSE
+  ) |> 
+  filter(
+    .by = address,
+    cost_total_value == max(cost_total_value)
+  ) |> 
   add_count(address, name = "n_address")
+
+parcel_cols$n_address |> table()
+
 
 property_cols <-
   raw_property_info |>
@@ -184,14 +203,11 @@ join_all_metadata <-
     extra_metadata_ind = as.integer(!is.na(property_id)) 
   ) |> 
   relocate(property_id, .after = parcel_ref) |> 
-  left_join(
-    relevant_cols |> select(parcel_id, geometry)
-  ) |> 
-  st_as_sf()
+  relocate(geometry, .after = everything())
 
 property_metadata <-
   join_all_metadata |> 
-  # st_transform(crs = 4326) |> 
+  st_as_sf() |> 
   st_join(blocks, join = st_within) |>
   relocate(
     geometry, .after = everything()

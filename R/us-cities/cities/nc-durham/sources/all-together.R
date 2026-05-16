@@ -12,12 +12,9 @@ setwd(dirname(.rs.api.getSourceEditorContext()$path))
 map_limits <- 
   st_bbox(
     c(
-      # xmin = -78.86, xmax = -78.95, 
-      # ymin =  35.95, ymax =  36.00
-      # xmin = -78.85, xmax = -79.10,
-      # ymin =  35.90, ymax =  36.06
-      xmin = -78.74, xmax = -79.10,
-      ymin =  35.81, ymax =  36.064
+      # xmin = -78.86, xmax = -78.95, ymin =  35.95, ymax =  36.00
+      # xmin = -78.85, xmax = -79.10, ymin =  35.90, ymax =  36.06
+      xmin = -79.01, xmax = -78.82, ymin =  35.89, ymax =  36.064
     ), 
     crs = st_crs(4326)
   )
@@ -28,9 +25,6 @@ map_limits <-
 roads <- read_rds("output/roads.Rds")
 property <- 
   read_rds("output/sf-property-metadata.Rds") |> 
-  rename(
-    style = desc_built_use
-  ) |> 
   mutate(
     full_address =
       full_address |>
@@ -49,18 +43,34 @@ block_groups <- read_rds("output/sf-block-groups.Rds")
 blocks <- read_rds("output/sf-blocks.Rds")
 
 # https://www.redfin.com/city/4909/NC/Durham/filter/sort=lo-days,property-type=house+other,max-price=400k,max-sqft=1.5k-sqft,min-lot-size=4.5k-sqft,viewport=36.16242:35.81573:-78.70434:-79.20216,no-outline
-redfin <- 
-  read_csv("input/realestate/redfin_2026-05-09-04-29-47.csv") |> 
-  rename_with(
-    ~str_replace(.x, "^URL.*", "url") |> tolower()
-  ) |> 
-  janitor::clean_names() |> 
-  drop_na(address) |> 
-  st_as_sf(coords = c("longitude", "latitude")) |> 
-  st_set_crs(st_crs(4326)) |> 
-  st_join(blocks, join = st_within)
+# redfin <- 
+#   read_csv("input/realestate/redfin_2026-05-09-04-29-47.csv") |> 
+#   rename_with(
+#     ~str_replace(.x, "^URL.*", "url") |> tolower()
+#   ) |> 
+#   janitor::clean_names() |> 
+#   drop_na(address) |> 
+#   st_as_sf(coords = c("longitude", "latitude")) |> 
+#   st_set_crs(st_crs(4326)) |> 
+#   st_join(blocks, join = st_within)
 
-raw_mls <- read_csv("output/mls-clean.csv")
+
+encode_img <- function(path, width = 200) {
+  if (!file.exists(path)) return('<i>No photo available</i>')
+  ext <- tools::file_ext(path)
+  uri <- str_c("data:image/", ext, ";base64,", base64enc::base64encode(path))
+  str_glue('<img src="{uri}" width="{width}">')
+}
+
+raw_mls <- 
+  read_csv("output/mls-clean.csv") |> 
+  mutate(
+    photo_path = str_c("input/realestate/photos/", mls_number, ".jpg"),
+    popup_html = str_c(
+      str_glue("<b>{mls_number}</b><br>"),
+      map_chr(photo_path, encode_img)
+    )
+  )
 
 ## csv ----
 census_block_demo <- read_csv("output/census-race-blocks.csv", col_types = c(block_geoid = "c", geoid = "c"))
@@ -148,7 +158,24 @@ prep_roads <-
   ) |> 
   ungroup() |> 
   st_simplify(preserveTopology = TRUE, dTolerance = 1) |>  # 1 meter
-  st_transform(crs = 4326) #|> st_crop(map_limits) 
+  st_transform(crs = 4326) |> 
+  st_crop(map_limits) 
+
+mapviewOptions(
+  # see examples: https://leaflet-extras.github.io/leaflet-providers/preview/
+  basemaps = 
+    c(
+      #"Thunderforest.Transport",
+      #"Thunderforest.MobileAtlas",
+      #"Jawg.Streets",
+      #"Stadia.StamenToner"
+      "CartoDB.Positron", 
+      "OpenStreetMap",
+      "USGS.USImagery",
+      "Esri.WorldImagery",
+      "OpenTopoMap"
+    )
+)
 
 
 map_roads <- mapview(prep_roads, col.regions = "black", alpha.regions = 1)
@@ -214,7 +241,8 @@ census_demo <-
   ) |> 
   left_join(blocks) |> 
   st_as_sf() |> 
-  st_transform(crs = 4326)
+  st_transform(crs = 4326) |> 
+  st_crop(map_limits)
 
 if (FALSE) {
   census_demo |> 
@@ -322,10 +350,10 @@ neighborhood <-
 
 ## crop_census ----
 crop_census <-
-  census_demo# |> 
+  census_demo |> 
   #filter(geoid  |> str_detect("37063000600")) |> 
   #filter(cat == "other") #|> 
-  #st_crop(map_limits) 
+  st_crop(map_limits) 
 
 
 block_housing_price <-
@@ -352,7 +380,7 @@ block_housing_price <-
 
 
 census_metrics <-
-  crop_census |> 
+  census_demo |> 
   #filter(block_geoid == "370630017054002") |> 
   left_join(
     block_housing_price |> select(block_geoid, housing_p25, housing_med)
@@ -381,7 +409,7 @@ census_metrics <-
       )
   )
 
-mapview(census_metrics, zcol = "cat")# + map_roads + map_home
+#mapview(census_metrics, zcol = "cat")# + map_roads + map_home
 #mapview(census_metrics, zcol = "housing_stability") + map_home
 
 #census_metrics |> st_drop_geometry() |>  count(housing_stability, cat)
@@ -402,7 +430,7 @@ mapview(census_metrics, zcol = "cat")# + map_roads + map_home
   #   )
   # )
 
-census_metrics |> mapview(zcol = "cat", layer.name = "x")
+#census_metrics |> mapview(zcol = "cat", layer.name = "x")
 
   # mutate(
   #   gentrifying = 
@@ -423,9 +451,9 @@ census_metrics |> mapview(zcol = "cat", layer.name = "x")
   #     )
   # )
 
-census_metrics |> 
-  filter(str_detect(block_geoid, "37063000600")) |> 
-  mapview(zcol = "housing_p25", layer.name = "p25")
+# census_metrics |> 
+#   filter(str_detect(block_geoid, "37063000600")) |> 
+#   mapview(zcol = "housing_p25", layer.name = "p25")
 
 ## demo_colors ----
 demo_colors <- 
@@ -453,6 +481,7 @@ demo_colors <-
 
 ## > map_census ----
 census_metrics |> 
+  select(-popup_text) |> 
   #filter(str_detect(block_geoid, "37063000600|3706300130")) |>
   mapView(
     zcol = "cat", 
@@ -522,7 +551,7 @@ ideal_areas <-
     !str_detect(cat, "gentrif|hist|poverty") 
   )
 
-mapview(ideal_areas)
+# mapview(ideal_areas)
 
 ideal_property <-
   property_metrics |> 
@@ -562,7 +591,7 @@ prep_map <-
   ideal_property_sf |> 
   inner_join(
     raw_mls |>
-      select(parcel_id, mls_number, list_price, status)
+      select(parcel_id, mls_number, list_price, status, popup_html)
   ) |> 
   select(
     parcel_id,
@@ -576,10 +605,10 @@ prep_map <-
     #gentrification_shift,
     neighborhood,
     address = full_address,
+    zip,
     cost_total_value,
     deed_date,
     years_owned,
-    f_of_bedrooms,
     craftsmanship,
     bldg_sqft,
     style,
@@ -587,7 +616,8 @@ prep_map <-
     actual_year_built,
     bldg_age,
     owner_far,
-    block_geoid
+    block_geoid,
+    popup_html
   ) |> 
   mutate(
     neighborhood = str_trunc(neighborhood, 20),
@@ -603,25 +633,8 @@ prep_map <-
       )    
   )
 
-mapviewOptions(
-  # see examples: https://leaflet-extras.github.io/leaflet-providers/preview/
-  basemaps = 
-    c(
-      #"Thunderforest.Transport",
-      #"Thunderforest.MobileAtlas",
-      #"Jawg.Streets",
-      #"Stadia.StamenToner"
-      "CartoDB.Positron", 
-      "OpenStreetMap",
-      "Esri.WorldImagery",
-      "OpenTopoMap"
-    )
-)
 
-
-
-
- local_geoid <-
+local_geoid <-
   block_groups |> 
   filter(
     as.logical(
@@ -638,12 +651,15 @@ mapviewOptions(
   pull(geoid)
 #mapview(legend = FALSE)
 
-# breakdown of sqft by # of rooms
-property$improvement_ratio[property$f_of_bedrooms == 2] |> 
-  quantile(1:10/10, na.rm = TRUE)
-
 ideal_only <-
   prep_map |>
+  filter(
+    !mls_number %in% c(
+      # from google sheet where grade == X
+      #data.table::fread("") |> pull(V1) |> glue_collapse(", ")
+      626698, 629343, 637296, 650408, 661312, 687877, 718175, 718485, 718820, 721502, 730262, 733489, 768936, 776086, 857743, 874763, 876333, 957076, 983902, 1003391, 1607434, 1667497, 1703623, 1792502, 1815244, 1931988, 1942221, 2195618, 2288167, 2326380, 2331663, 2373314, 10101390, 10145359
+    ) 
+  ) |> 
   #filter(geoid %in% local_geoid) |> 
   # filter(geoid |> str_detect("3706300060")) |>
   mutate(
@@ -672,53 +688,40 @@ ideal_only <-
   )
 
 
-
-
 ideal_only |> 
-  # filter(
-  #   (
-  #     # between(years_owned, 5, 8)
-  #     # | 
-  #       years_owned > 20
-  #   )
-  # ) |> 
-  # filter(
-  #   geoid %in% local_geoid
-  # ) |> 
-  #filter(eligible_ind == 1) |> 
   select(
-    #mls_number, list_price, status,
+    mls_number, list_price, status,
     cost_total_value,
-    deed_date, 
-    age_color,
+    #deed_date, 
+    #age_color,
     years_owned, 
     owner_far,
     cost_total_value, 
-    house_no,
-    address,
+    #house_no,
+    #address,
     bldg_sqft, 
     acreage,
-    f_of_bedrooms,
     # zillow, 
     google,
-    style
+    zip,
+    style,
+    popup_html
   ) |> 
   mapview(
-    zcol = "cost_total_value",
+    zcol = "owner_far",
     alpha.regions = 1,
-    layer.name = "cost_total_value"#,col.regions =  c("#944500", "#007094")
-  ) +
-  mapview(
-    points_of_interest,
-    color = "black", 
-    cex = 4,
-    alpha.regions = 1,
-    col.regions = "orange"
+    layer.name = "owner_far",
+    col.regions =  c("#944500", "#007094")
+    # ,
+    # popup = ideal_only$popup_html |> map(htmltools::HTML)
+      # leafpop::popupImage(
+      #   ideal_only$popup_html |> map(htmltools::HTML),
+      #   src = "local"
+      # )
   )
 
-
-m_ideal_only <- .Last.value
-export_map(m_ideal_only, "output/expired-homes.html")
+m_mls <- .Last.value
+export_map(m_mls, "output/expired-homes.html")
 
 #my_neighborhood <- .Last.value
 # export_map(my_neighborhood, "output/my-neighborhood.html")
@@ -758,31 +761,31 @@ ideal_property |>
   geom_col() +facet_grid(rows = "deed_year")
 
 
-prep_map |>
-  # filter(geoid == "370630006003") |> 
-  #filter(cost_total_value < 400000) |>   
-  filter(
-    ideal_ind == 1,
-    !str_detect(cat, "gent|pov|black"),
-    #cost_total_value > 200000
-    #between(years_owned, 5, 7) | 
-    #  years_owned > 20
-  ) |> 
-  #st_crop(map_limits) |> 
-  mapview(
-    zcol = "cost_total_value",
-    #zcol = "cat",
-    layer.name = "cost_total_value"    
-  ) +
-  map_home
+# prep_map |>
+#   # filter(geoid == "370630006003") |> 
+#   #filter(cost_total_value < 400000) |>   
+#   filter(
+#     # ideal_ind == 1,
+#     #!str_detect(cat, "gent|pov|black"),
+#     #cost_total_value > 200000
+#     #between(years_owned, 5, 7) | 
+#     #  years_owned > 20
+#   ) |> 
+#   st_crop(map_limits) |> 
+#   mapview(
+#     zcol = "cost_total_value",
+#     #zcol = "cat",
+#     layer.name = "cost_total_value"    
+#   ) +
+#   map_home
 
-m <- .Last.value
-map_census + m
-census_demo |> filter(geoid == "370630006003") |> .show_n()
+#m <- .Last.value
+#map_census + m
+#census_demo |> filter(geoid == "370630006003") |> .show_n()
 
 iso_map |> 
   filter(isomax <= 20) |> 
-  #st_crop(map_limits) |> 
+  st_crop(map_limits) |> 
   mapview(
     alpha.regions = 0,#0.25,
     color = "orange",
@@ -793,6 +796,35 @@ iso_map |>
   )
 
 map_iso <- .Last.value
+
+map_census + 
+  map_roads +
+  m_mls + 
+  map_home +
+  map_iso
+
+export_map(.Last.value, "output/my-map.html")
+
+
+
+relevant_data |> 
+  filter(phyaddr_zi == "27517") |>
+  select(phyaddr_zi) |> 
+  plot()
+
+# NOTES #######################
+## * craftsmanship / state_of_repair ----
+"
+The hierarchy typically follows this pattern from highest to lowest quality:
+XX / XX-: Excellent+ / Custom Luxury. These are exceptionally high-end, custom-built homes with premium materials (e.g., heavy slate roofs, extensive masonry, high-end architectural details).
+X / X+ / X-: Extra / Luxury. Higher than 'A' grade, these properties feature superior construction and many custom architectural features.
+A+ / A / A-: Excellent. High-quality construction, often seen in upscale developments or high-end custom homes.
+B+ / B / B-: Good. Better than average materials and workmanship. This is common in many modern professional subdivisions.
+C+ / C / C-: Average. The standard for most mass-produced or 'tract' housing. 'C' represents the base level for average construction quality in the region.
+D+ / D / D-: Below Average / Fair. Economy-grade construction with basic materials and little to no architectural detail.
+E+ / E: Poor. Minimal construction quality, often associated with very old or basic utility structures. 
+"
+
 
 prep_redfin <-
   redfin |> 
@@ -829,29 +861,9 @@ map_redfin <- .Last.value
 map_census +
   map_roads +
   map_iso +
-  map_home +
-  map_redfin
-  
+  map_home + map_redfin
+
 
 full_map <- .Last.value
 #full_map@map |> leaflet::setView(lng = -78.915, lat = 35.97, zoom = 12)
 export_map(.Last.value, "output/my-map.html")
-
-
-relevant_data |> 
-  filter(phyaddr_zi == "27517") |>
-  select(phyaddr_zi) |> 
-  plot()
-
-# NOTES #######################
-## * craftsmanship / state_of_repair ----
-"
-The hierarchy typically follows this pattern from highest to lowest quality:
-XX / XX-: Excellent+ / Custom Luxury. These are exceptionally high-end, custom-built homes with premium materials (e.g., heavy slate roofs, extensive masonry, high-end architectural details).
-X / X+ / X-: Extra / Luxury. Higher than 'A' grade, these properties feature superior construction and many custom architectural features.
-A+ / A / A-: Excellent. High-quality construction, often seen in upscale developments or high-end custom homes.
-B+ / B / B-: Good. Better than average materials and workmanship. This is common in many modern professional subdivisions.
-C+ / C / C-: Average. The standard for most mass-produced or 'tract' housing. 'C' represents the base level for average construction quality in the region.
-D+ / D / D-: Below Average / Fair. Economy-grade construction with basic materials and little to no architectural detail.
-E+ / E: Poor. Minimal construction quality, often associated with very old or basic utility structures. 
-"
