@@ -113,13 +113,14 @@ parcel_as_points |>
 
 parcel_cols <-
   parcel_as_points |> 
+  #filter(str_detect(address, '1616 PEACE')) |> 
   as_tibble() |> 
   filter(
     street_no != 0
   ) |> 
   add_count(address, name = "n_address") |> 
   filter(
-    neighborhood != "DUKE TOWER CONDOS",
+    coalesce(neighborhood, "") != "DUKE TOWER CONDOS",
     !str_detect(land_class, "^(COM|IND|PRESENT|VAC)")
   ) |> 
   filter(
@@ -184,8 +185,9 @@ parcel_xref <-
 
 join_all_metadata <-
   parcel_cols |> 
-  select(-n_address) |> 
-  left_join(parcel_xref) |> 
+  select(-n_address) |>
+  # left_join()
+  # left_join(parcel_xref) |> 
   #slice(16307)
   left_join({
     property_cols |> 

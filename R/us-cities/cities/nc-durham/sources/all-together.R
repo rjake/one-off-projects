@@ -359,7 +359,10 @@ crop_census <-
 block_housing_price <-
   property |> 
   st_drop_geometry() |> 
-  filter(cost_total_value > 0 & bldg_sqft > 0) |> 
+  mutate(
+    cost_total_value = na_if(cost_total_value, 0),
+    bldg_sqft = na_if(bldg_sqft, 0)
+  ) |> 
   summarize(
     .by = block_geoid,
     x = mean(x),
@@ -378,6 +381,10 @@ block_housing_price <-
     pct_land_heavy = mean(improvement_ratio < 0.3, na.rm = TRUE)
   )
 
+block_housing_price |> 
+  inner_join(blocks) |> 
+  st_as_sf() |> 
+  mapview(zcol = "housing_p25")
 
 census_metrics <-
   census_demo |> 
@@ -451,9 +458,11 @@ census_metrics <-
   #     )
   # )
 
-# census_metrics |> 
-#   filter(str_detect(block_geoid, "37063000600")) |> 
-#   mapview(zcol = "housing_p25", layer.name = "p25")
+census_metrics |>
+  select(-popup_text) |>
+  filter(housing_p25 < 1e6) |> 
+  #filter(str_detect(geoid, "37063000200")) |>
+  mapview(zcol = "housing_p25", layer.name = "p25")
 
 ## demo_colors ----
 demo_colors <- 
