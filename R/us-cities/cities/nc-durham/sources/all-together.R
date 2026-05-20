@@ -260,22 +260,22 @@ library(leaflet)
 library(scales)
 
 # 1. pre-calculate hex colors with alpha embedded
-popup_strings <- 
-  census_demo |> 
-  select(
-    -c(base_col, fill_rgba),
-    -one_of("popup_text")
-  ) |> 
-  st_drop_geometry() |> 
-  apply(1, function(x) {
-    paste0(
-      "<b>", names(x), ":</b> ", as.character(x), 
-      collapse = "<br/>"
-    )
-  })
+# popup_strings <- 
+#   census_demo |> 
+#   select(
+#     -c(base_col, fill_rgba),
+#     -one_of("popup_text")
+#   ) |> 
+#   st_drop_geometry() |> 
+#   apply(1, function(x) {
+#     paste0(
+#       "<b>", names(x), ":</b> ", as.character(x), 
+#       collapse = "<br/>"
+#     )
+#   })
 
 # 2. convert to a list of individual HTML objects
-census_demo$popup_text <- map_chr(popup_strings, HTML) |> unname()
+# census_demo$popup_text <- map_chr(popup_strings, HTML) |> unname()
 
 # 2. build the leaflet map
 leaflet() |> 
@@ -285,7 +285,7 @@ leaflet() |>
     fillColor = ~fill_rgba,
     fillOpacity = 1, # use 1 because transparency is now baked into the hex code
     weight = 0,
-    popup = ~popup_text,
+    #popup = ~popup_text,
     group = "demo"
   ) |> 
   addPolygons(
@@ -381,10 +381,6 @@ block_housing_price <-
     pct_land_heavy = mean(improvement_ratio < 0.3, na.rm = TRUE)
   )
 
-block_housing_price |> 
-  inner_join(blocks) |> 
-  st_as_sf() |> 
-  mapview(zcol = "housing_p25")
 
 census_metrics <-
   census_demo |> 
@@ -410,7 +406,7 @@ census_metrics <-
         gentrifying == 1 ~ "gentrifying",
         pct_black >= 60 | (pct_black > 40 & shift_black < -200) ~ "historically black",
         housing_p25 >= 500000 ~ "high income",
-        est_poverty_ratio < 2 | med_hh_income <= 75000 ~ "higher poverty",
+        (est_poverty_ratio < 2 | med_hh_income <= 75000) & housing_med < 300000 ~ "higher poverty",
         #est_poverty_ratio > 1.25 & income_ratio < 2 ~ "working class?",
         .default = "other"
       )
@@ -459,7 +455,7 @@ census_metrics <-
   # )
 
 census_metrics |>
-  select(-popup_text) |>
+  #select(-popup_text) |>
   filter(housing_p25 < 1e6) |> 
   #filter(str_detect(geoid, "37063000200")) |>
   mapview(zcol = "housing_p25", layer.name = "p25")
@@ -490,7 +486,7 @@ demo_colors <-
 
 ## > map_census ----
 census_metrics |> 
-  select(-popup_text) |> 
+  #select(-popup_text) |> 
   #filter(str_detect(block_geoid, "37063000600|3706300130")) |>
   mapView(
     zcol = "cat", 
