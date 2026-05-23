@@ -1,5 +1,8 @@
+# workspace ----
 library(tidyverse)
 library(tidycensus)
+library(sf)
+
 setwd(dirname(.rs.api.getSourceEditorContext()$path))
 options(tigris_use_cache = TRUE)
 
@@ -7,6 +10,8 @@ acs_vars <- load_variables(2023, "acs5", cache = TRUE)
 decenial_vars <- load_variables(2020, "pl", cache = TRUE)
 decenial_vars_sf <- load_variables(2020, "sf1", cache = TRUE)
 tidycensus::acs5_geography |> view()
+
+use_counties <- c(63, 135, 183) # 63 durham, 135 orange, 183 raleigh
 
 ## block - race ----
 census_blocks <- 
@@ -20,7 +25,7 @@ census_blocks <-
         race_black = "P1_004N"
       ), 
     state = 37,
-    county = 063,
+    county = use_counties,
     cache_table = TRUE,
     geometry = TRUE
   ) |> 
@@ -35,19 +40,34 @@ race_vars <- c(
   total  = "P2_001N"
 )
 
-# fetch data for durham county (example)
-raw_race <- 
-  get_decennial(
-    geography = "block",
-    variables = race_vars,
-    year = 2020,
-    state = "NC",
-    county = "Durham",
-    summary_var = "P2_001N",
-    cache_table = TRUE
-  ) |> 
-  janitor::clean_names()
+# fetch data for each county
+## * raw_race ----
+raw_race <- local({
+  if ("raw_race" %in% ls(envir = globalenv())) return(raw_race)
+  
+  counties <- 
+    census_blocks$name |> 
+    str_extract("(?<=, )[^,]+(?= County)") |> 
+    unique()
+  
+  res <- map_dfr(
+    counties,
+    ~get_decennial(
+      geography = "block",
+      variables = race_vars,
+      year = 2020,
+      state = "NC",
+      county = .x,
+      summary_var = "P2_001N",
+      cache_table = TRUE
+    )
+  )
+  
+  res |>  
+    janitor::clean_names()
+})
 
+## * prep_race ----
 prep_race <-
   raw_race |>
   select(-name) |> 
@@ -77,7 +97,7 @@ prep_race <-
 prep_race |>  
   write_csv("output/census-race-blocks.csv")
 
-
+## census_blocks ----
 census_blocks |> 
   st_transform(4326) |> 
   transmute(
@@ -124,7 +144,7 @@ raw_acs <-
     geography = "block group", 
     variables = poverty_vars,
     state = 37, 
-    county = 063,
+    county = use_counties,
     cache_table = TRUE
   ) |> 
   rename_all(tolower)
@@ -172,30 +192,32 @@ raw_income <-
     geography = "block group", 
     variables = income_vars,
     state = 37, 
-    county = 063,
-    cache_table = TRUE
+    county = use_counties,
+    cache_table = TRUE,
+    geometry = TRUE
   ) |> 
   rename_all(tolower) |> 
   select(geoid, variable, estimate)
 
-wide_income <-
+census_income <-
   raw_income |> 
   pivot_wider(
     names_from = variable,
     values_from = estimate
-  )
+  ) |> 
+  relocate(geometry, .after = everything())
 
-wide_income |> view()
+census_income |> view()
 
-wide_income |> skimr::skim()
+census_income |> skimr::skim()
 
-wide_income |> 
+census_income |> 
   ggplot(aes(med_hh_income, med_nf_income)) + 
   geom_point() + 
   geom_smooth(method =  "lm") + 
   geom_abline()
 
-  write_csv("output/census-income.csv")
+write_csv(census_income, "output/census-income.csv")
 
 ## block_group - gentrifcation & education ----
 acs_demo_vars <-
@@ -221,7 +243,7 @@ census_prior <-
     variables = acs_demo_vars,
     year = 2020,
     state = 37, 
-    county = 063,
+    county = use_counties,
     cache_table = TRUE
   ) |> 
   rename_all(tolower)
@@ -232,7 +254,7 @@ census_current <-
     variables = acs_demo_vars,
     year = 2024,
     state = 37, 
-    county = 063,
+    county = use_counties,
     cache_table = TRUE
   ) |> 
   rename_all(tolower)
@@ -298,8 +320,24 @@ census_edu_prep <-
     prior_pct_degree = prior
   )
 
+census_demo <-
+  census_poverty |> 
+  left_join(census_income) |> 
+  left_join(census_edu_prep) |> 
+  left_join(census_race_prep) |> 
+  relocate(geometry, .after = everything())
 
-# explore maps ----
+
+census_demo |> 
+  st_as_sf() |> 
+  mapview(zcol = "current_black")
+
+
+census_demo |> 
+  st_drop_geometry() |> 
+  write_csv("output/census-demo.csv")
+
+
 library(mapview)
 
 fill_scale <-
@@ -321,10 +359,10 @@ block_groups |>
   scale_fill_viridis_b(option = "E")
 mapview(zcol = "med_hh_income", layer.name = "med_hh_income")
              
-block_groups |> 
+census_income |> 
   inner_join(census_edu_prep) |> 
   inner_join(census_race_prep) |>
-  inner_join(census_poverty)
+  inner_join(census_poverty) |> 
   mutate(
     white_pct = round(current_white / (current_black + current_white) * 100),
     black_pct = round(current_black / (current_black + current_white) * 100),
@@ -334,19 +372,5 @@ block_groups |>
   relocate(geometry, .after = everything()) |> 
   # mapview(zcol = "shift_pct_degree", layer.name = "> hs degree", col.regions= RColorBrewer::brewer.pal(4, "RdBu"), alpha.regions = 0.25)
   #mapview(zcol = "gentrification_shift", layer.name = "g") +#, col.regions= RColorBrewer::brewer.pal(4, "RdBu"), alpha.regions = 0.25)
-  mapview(zcol = "black_pct", layer.name = "pct", alpha.regions = 0.8, col.regions = fill_scale$c) +
-  #mapview(zcol = "white_pct", layer.name = "pct", alpha.regions = 0.8, col.regions = fill_scale$c) +
-  mapview(
-    points_of_interest,
-    color = "black", 
-    alpha.regions = 1,
-    col.regions = "orange"
-  )
+  mapview(zcol = "black_pct", layer.name = "pct", alpha.regions = 0.8, col.regions = fill_scale$c)
 
-census_demo <-
-  census_poverty |> 
-  left_join(census_income) |> 
-  left_join(census_edu_prep) |> 
-  left_join(census_race_prep) 
-
-write_csv(census_demo, "output/census-demo.csv")
