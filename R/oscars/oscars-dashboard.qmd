@@ -1,0 +1,252 @@
+---
+title: "Ocars"
+format: dashboard
+server: shiny
+---
+
+```{r workspace}
+#| context: setup
+
+```
+
+
+## {.sidebar}
+
+```{r inputs}
+
+```
+
+## Column 
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+#| eval: false
+ 
+
+# https://datahub.io/rufuspollock/oscars-nominees-and-winners
+
+
+
+
+# https://www.kaggle.com/datasets/matevaradi/oscar-prediction-dataset?select=oscardata_acting.csv
+# unzip("data/kaggle.zip", exdir = "data/")
+library(tidyverse)
+raw_film_indicators <-
+  map_df(
+    .x = list.files("data", ".csv", full.names = TRUE),
+    .f = ~read_csv(.x, col_types = list(`Release_date` = "c"))
+  ) |> 
+  rename_all(tolower)
+
+df |> write.csv("test.csv")
+raw_film_indicators <- read.csv("test.csv", encoding = "UTF-8")
+x <-
+  raw_film_indicators |> 
+  filter(year == 2019) |> 
+  distinct(
+    year, 
+    film, 
+    enc = Encoding(film)
+  ) |> 
+  arrange(film)
+
+
+x <- .Last.value
+
+
+x |> 
+  mutate(
+    attempt = iconv(film, to = "UTF-8") |> Encoding(),
+    attempt2 = textclean::replace_non_ascii(film),
+    attempt3 = str_replace_all(film, '(\xc3\x82)?\xc2\xa0', ' ')
+  ) |> 
+  arrange(film) |> 
+  distinct(attempt3)
+
+tools::showNonASCII(gsub('\xc2\xa0+', ' ', x$film[2]))
+
+
+Encoding(x$film[[1]])
+table(Encoding(raw_film_indicators$film))
+
+prep_film_indicators <-
+  raw_film_indicators |> 
+  filter(
+    #category == "Actor", 
+    #year >= 2010
+  ) |> 
+  #filter(year == 2019) |> 
+  select(one_of(names(raw_film_indicators) |> sort())) |> 
+  relocate(
+    film, year, winner, release_date, mpaa_rating,
+    starts_with("rating")
+  ) |> 
+  mutate(
+    film = 
+      film |> 
+      str_remove("\\.$") |> 
+      str_replace_all('(\xc3\x82)?\xc2\xa0', ' ') |> 
+      str_replace_all("\xe2\x80\x99", "'") |> 
+      recode(
+        "Il Postino" = "The Postman (Il Postino)"
+      ) |> 
+      str_to_title()
+  ) |> 
+  select(
+    -matches(
+      "^age|bafta|birth|category|female|goldenglobe|^nom|nonom_|oscarstat|previous|q\\d|win_"
+    ),
+    -c(mpaa_g:mpaa_r)
+  ) |> 
+  #mutate(film = enc2utf8(film)) |> 
+  summarise(
+    .by = c(film, year, contains("rating")),
+    across(everything(), ~max(.x))
+  )
+
+# https://github.com/DLu/oscar_data
+raw_film_categories <- local({
+  tsv_lines <-
+    read_lines("https://raw.githubusercontent.com/DLu/oscar_data/main/oscars.csv")
+
+  tibble(info = tsv_lines[-1]) |>
+    separate(
+      col = info,
+      into = str_split_1(tsv_lines[1], "\t"),
+      sep = "\t"
+    ) |>
+    janitor::clean_names()
+})
+
+
+prep_film_categories <-
+  raw_film_categories |> 
+  transmute(
+    year = (str_extract(year, "^\\d{4}") |> as.integer()) + 1,
+    film = 
+      film |> 
+      str_remove("^'|\\.$") |> 
+      str_replace_all("--", " ") |> 
+      str_replace("Todd The", "Todd: The") |> 
+      str_replace("Coming The", "Coming, The") |> 
+      recode(
+        "Hustle & Flow" = "Hustle and Flow"
+      ) |> 
+      str_to_title(),
+    category = canonical_category,
+    winner = as.integer(winner == "True") |> replace_na(0),
+    name
+  ) |> 
+  filter(
+    year %in% unique(prep_film_indicators$year),
+    #category %in% c("ACTOR", "ACTOR IN A LEADING ROLE"), 
+    #year > 2010,
+    category %in% c(
+      "ANIMATED FEATURE FILM",
+      "BEST PICTURE",
+      "DOCUMENTARY (Feature)",
+      "DOCUMENTARY (Short Subject)",
+      "INTERNATIONAL FEATURE FILM",
+      "MUSIC (Original Score)",
+      "MUSIC (Original Song Score or Adaptation Score)",
+      "MUSIC (Scoring)",
+      "SHORT FILM (Animated)",
+      "SHORT FILM (Dramatic Live Action)",
+      "SHORT FILM (Live Action)",
+      "SHORT SUBJECT (Color)",
+      "SHORT SUBJECT (Comedy)",
+      "SHORT SUBJECT (Novelty)",
+      "SHORT SUBJECT (One-reel)",
+      "SHORT SUBJECT (Two-reel)",
+      "VISUAL EFFECTS"
+    )
+  )
+
+ind <- prep_film_indicators |> select(year, film, mpaa_rating) |> arrange(film)
+cat <- prep_film_categories |> distinct(year, film, x = nchar(film)) |> arrange(film)
+  
+ind |> anti_join(cat) |> count(year)
+cat |> anti_join(ind) |> count(year)
+
+final_df <-
+  prep_film_categories |> 
+  #filter(category == "BEST PICTURE") |> 
+  full_join(
+    prep_film_indicators |> select(-winner), 
+    by = join_by(year, film)
+  ) |> 
+  mutate(
+    .after = winner,
+    has_indicators = !is.na(category)
+  )
+
+final_df |> 
+  write_csv("oscars-data.csv")
+
+final_df |> 
+  filter(str_detect(film, "Amad")) |> 
+  pull(film)
+  lapply(charToRaw)
+
+check <-
+  bind_rows(
+    cat = prep_film_categories |> distinct(year, film) |> filter(year >= 2019),
+    ind = prep_film_indicators |> distinct(year, film) |> filter(year >= 2019),
+    .id = "src"
+  ) |> 
+  add_count(film) |> 
+  pivot_wider(
+    names_from = src,
+    values_from = n
+  )
+
+raw_film_indicators |>
+  filter(year == 2019, winner == 1) |> 
+  distinct(category, film) |>
+  mutate(
+    enc = film
+      #map_chr(film, ~charToRaw(.x) |> rawToChar()) 
+       #|> 
+      #iconv(to = "latin1")# |>  #Encoding()
+  ) |>  #->x
+  distinct(enc)
+
+  pull(film) |> 
+  sort() |>
+  stringi::stri_encode("UTF-8") |> 
+  Encoding()
+```
+
+
+```{r}
+#http://www.r-bloggers.com/sparql-with-r-in-less-than-5-minutes/
+
+library(SPARQL) # SPARQL querying package
+library(ggplot2)
+
+endpoint <- "https://query.wikidata.org/sparql"
+query <- '#Academy award data\nSELECT ?human ?humanLabel ?awardEditionLabel ?awardLabel ?awardWork ?awardWorkLabel ?director ?directorLabel ?time\nWHERE\n{\n  {\n    SELECT (SAMPLE(?human) AS ?human) ?award ?awardWork (SAMPLE(?director) AS ?director) (SAMPLE(?awardEdition) AS ?awardEdition) (SAMPLE(?time) AS ?time) WHERE {\n      ?award wdt:P31 wd:Q19020 .      # All items that are instance of(P31) of Academy awards (Q19020)\n      {\n        ?human p:P166 ?awardStat .              # Humans with an awarded(P166) statement\n        ?awardStat ps:P166 ?award .        # ... that has any of the values of ?award\n        ?awardStat pq:P805 ?awardEdition . # Get the award edition (which is "subject of" XXth Academy Awards)\n        ?awardStat pq:P1686 ?awardWork . # The work they have been awarded for\n        ?human wdt:P31 wd:Q5 .        # Humans\n      } UNION {\n        ?awardWork wdt:P31 wd:Q11424 . # Films\n        ?awardWork p:P166 ?awardStat . # ... with an awarded(P166) statement\n        ?awardStat ps:P166 ?award .        # ... that has any of the values of ?award\n        ?awardStat pq:P805 ?awardEdition . # Get the award edition (which is "subject of" XXth Academy Awards)\n      }\n      OPTIONAL {\n        ?awardEdition wdt:P585 ?time . # the "point of time" of the Academy Award\n        ?awardWork wdt:P57 ?director .\n      }\n    }\n    GROUP BY ?awardWork ?award # We only want every movie once for a category (a \'random\' person is selected)\n  }\n\n  SERVICE wikibase:label {            # ... include the labels\n    bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en" .\n  }\n}\nORDER BY DESC(?time)'
+useragent <- paste("WDQS-Example", R.version.string) # TODO adjust this; see https://w.wiki/CX6
+
+qd <- SPARQL(endpoint,query,curl_args=list(useragent=useragent))
+df <- qd$results
+
+```
+
+licorice pizza
+king william
+the windshield wiper - short
+Heaven Is a Traffic Jam on the 405
+zootopia
+brave
+ratatouille
+slumdog millionaire
+ex-machina
+life of pi
+
+
