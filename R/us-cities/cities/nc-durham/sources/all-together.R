@@ -9,15 +9,15 @@ library(htmlwidgets)
 setwd(dirname(.rs.api.getSourceEditorContext()$path))
 
 ## map_limits ----
-map_limits <- 
-  st_bbox(
-    c(
-      # xmin = -78.86, xmax = -78.95, ymin =  35.95, ymax =  36.00
-      # xmin = -78.85, xmax = -79.10, ymin =  35.90, ymax =  36.06
-      xmin = -79.01, xmax = -78.82, ymin =  35.89, ymax =  36.064
-    ), 
-    crs = st_crs(4326)
-  )
+# map_limits <- 
+#   st_bbox(
+#     c(
+#       # xmin = -78.86, xmax = -78.95, ymin =  35.95, ymax =  36.00
+#       # xmin = -78.85, xmax = -79.10, ymin =  35.90, ymax =  36.06
+#       xmin = -79.01, xmax = -78.82, ymin =  35.89, ymax =  36.064
+#     ), 
+#     crs = st_crs(4326)
+#   )
 
 
 # Data ----
@@ -62,15 +62,15 @@ encode_img <- function(path, width = 200) {
   str_glue('<img src="{uri}" width="{width}">')
 }
 
-raw_mls <- 
-  read_csv("output/mls-clean.csv") |> 
-  mutate(
-    photo_path = str_c("input/realestate/photos/", mls_number, ".jpg"),
-    popup_html = str_c(
-      str_glue("<b>{mls_number}</b><br>"),
-      map_chr(photo_path, encode_img)
-    )
-  )
+# raw_mls <- 
+#   read_csv("output/mls-clean.csv") |> 
+#   mutate(
+#     photo_path = str_c("input/realestate/photos/", mls_number, ".jpg"),
+#     popup_html = str_c(
+#       str_glue("<b>{mls_number}</b><br>"),
+#       map_chr(photo_path, encode_img)
+#     )
+#   )
 
 ## csv ----
 census_block_demo <- read_csv("output/census-race-blocks.csv", col_types = c(block_geoid = "c", geoid = "c"))
@@ -158,8 +158,7 @@ prep_roads <-
   ) |> 
   ungroup() |> 
   st_simplify(preserveTopology = TRUE, dTolerance = 1) |>  # 1 meter
-  st_transform(crs = 4326) |> 
-  st_crop(map_limits) 
+  st_transform(crs = 4326) #|> st_crop(map_limits) 
 
 mapviewOptions(
   # see examples: https://leaflet-extras.github.io/leaflet-providers/preview/
@@ -241,8 +240,7 @@ census_demo <-
   ) |> 
   left_join(blocks) |> 
   st_as_sf() |> 
-  st_transform(crs = 4326) |> 
-  st_crop(map_limits)
+  st_transform(crs = 4326) #|> st_crop(map_limits)
 
 if (FALSE) {
   census_demo |> 
@@ -350,10 +348,9 @@ neighborhood <-
 
 ## crop_census ----
 crop_census <-
-  census_demo |> 
+  census_demo #|> 
   #filter(geoid  |> str_detect("37063000600")) |> 
-  #filter(cat == "other") #|> 
-  st_crop(map_limits) 
+  #filter(cat == "other") #|> st_crop(map_limits) 
 
 
 block_housing_price <-
@@ -410,6 +407,19 @@ census_metrics <-
         #est_poverty_ratio > 1.25 & income_ratio < 2 ~ "working class?",
         .default = "other"
       )
+  )
+
+block_group_metrics <-
+  census_metrics |> 
+  summarise(
+    .by = c(geoid, cat, fill_rgba),
+    shift_black = sum(shift_black),
+    shift_white = sum(shift_white),
+    pct_white = weighted.mean(pct_white, total_pop),
+    pct_black = weighted.mean(pct_black, total_pop),
+    pct_latino = weighted.mean(pct_latino, total_pop),
+    med_hh_income = weighted.mean(med_hh_income, total_pop),
+    geometry = across(geometry, st_union)
   )
 
 #mapview(census_metrics, zcol = "cat")# + map_roads + map_home
