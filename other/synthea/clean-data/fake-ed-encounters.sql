@@ -1,10 +1,12 @@
 /*
 Describes ED visits
 */
-copy ed_encounters to '../output/ed_encounters.csv' (header, delimiter ',');
+set file_search_path = 'C://Users/foxtr/Documents/github/one-off-projects/other/synthea/output/';
+
+copy ed_encounters to 'ed_encounters.csv' (header, delimiter ',');
 drop table ed_encounters if exists;
 create table ed_encounters as 
-
+;
 with
 cohort as (
     select

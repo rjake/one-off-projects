@@ -1,7 +1,7 @@
 --  you can either write to memory or write to a db file, you set this in the duckdb config
 
 -- set the search path then code runs from here, may need to create final item: 'closest_hospital'
-set file_search_path = '~/github/one-off-projects/other/synthea/output/n-2000/csv/';
+set file_search_path = 'C://Users/foxtr/Documents/github/one-off-projects/other/synthea/build-data/output/n-2000/csv/';
 
 
 set preserve_identifier_case = false; -- this doesn't seem to work?

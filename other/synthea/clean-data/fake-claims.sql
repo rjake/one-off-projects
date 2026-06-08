@@ -1,11 +1,12 @@
 /*
 Describes claims and financial transactions
 */
+set file_search_path = 'C://Users/foxtr/Documents/github/one-off-projects/other/synthea/output/';
 
-copy fake_claims to '../output/fake_claims.csv' (header, delimiter ',');
+copy fake_claims to 'fake_claims.csv' (header, delimiter ',');
 drop table fake_claims if exists;
 create table fake_claims as 
-
+;
 with
 claim_info as (
     select
