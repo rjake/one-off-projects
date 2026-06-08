@@ -8,10 +8,10 @@ library(osrm)
 library(tmap)
 
 gym <-
-  tibble(
-    location = "gym",
-    x = -78.9245, 
-    y = 35.9507
+  data.table::fread(
+    "location, x, y
+    salvage yard, -78.6171, 35.8100 
+    durham,       -78.9245, 35.9507"
   ) |> 
   st_as_sf(coords = c("x", "y"), crs = 4326)
 
