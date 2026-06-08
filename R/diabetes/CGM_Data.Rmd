@@ -1,0 +1,818 @@
+---
+title: "diabetes"
+author: "Jake"
+date: "March 9, 2016"
+output: html_document
+---
+```{r eval=F, echo=F}
+# go to
+https://blip.tidepool.org/patients/2e5d9c924a/data
+
+then ```[Ctrl]+[Shift]+[J]```
+
+then type ```> downloadInputData()```
+
+See here: http://support.tidepool.org/article/37-export-your-account-data
+```
+
+```{r message=F, warning=F, echo=F}
+setwd("J:/Portfolio/Diabetes")
+library(jsonlite)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(lubridate)
+library(plotly)
+library(knitr)
+library(zoo)
+
+tI <- 30 #timeInterval   
+
+```
+
+```{r echo=F, eval=T, warning=F, message=F}
+#Read extract
+extract <- read.csv("extract_20160501.csv", stringsAsFactors = F)%>%
+              mutate(dateTime = ymd_hms(dateTime))
+
+Extremes <- read.csv("Extremes_20160501.csv", stringsAsFactors = F)
+
+slopeEval <- read.csv("slopeEval.csv", stringsAsFactors = F)%>%
+              mutate(dateTime = ymd_hms(dateTime),
+                     postRange = factor(postRange, levels = c("Low", "Good", "High")))
+```
+
+```{r eval=F, echo=F}
+#Manipulate data, add columns & get pre-/post- levels
+
+json_file <- "blip-input.json"
+
+data <- flatten(fromJSON(json_file), recursive = T)%>%as.data.frame()
+
+#write.csv(data, "json_file_20160601.csv", row.names = F)
+
+extract <- data%>%
+           select(time, timezoneOffset, type, subType, value, units, payload.trend)%>%
+           filter(!is.na(value))%>%
+           filter(type == "cbg")%>%
+           mutate(mg = round(value*18, 2),
+                  range = ifelse(mg < 80, "Low", ifelse(mg > 180, "High", "Good")),
+                  dateTime = ymd_hms(time)+(timezoneOffset/100 *60 *60),
+                  month = month(dateTime),
+                  year = year(dateTime),
+                  day = day(dateTime),
+                  hour = hour(dateTime),
+                  timeOfDay = strftime(dateTime, format="%H:%M:%S"),
+                  yearDate = as.Date(dateTime),  #strftime(dateTime, format='%D'),
+                  Weekday = weekdays(dateTime),
+                  Weekday2 = wday(dateTime)
+                  )%>%
+          arrange(dateTime)%>%
+          filter(dateTime > "2016-01-21 09:16:00")%>%
+          arrange(dateTime)%>%
+          mutate(Order = row_number(),
+                 Episode = cumsum(range!=lag(as.character(range), default = range[1])),
+                 studyDay = cumsum(day!=lag(as.character(day), default = 1)),
+                 studyWeek = as.integer(floor(difftime(dateTime, min(dateTime), units = "week")))+1,
+                 yearWeek = week(dateTime),
+                 diffTime = as.integer(dateTime-lead(dateTime)),
+                 Event = ifelse(mg > lag(mg) & mg > lead(mg) & range =="High", "Peak",
+                          ifelse(mg < lag(mg) & mg < lead(mg) & range == "Low", "Valley", "-")),
+                 Pre = as.numeric(NA),
+                 Post =as.numeric(NA),
+                 slopeNumerator = mg-lag(mg),
+                 slopeDenominator = as.integer(difftime(dateTime, lag(dateTime), 
+                                                        units = "min")),
+                 slope = ifelse(slopeDenominator >20 |slopeNumerator > 10, NA,
+                                round(slopeNumerator/slopeDenominator,2)),
+                 rollingSlope = round(rollapply(data = slope, 
+                                          width = 3, #Dexcom says 15-20 min
+                                          FUN = mean, 
+                                          align = "right", 
+                                          fill = NA, 
+                                          na.rm = T), 2)
+                 )%>%
+          group_by(Episode)%>%
+              mutate(EpisodeOrd = row_number())%>%
+              ungroup()%>%
+         # filter(diffTime > -3600)%>%
+          select(-c(time, timezoneOffset))
+
+
+#What happens 30 min before/after?
+      time_diff <- function(x, y){
+                    as.numeric(difftime(extract$dateTime[x], 
+                                        extract$dateTime[x+y], 
+                                        units = "mins"))
+                    }
+  
+
+      closest <- function(x,v,s){
+                  ifelse(min(abs(x[[v]]-s)) > tI, "", 
+                             #x[which(abs(x[[v]]-s)==min(abs(x[[v]]-s))), 1]
+                         which(abs(x[[v]]-s)==min(abs(x[[v]]-s)))    
+                         )
+                    }
+      
+for(i in 9:(nrow(extract)-8)){
+     # i=29    rm(i)
+      extract$mg[i] <- ifelse(extract$mg[i]==extract$mg[i-1], 
+                                extract$mg[i]+0.00001, 
+                                extract$mg[i])
+    
+     lookupTable <- data.frame(When = rep(c("Before", "After"), each=8),
+                                    iValue = i-c(8:1, -1:-8),
+                                    Value = time_diff(i, c(-8:-1, 1:8)),
+                                    timeOfDay = extract$timeOfDay[i+c(-8:-1, 1:8)],
+                                    mg = extract$mg[i+c(-8:-1, 1:8)])     
+     
+      pre <- lookupTable[closest(lookupTable, "Value" , tI), ]
+        
+      post <- lookupTable[closest(lookupTable, "Value" , -tI), ]
+      
+      extract$Pre[i] <- ifelse((pre$When == "Before" & pre$Value > 0), 
+                                  pre$mg,
+                                  NA)
+  
+      extract$Post[i] <- ifelse((post$When == "After" & post$Value < 0), 
+                                  post$mg,
+                                  NA)        
+  }                    
+
+#      write.csv(extract, "extract_20160601.csv", row.names = F)
+```
+
+#Type I Diabetes
+Managing Type I diabetes can be like playing the racecar game at the arcade. In response to going low (<80), the mad dash to increase sugar levels can then cause the blood sugar to go too high (>180) if too much food was eaten to increase it. This kind of overcompensation, in addition to other factors in the individual's life (e.g. exercise, stress, hormone cycles) can make the management of diabetes quite difficult. While every person's diabetes management strategies will be somewhat different, this report is a look into one individual's experience in an attempt to find patterns and create intervention strategies.
+
+Using data from a constant glucose monitor (CGM), I am able to look at five-minute interval blood sugar readings to assess trends over time for this individual. This report is written in R and is able to analyze any set of data given that it has the same field names. The analysis is not specific to this particular user. There are challenges to assessing this kind of data and I hope that these factors have been appropriately accounted for: the user may take the monitor off from time to time, the CGM must be calibrated regularly and may be off by a large number, eating habits and other events have not been captured and can not be used for comparison.
+
+Below is an example of blood sugar levels over a course of 17.5 hours. The area between the red lines is the desired range. The blue & purple dots show the blood sugar levels 30 minutes before (blue) and 30 minutes after (purple). This, any many other charts are interactive so you can mouse over them to see changes.
+
+#Excerpt of readings (~17.5 hours)
+```{r warning=F, out.width = 1000, echo=F}  
+#188:250
+subExtract <- extract[2400:2610,]
+
+p <-  ggplot(data=subExtract)+
+  geom_hline(yintercept = c(80, 180), color="red",  linetype="longdash", size=1, alpha=.2)+ #
+  
+  geom_point(aes(x=Order, y=Pre,  group=1, text = mg), color = "blue",   size=.5, alpha=.3)+
+  geom_point(aes(x=Order, y=Post, group=1, text = mg), color = "purple", size=.5, alpha=.3)+  
+  
+  geom_line(aes(x=Order,  y=mg,   group=1), color = "grey20", size = 1, alpha=.2)+
+  geom_point(aes(x=Order, y=mg, text = mg), size=1.5)+
+  
+  #facet_grid(month~day)+
+  #theme(axis.text = element_blank(), axis.ticks = element_blank())+
+  guides(fill = guide_legend(keywidth = 3, keyheight = 1))+
+  expand_limits(y = 0)+
+  #scale_x_continuous(breaks = seq(min(subExtract$dateTime), max(subExtract$dateTime), 5))+
+  #ylim()+
+  ggtitle(paste("Graph of Blood Sugar (mg) with Trendlines +/-", tI, "mins \n(blue= before, purple= after)", sep=" "))
+
+ggplotly(p)%>%layout(hovermode = "x")
+```
+
+#Time of Day
+I then am interested in looking at patterns by time of day. Here I use a variety of charts to look at the percentage of time that this person spends in high, good, and low ranges by time of day. The data represents all readings since the beginning of this study and will continue to be more precise as the user continues to upload data.
+```{r warning=F, out.width = 1000, echo=F}
+hourDist <- extract%>%
+              group_by(hour, range)%>%
+                summarise(Count = n())%>%
+                ungroup()%>%
+              mutate(range = factor(range, levels = c("Low", "Good", "High")),
+                     inRange = ifelse(range=="Good", "In Range", "Out of Range"),
+                     xLab = ifelse(range=="Low", 50, 
+                         ifelse(range == "Good", 130, 220)),
+                     yLab = .013)%>%
+              arrange(hour, as.numeric(range))%>%
+              group_by(hour)%>%
+                mutate(Pct = round(Count/sum(Count), 3)*100,
+                       Label = ifelse(range == "Low", 0.05, 
+                                      ifelse(range == "Good", 0.5, .95)))%>%
+                ungroup()%>%
+              group_by(range)%>%
+                mutate(Rank = round(percent_rank(Pct),2))%>%
+                ungroup()
+
+
+
+```
+
+##Heatmap by time of day
+```{r warning=F, out.width = 1000, echo=F}
+#Heatmap
+  ggplot(hourDist, aes(x = factor(hour), y = factor(range)))+
+    geom_tile(aes(fill=inRange, alpha=Rank))+
+    scale_fill_manual(values = c("#00BFC4", "#F8766D"))+
+#    scale_fill_manual(values = c("navyblue", "orange"))+
+    scale_alpha(range = c(.1, 1))+
+    coord_fixed()+   theme_bw()+
+    theme(panel.grid.minor = element_line(colour="grey75", size=0.5),
+          axis.title = element_blank(),
+          panel.grid.major = element_blank(),
+          legend.position="none")+
+    ggtitle("Percent in Range by \nHour of Day")
+```  
+
+
+#Extreme Events
+I then looked at peaks & valleys. When the patient goes outside of the desired range (too high or too low) the event is noted as an "extreme event"
+```{r warning=F, eval=F, echo=F}
+Extremes <- filter(extract, range != "Good")%>%
+            filter(diffTime > -3600)%>%
+            group_by(Episode)%>%
+              mutate(pvMG = ifelse(range == "Low", min(mg), max(mg)),
+                     Extreme= ifelse(range=="Low", mg==min(mg), mg==max(mg)),
+                     Count = n(),
+                     Start = min(dateTime),
+                     End = max(dateTime),
+                     EpisodeLength = as.numeric(difftime(End, Start, units="mins")),
+                     timeToExtreme = as.numeric(difftime(dateTime, Start, units="mins")))%>%
+              ungroup()%>%
+      filter(Extreme==T, EpisodeLength != 0)%>%
+      group_by(Episode)%>%
+        slice(which.max(EpisodeOrd)) %>%
+        ungroup()%>%
+      mutate(NextEvent = lead(range),
+             NextEventTime = lead(Start),
+             BetweenEvents = as.numeric(difftime(NextEventTime, End, units="mins")))
+
+# write.csv(Extremes, "Extremes_20160601.csv", row.names = F)
+```
+###Distribution of peaks & valleys
+
+
+###Order of events
+This chart shows the order of extreme events since the beginning of the study.
+```{r warning=F, out.width = 1000, echo=F, echo=F}
+#p <- 
+  ggplot()+
+      geom_bar(data = #filter(
+                 Extremes#, studyWeek >3,studyWeek < 13)
+               , 
+               aes(x = factor(Episode), y = mg, fill = range), 
+               stat = "identity", position = "dodge")+
+      facet_wrap(~studyWeek, scales = "free_x", ncol=4)+
+      theme(axis.text.x = element_blank(),
+            axis.ticks.x = element_blank(),
+            plot.title = element_text(hjust = 0))+
+    ggtitle("Order of Extreme Events by Week")
+#ggplotly(p)
+
+
+PVDist <- extract %>%
+          filter(range != "Good") %>%
+          group_by(range, Episode) %>%
+          summarise(Min = min(mg, na.rm=T),
+                    Max = max(mg, na.rm=T)) %>%
+          ungroup() %>%
+          gather(key = Type, value = Mg, Min:Max) %>%
+          filter((range == "High" & Type == "Max") | 
+                   (range == "Low" & Type == "Min")) %>%
+          arrange(Episode) %>%
+          group_by(range) %>%
+          mutate(Ord = row_number(),
+                 Mean = mean(Mg),
+                 Median = median(Mg)) %>%
+          ungroup()
+
+ggplot(PVDist, aes(x=Ord, y=Mg, color = Type, group=Type))+
+  geom_line(size = 1, alpha = .5)+
+  geom_point()+
+  facet_grid(Type~., scales = "free_y")+
+  ggtitle("Extreme Points of High & Low Events")
+
+#p <- 
+  ggplot(data=Extremes)+
+      geom_bar(aes(x=studyWeek, fill=range), color = "black")+
+      #scale_y_continuous(breaks = seq(0,14,2))+
+      facet_grid(range~., scales="free")+
+      #scale_fill_manual(values = c("grey50", "grey70"))+
+      theme(plot.title = element_text(hjust = 0))+
+      ggtitle("Count of Extreme Events by Week")
+#ggplotly(p)
+```
+
+###Between Events
+This table looks at the length of time between extreme events (ex: high to low). The table shows how often a High event is followed by a Low event (and all other permutations) and the frequency (Count), Minimum time in-between (MinDuration), the median time in-between, and the maximum time observed between events.
+```{r warning=F, out.width = 1000, message=F, echo=F}
+#The following chart shows the frequency between events with the starting event on the right and the following event on the top. The x-axis is the length between the two events and the y-axis is the frequency.
+
+Events <- select(Extremes, range, NextEvent, BetweenEvents)%>% 
+            mutate(Sequence = paste(range, NextEvent, sep="-"))%>%
+  filter(!is.na(NextEvent),
+         BetweenEvents<1000) 
+
+Events%>%
+  group_by(Sequence)%>%
+  summarise(Count = n(),
+             MinDuration = min(BetweenEvents),
+             MedianDuration = median(BetweenEvents),
+             MaxDuration = max(BetweenEvents))%>%
+  mutate_each(funs(round(.,1)), MinDuration:MaxDuration)%>%
+  arrange(-Count)%>%
+  kable(caption = "Time Bewteen Events (in minutes)")
+  
+p <- ggplot(Events, aes(x=BetweenEvents))+
+    geom_histogram(aes(fill=Sequence), color="black")+
+    facet_grid(range~NextEvent)+
+    scale_fill_manual(values = c("grey30", "grey50", "grey70", "grey90"))+
+    xlim(0,220)+
+    ggtitle("Frequency Between Extreme Events")
+#ggplotly(p)
+```
+
+
+
+
+#Time until noticed
+This table looks at how long it takes, on average, for the direction to change during an extreme event.
+```{r}
+Extremes%>%
+  group_by(range)%>%
+  summarise(Count = n(),
+            MedianDuration = median(EpisodeLength), 
+            MedianTilExtreme = median(timeToExtreme))%>%
+  mutate_each(funs(round(.,1)), MedianDuration:MedianTilExtreme)%>%
+  kable(caption = "Duration of Event and Time Until Noticed")
+```
+
+###Duration
+I am also interested in how long this user stays in an extreme range (top chart) 
+```{r warning=F, out.width = 1000, echo=F}
+p <- ggplot(filter(Extremes, EpisodeLength <600), aes(x=factor(hour), y=EpisodeLength))+
+  geom_boxplot(aes(fill=range), varwidth = T)+
+  geom_hline(yintercept = median(Extremes$EpisodeLength), color="blue",  linetype="longdash",size=1, alpha=.2)+
+  facet_grid(range~., scales="free")+
+  ggtitle("Length of Event by Time of Day")
+ggplotly(p)
+```
+
+###Time Until Noticed
+I am also how long it takes the patient to notice (time til change in direction). This point is approximately 20 minutes after taking insulin or eating food. 
+``````{r warning=F, out.width = 1000, echo=F}
+p<-ggplot(filter(Extremes, timeToExtreme <300), aes(x=factor(hour), y=timeToExtreme))+
+  geom_boxplot(aes(fill=range), varwidth = T)+
+  geom_hline(yintercept = median(Extremes$timeToExtreme), color="blue",  linetype="longdash",size=1, alpha=.2)+
+  facet_grid(range~., scales="free")+
+  ggtitle("Time Until Noticed by Time of Day")
+ggplotly(p)
+
+```
+
+#Slopes
+From the very first chart, it appears that slope is a factor in whether this individual will go high or low given a particular reading. These charts will explore patterns in going high/low given a rolling slope (average of five readings).
+```{r eval=F, echo=F}
+slopeEval <- extract %>% 
+  filter(EpisodeOrd != 1,
+         rollingSlope != -Inf,
+         rollingSlope != Inf)%>%
+  select(Episode, dateTime, mg, slope, rollingSlope, range, Post)%>%
+  mutate(postRange = ifelse(Post < 80, "Low", ifelse(Post > 180, "High", "Good")),
+         Speed = floor(abs(rollingSlope)),
+         Direction = ifelse(rollingSlope > 0, "Up", "Down"))%>%
+  filter(!is.na(postRange),
+         !is.na(rollingSlope))
+#write.csv(slopeEval, "slopeEval.csv", row.names = F)
+```
+
+```{r warning = F, echo=F}
+#p <- 
+ggplot(filter(slopeEval, range == "Good"))+
+  geom_boxplot(aes(x =postRange , y = rollingSlope, fill= postRange, order = range), 
+               varwidth = T)+
+  scale_fill_manual(values = c("#00BFC4", "grey75", "#F8766D"))+
+  theme(plot.title = element_text(hjust = 0))+
+  ylim(-5,5)+
+  ggtitle("Distribution of Slopes (mgL/min) in 30 Minutes Prior to Event \n(High, Low, Stable)")
+#ggplotly(p)
+```
+
+A linear regression using current mg and slope to predict the mg reading in 30 minutes.
+```{r eval=T, echo=F}
+#Correlations  
+summary(lm(Post ~ mg + rollingSlope + mg*rollingSlope, data = slopeEval))
+```
+
+#Countdown, speed and slope
+This chart looks at the slope in the 60 minutes before a high or low event in 5 minute increments.
+```{r warning=F, out.width = 1000, echo=F}
+rangeOrder <- select(extract, range, Episode, EpisodeOrd, dateTime, studyWeek)%>%
+                filter(EpisodeOrd==1)%>%
+                mutate(NextEvent = lead(range),
+                       NextEventStart = lead(dateTime))
+
+nround <- function(x,base){ 
+        base*round(x/base) 
+} 
+
+slopeEventsPre <- left_join(slopeEval, 
+                         select(rangeOrder, Episode, NextEvent, NextEventStart, studyWeek),
+                         by = "Episode")%>%
+                mutate(Countdown = nround(as.numeric(difftime(NextEventStart, dateTime, units="mins")),5))%>%
+                filter(Countdown <= 60, range=="Good",
+                       Countdown >0)%>%
+                mutate(fCountdown = factor(Countdown),
+                       fCountdown = factor(fCountdown, levels = rev(levels(fCountdown))))
+
+#add last point
+addPt <- slopeEventsPre%>%
+  group_by(Episode)%>%
+  slice(1)%>%
+  ungroup%>%
+  mutate(Countdown=0,
+         fCountdown=factor(0),
+         mg = ifelse(NextEvent=="High", 180, 80)) 
+
+slopeEvents <- slopeEventsPre %>% #rbind(slopeEventsPre, addPt)%>%
+                group_by(studyWeek, NextEvent)%>%
+                  mutate(Ord=dense_rank(Episode))%>%
+                group_by(postRange, Countdown)%>%
+                  mutate(mgMedian = median(mg),
+                         mgMean = mean(mg))%>%
+                ungroup()%>%
+                filter(studyWeek!=max(studyWeek)) 
+
+#write.csv(slopeEvents, "slopeEvents.csv", row.names = F)
+```
+
+```{r echo=F}
+avgs <- filter(slopeEvents, NextEvent != "Good")%>%
+        group_by(NextEvent, fCountdown#, studyWeek
+                 )%>%
+        summarise(mgMedian = median(mg),
+                  mgMean = mean(mg))%>%
+        ungroup()
+
+```
+
+This chart shows the distribution of blood glucose leves in the 60 minutes prior to an extreme event.
+```{r warning=F, echo=F}
+#Line charts / boxplot
+  ggplot(slopeEventsPre, aes(x=fCountdown, y=mg))+  
+    #geom_line(aes(group=Episode), size = .5, alpha = .2 )+
+    #geom_line(data=avgs, aes(y=mgMedian, group=NextEvent),size=2, alpha=.8, color="blue")+
+    #geom_line(data=avgs, aes(y=mgMean, group=NextEvent),size=2, alpha=.8, color="green4")+
+    geom_boxplot(aes(group=fCountdown, fill=NextEvent), alpha = .8)+
+    #geom_jitter(size = .25, alpha=.3, width = .15, color="black")+
+    geom_hline(yintercept = c(80, 180), color="red", linetype="longdash", size=1, alpha=.2)+
+    facet_grid(~NextEvent, scales="free")+
+    xlab("Countdown")+
+    ylab("mg/dL")+
+    #coord_fixed(ratio = .25)+
+    #theme_bw()+
+    theme(plot.title = element_text(hjust = 0),
+          aspect.ratio=.75)+
+    ggtitle("Distribution of Blood Glucose Levels in 60 min. Prior to High/Low Event")
+
+```
+
+This chart looks at the slope in the 60 minutes before a high or low event in 5 minute increments.
+```{r warning=F, out.width = 1000, echo=F}
+#Boxplots
+  ggplot(slopeEventsPre, aes(x=factor(fCountdown), y=rollingSlope))+  
+    geom_hline(yintercept = 0)+
+    geom_boxplot(aes(fill = NextEvent))+    
+    facet_grid(~NextEvent)+
+    labs(x="Countdown", y= "Slope (mg/dL per min)")+
+    ylim(-5,5)+
+    theme(plot.title = element_text(hjust = 0),
+          aspect.ratio=.75)+
+    ggtitle("Distribution of Slopes in 60 min. prior to High/Low Event")
+```
+
+```{r eval=F, echo=F}
+#Scatterplots 
+  ggplot(slopeEventsPre, aes(x=Countdown, y=rollingSlope))+  
+    geom_jitter(aes(color=NextEvent), alpha = .5, width = .75)+
+    #geom_point(aes(color=NextEvent))+
+    facet_grid(~NextEvent)+
+    #theme_bw()+
+    xlim(60,0)+
+    labs(x = "Countdown", y="Slope (mg/dL per min)")+
+    geom_hline(yintercept = 0, color = "grey30")+
+    geom_smooth(method = "lm", color="black", size = 0.75)+
+    theme(plot.title = element_text(hjust = 0))+
+    ggtitle("Distribution of Slopes in 60 min. prior to High/Low Event")
+
+```
+
+```{r warning=F, out.width = 1000, echo=F}
+speedPlot <- extract%>%
+  select(Episode, dateTime, range, mg,rollingSlope, Post)%>%
+  filter(!is.na(Post))%>%
+  mutate(PostRange = ifelse(Post < 80, "Low", ifelse(Post > 180, "High", "Good")))%>%
+  left_join(select(rangeOrder, Episode, NextEvent, NextEventStart), by = "Episode")%>%
+  mutate(Countdown = nround(as.numeric(difftime(NextEventStart, dateTime, units="mins")),5))%>%
+  filter(range=="Good")
+
+#Scatter plot
+p <-  ggplot(speedPlot, aes(x=mg, y=rollingSlope))+  
+        geom_jitter(aes(color=PostRange, alpha = PostRange, size = PostRange), width=1)+
+        #geom_point(aes(color=PostRange, alpha =0.3, size = PostRange))+
+        scale_alpha_manual(values = c(.2, .5, .5))+
+        scale_size_manual(values = c(.75, 2, 2))+
+        scale_color_manual(values = c("grey50", "#F8766D", "#00BFC4"))+
+        #theme_bw()+
+        labs(x = "mg/dL", y = "Slope (mg/dL per min)")+
+        xlim(80,180)+
+        geom_hline(yintercept = 0, color = "grey50")+
+        geom_smooth(method = "lm", color="black", size = 0.75)+
+       # ggtitle("Distribution of Slopes by mg/dL \nColor Represents Range 30 Minutes After Reading")
+        theme(plot.title = element_text(hjust = 0),
+              aspect.ratio = .75)+
+        ggtitle(expression(
+             atop("Distribution of Slopes by mg/dL", 
+             atop("Color Represents Range 30 Minutes After Reading", ""))))
+
+p
+p+facet_grid(~PostRange)
+
+```
+
+Below is a heatmap of how frequently the patient goes out of range in 30 miunutes given the current blood sugar level and slope.
+```{r warning = F, out.width = 1000, echo=F}
+freqTable <- extract%>%
+             select(mg, range,Post, rollingSlope)%>%
+             mutate(#current = round(mg/20)*20,
+                    current = cut(mg, breaks = seq(80,180,20), include.lowest = T),
+                    rcurrent = factor(current, levels = rev(levels(current))),
+                    postRange = ifelse(Post <= 80, "Low", ifelse(Post >= 180, "High", "Good")),
+                    roundSlope = floor(rollingSlope),
+                    roundSlope = ifelse(roundSlope > 3, 3, 
+                                   ifelse(roundSlope < -3, -3, roundSlope)))%>%
+             filter(range=="Good",
+                   !is.na(Post))%>%
+             group_by(current, rcurrent, postRange, roundSlope)%>%
+             summarise(Count = n())%>%
+             group_by(current, roundSlope)%>%
+             mutate(Total = sum(Count),
+                    logTotal = log(Total, 10),
+                    Pct = Count/Total,
+                    Highest = Pct==max(Pct))%>%
+             ungroup()
+#Heatmap
+ggplot(freqTable, aes(x = factor(roundSlope), y = factor(current)))+
+  geom_tile(aes(fill=Pct))+
+  theme_bw()+
+  facet_grid(~postRange)+
+  coord_fixed()+   
+  labs(x= "Slope", y= "Blood Sugar")+
+  theme(plot.title = element_text(hjust = 0, size = 11),
+        aspect.ratio=.5)+
+  ggtitle("Frequency of Going High/Low in 30 min Given Slope & Current Reading (mg)")
+
+p <- ggplot(filter(freqTable, Highest==T), aes(x = factor(roundSlope), y = factor(current)))+
+      geom_tile(aes(fill=postRange, alpha = Pct))+
+        scale_fill_manual(values = c("green4", "goldenrod2", "red"))+
+      geom_text(aes(label = Count), size = 2, alpha = .5)+
+      theme_bw()+
+      labs(x= "Rolling Slope", y= "Blood Sugar")+
+      guides(alpha = guide_legend("none"))+
+      ggtitle(expression(
+         atop("Frequency of Going High/Low in 30 min Given Slope & Current Reading (mg)", 
+         atop("count of events in center", "")))) +
+      theme(plot.title = element_text(hjust = 0, size = 11),
+            aspect.ratio=.5)
+
+ggplot(freqTable, aes(x = Total/2, y = Pct/100, fill=postRange, width = Total, alpha = Pct))+
+  facet_grid(rcurrent~roundSlope)+
+  #geom_bar(position = "dodge", stat="identity")+
+  geom_bar(position = "fill", stat="identity")+
+  #geom_bar(position="fill", stat="identity", color = "grey40", alpha = .5)+
+  scale_fill_manual(values = c("green4", "goldenrod2", "red"))+ 
+#  coord_polar(theta = "y")+
+  theme_bw()+
+  theme(axis.text = element_blank(),
+        axis.title = element_blank(),
+        axis.ticks = element_blank(),
+        panel.margin=unit(0, "lines"),
+        panel.grid.major = element_blank(),
+       # strip.text.y = element_blank(),
+        legend.position="bottom")+
+  ggtitle("Frequency of Going High/Low in 30 min \nGiven Slope & Current Reading (mg)")
+
+```
+
+This chart is similar but shows how many times this mg & slope combination has occured in the study using the size of the circle. Hover over a circle to see the count and the frequency (shown as a percentage)
+```{r warning = F, out.width = 1000, echo=F}
+#p <- 
+  ggplot(filter(freqTable, Highest==T)
+                  ,aes(x = factor(roundSlope), y = factor(current)))+
+      geom_point(aes(color=postRange, alpha = Pct, size = Count))+
+      geom_point(aes(size = Count), shape = 1, colour = "black")+
+        scale_color_manual(values = c("green4", "goldenrod2", "red"))+
+        scale_size(range = c(2, 8))+
+      theme_bw()+
+      labs(x= "Rolling Slope", y= "Blood Sugar")+
+      theme(aspect.ratio=1.25,
+            legend.position="bottom") +
+      guides(alpha = guide_legend("none"))+
+      facet_grid(.~postRange)+
+      ggtitle("Frequency of Going High/Low in 30 min \nGiven Slope & Current Reading (mg)")
+
+#ggplotly(p)
+    
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r eval=F, echo=F}
+#Not using
+
+#Readings (mg) by time of day
+#These density plots are shaded by the rank within each region (low, good, high). The time that has the most in the "good" range, will be the darkest green. The time that has the lowest percentages will have the lightest colors.
+p <- ggplot()+
+      #geom_histogram(data=extract, aes(x=mg), bins=5)+
+      geom_density(data=extract, aes(x=mg), color="grey30", fill="grey70")+
+      geom_vline(xintercept = c(80, 180), color="blue")+
+      facet_wrap(~hour, ncol=6)+
+      theme(axis.text = element_blank(),
+            axis.ticks = element_blank())+
+      ggtitle("Density of Readings (mg/dl) by Time of Day")
+
+pg <- ggplot_build(p)
+
+
+#Density Plots
+pg_data <- data.frame(pg$data[[1]],stringsAsFactors = F)%>%
+            mutate(hour = as.numeric(PANEL)-1,
+                   range = ifelse(x<80, "Low", 
+                           ifelse(x < 180, "Good", "High")),
+                   range = factor(range, levels = c("Low", "Good", "High")))%>%
+            left_join(hourDist, by= c("hour", "range")) 
+
+ggplot(data=pg_data,aes(x,y))+
+    geom_area(aes(x,y, fill = range, alpha = Rank))+
+    scale_fill_manual(values = c("red", "green4","red"))+
+    scale_alpha(range = c(.15, .95))+
+    geom_line()+
+    geom_vline(xintercept = c(80, 180), color="blue")+
+    facet_wrap(~hour, ncol=6)+
+    geom_text(data = hourDist, 
+              aes(xLab, yLab, label= Pct), 
+              size = 2, 
+              color = "grey60",
+              inherit.aes=FALSE)+
+    theme(axis.text = element_blank(),
+          axis.ticks = element_blank(),
+          #panel.grid = element_blank(),
+          panel.background = element_rect(fill = "grey95"),
+          legend.position = "bottom")+
+    guides(alpha = guide_legend("none"))+
+    ggtitle("Density of Readings (mg/dl) by Time of Day")
+  
+
+
+
+#Dotplot heatmap   #00BFC4", "grey75", "#F8766D"
+  ggplot(hourDist, aes(x = factor(range), y = hour))+
+    geom_tile(aes(fill=Rank), alpha = .15)+
+    scale_fill_gradient(high="yellow", low= "white")+   
+    geom_text(aes(label=Pct, alpha = Rank), hjust=1.75, size = 2)+
+    geom_point(aes(color = range, size = Rank), alpha = .6)+
+    scale_color_manual(values = c("blue", "green4", "red"))+
+    scale_y_reverse(breaks = seq(0,23, 1),
+                       minor_breaks = seq(0.5, 22.5, 1))+
+    coord_fixed()+   theme_bw()+
+    ylab("Hour of Day")+
+    theme(panel.grid.minor = element_line(colour="grey75", size=0.5),
+          axis.title.x = element_blank(),
+          panel.grid.major = element_blank(),
+          legend.position="none",
+          aspect.ratio=2)+
+    ggtitle("Percent in Range by \nHour of Day")
+  
+  #Line charts
+    p <- ggplot(hourDist, aes(x = factor(hour), y = Pct, color=range, order=range))+
+            geom_line(stat="identity", aes(group=range), size = 1.5)+
+            #geom_point(stat="identity", size = 2.5, color = "grey30")+
+            #geom_text(size=3,vjust= -0.5, aes(label=Pct*100))+
+            scale_color_manual(values = c("blue", "green4", "red"))+
+            theme_bw()+
+            #coord_polar()+
+            theme(axis.text.x = element_text(angle = 90, hjust = 1),
+                  axis.title = element_blank())+
+            ggtitle("Percent in Range by Hour of Day")
+  
+  ggplotly(p)%>%layout(hovermode = "x")
+   
+#Radar plot
+  # p+coord_polar()
+
+#Stacked Barchart
+  ggplot(hourDist, aes(x = factor(hour), y = Pct, fill=range, order=range))+
+    geom_bar(position = "fill", stat="identity", alpha = 0.5, color = "black")+
+    geom_text(aes(label = round(Pct, 0), y = Label, alpha = Rank, size = Rank))+
+    scale_fill_manual(values = c("red", "green4", "goldenrod2"))+
+    scale_alpha(range = c(.3, 1))+
+    scale_size(range = c(2, 4.5), guide = FALSE)+
+    #coord_flip()+
+    theme_minimal()+
+    theme(plot.title = element_text(hjust = 0),
+          #axis.text.x = element_text(angle = 90, hjust = 1),
+          axis.title = element_blank(),
+          #panel.grid.major = element_blank(),
+          aspect.ratio=.4)+
+    guides(fill = guide_legend(reverse = TRUE),
+           size = guide_legend("none"),
+           alpha = guide_legend("none"))+
+    ggtitle("Percent in Range by Hour of Day")
+
+#Barcharts : just highs & lows
+  ggplot()+
+    geom_bar(data = filter(hourDist, range=="High"),
+             stat="identity", alpha = 0.5,
+             aes(x = factor(hour), y = Pct), fill = "#F8766D", color = "black")+
+      geom_bar(data = filter(hourDist, range=="Low"),
+             stat="identity", alpha = 0.5,
+             aes(x = factor(hour), y = -Pct), fill="#00BFC4", color = "black")+
+      scale_y_continuous(breaks = seq(-20, 40, 10), 
+                     labels = c(seq(20, 0, -10), seq(10, 40, 10)))+
+    geom_hline(yintercept = 0, size = 2)+
+    ggtitle("Percentage in High & Low Ranges by Hour")
+
+#Piecharts
+  ggplot(hourDist, aes(x = factor(1), y = Pct/100, fill=range, order=range, alpha=Rank))+
+    geom_bar(stat="identity", color = "black")+
+    scale_fill_manual(values = c("red", "green4", "goldenrod2"))+
+    scale_y_continuous(limits=c(0,1))+
+    facet_grid(inRange~hour)+
+    coord_polar(theta="y")+
+    theme_bw()+
+    theme(axis.text = element_blank(),
+          axis.title = element_blank(),
+          panel.margin=unit(0, "lines"),
+          strip.text.y = element_blank(),
+          legend.position="bottom")+
+    guides(alpha = guide_legend("none"))+
+    ggtitle("Percentage in Range by Hour")
+
+#order wrong
+  hourDist2 <- hourDist%>%
+    mutate(range = factor(range, levels = c("Good", "High", "Low")))
+  
+  ggplot(hourDist2, aes(x = factor(1), y = Pct/100, fill=range, alpha=Rank))+
+      geom_bar(position = "fill", stat="identity", color = "black", aes(order=range))+
+      scale_fill_manual(values = c("green4", "goldenrod2", "red"))+
+      scale_y_continuous(limits=c(0,1))+
+      facet_wrap(~hour, ncol=6)+
+      coord_polar("y")+
+      theme_bw()+
+      theme(axis.text = element_blank(),
+            axis.title = element_blank(),
+             panel.margin=unit(0, "lines"),
+            legend.position = "bottom")+
+      guides(alpha = guide_legend("none"))+
+      ggtitle("Percentage in Range by Hour")
+
+#this is currenly not rendering as I would like
+#trial  
+   ggplot(hourDist2, aes(x = factor(range), y = Pct, fill=range, alpha=Rank))+
+    geom_bar(position = "fill", stat="identity", color = "black", aes(order=range))+
+    scale_y_continuous(limits=c(0,1))+
+    facet_wrap(~hour, ncol=12)+
+    coord_polar("x")+
+    theme_bw()+
+    theme(axis.text = element_blank(),
+          axis.title = element_blank())+
+    ggtitle("Percentage in Range by Hour") 
+
+   
+   
+#payload vs. rolling slope
+a <- select(extract, dateTime, mg, payload.trend, slope, rollingSlope)   
+
+a$payload.trend <- factor(a$payload.trend, 
+                          levels = c("DoubleDown", "SingleDown", "FortyFiveDown", "Flat",
+                                     "FortyFiveUp", "SingleUp", "DoubleUp", "Not Computable"))
+
+ggplot(a, aes(x=payload.trend, y=rollingSlope, fill=payload.trend))+
+  geom_hline(yintercept = 0)+
+  geom_jitter(size=.5, alpha=.3, width = .75)+
+  geom_boxplot(alpha = .5)+
+  ylim(-5,5)+
+  ggtitle("Payload Trend vs. Rolling Slope (lag = 5 or 25 min)")
+
+#"Double Arrow", 3mg/min or >45mg/15min
+#"Single Arrow", 2mg/min or >30mg/15min
+#"FortyFive Arrow", 1mg to 2mg/min or up to 30mg/min
+
+   
+```
