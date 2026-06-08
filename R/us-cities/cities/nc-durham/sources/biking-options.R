@@ -2,100 +2,122 @@
 library(tidyverse)
 library(sf)
 library(tmap)
+setwd(dirname(.rs.api.getSourceEditorContext()$path))
 
-map_limits <- 
-  st_bbox(
-    c(
-      xmin = -78.95, xmax = -78.90, 
-      ymax =  35.986, ymin =  35.937
-    ), 
-    crs = st_crs(4326)
-  )
+relevant_areas <- 
+  read_sf("input/census-boundaries/relevant-areas.shp") |> 
+  st_set_crs(4326)
 
-shp_road <- read_sf("input/Roads/Roads.shp") |> rename_all(tolower)
-shp_trail <- read_sf("input/Existing_and_Proposed_Trails/Existing_and_Proposed_Trails.shp") |> rename_all(tolower)
-shp_bike_lane <- read_sf("input/Existing_Bike_Facilities/Existing_Bike_Facilities.shp") |> rename_all(tolower)
-shp_proposed_blike_lane <- read_sf("input/Future_Bike_Facilities/Future_Bike_Facilities.shp") |> rename_all(tolower)
+# durham ----
+d_trail <- read_sf("input/biking/durham-proposed.shp") |> rename_all(tolower)
+d_bike_lane <- read_sf("input/biking/durham-current.shp") |> rename_all(tolower)
+d_proposed_bike_lane <- read_sf("input/biking/durham-future.shp") |> rename_all(tolower)
 
-
-shp_road |> 
-  filter(
-    str_detect(strname, "James"),
-  ) |> 
-  view()
-
-prep_road <-
-  shp_road |>
-  filter(
-    objectid != 75616,
-    str_detect(surface, "(?i)asphalt|concrete")
-  ) |> 
+prep_d_trail <-
+  d_trail |>
   st_transform(4326) |>
-  st_crop(map_limits) |> 
-  select(
-    road_id = objectid,
-    road_name = strname,
-    speed_limit = speed_lmt,
-    n_lanes = lanes,
-    road_width = width,
-    road_length = shapestlen,
-    maintained_by = maint,
-    road_type = func_class,
-    facility_id = facility_1,
-    lowest_no = blk_lo_eve,
-    highest_no = blk_hi_odd
+  filter(
+    mtbcycle == "Yes" 
+    | roadcycle == "Yes"
+    | (
+      trailtype == "Multi Use Path" 
+      & surftype == "Asphalt"
+    )
   ) |> 
-  mutate(
-    road_type =
-      road_type |> 
-      str_replace("Road$", "Roads") |> 
-      str_replace("([a-z])([A-Z])", "\\1 \\2")
-
+  transmute(
+    path_name = systemname,
+    surface = surftype,
+    path_type = "trail",
+    path_subtype = trailtype,
+    status = tolower(status)
   )
 
 
-prep_trail <-
-  shp_trail |>
+prep_d_bike_lane <-
+  d_bike_lane |>
   st_transform(4326) |>
-  st_crop(map_limits) |> 
-  filter(
-    mtbcycle == "Yes" | roadcycle == "Yes"
-  ) |> 
-  select(
-    trail_id = objectid,
-    path_name = name,
-    path_width = width,
-    path_length = length,
-    surf_type = surftype,
-    trail_type = trailtype,
-    system_name = systemname,
-    facility_id = facilityid
-  )
-
-
-prep_bike_lane <-
-  shp_bike_lane |>
-  st_transform(4326) |>
-  st_crop(map_limits) |>
-  select(
-    object_id = objectid,
+  transmute(
     path_name = on_road,
-    path_type = simplified    
+    surface = "Asphalt",
+    path_type = "bike lane",
+    path_subtype = facility_t,
+    status = "existing"
   )
   
 
-prep_proposed_bike_lane <-
-  shp_proposed_blike_lane |>
+prep_d_proposed_bike_lane <-
+  d_proposed_bike_lane |>
   st_transform(4326) |>
-  st_crop(map_limits) |> 
-  select(
+  transmute(
     path_name = project_na,
-    project_status = phase_stat,
-    path_type = simplified,
-    object_id = objectid
+    surface = "Asphalt",
+    path_type = "bike lane",
+    path_subtype = simplified,
+    status = "proposed"
   )
   
-rm(list = grep("shp_", ls(), value = TRUE))
+durham <-
+  bind_rows(
+    prep_d_bike_lane,
+    prep_d_proposed_bike_lane,
+    prep_d_trail
+  )
+
+# raleigh ----
+r_lanes <- read_sf("input/biking/raleigh-existing-and-planned.shp") |> rename_all(tolower)
+r_trails <- read_sf("input/biking/raleigh-trails.shp") |> rename_all(tolower)
+
+
+prep_r_lanes <-
+  r_lanes |> 
+  st_transform(4326) |>
+  transmute(
+    path_name = name,
+    surface = "Asphalt",
+    path_type = case_when(
+      str_detect(existingfa, "LANE|SHARROW") ~ "bike lane",
+      str_detect(existingfa, "PATH") ~ "trail"
+    ),
+    path_subtype = existingfa,
+    status = "existing"
+  )
+
+prep_r_trails <-
+  r_trails |> 
+  st_transform(4326) |>
+  transmute(
+    path_name = location,
+    surface = material,
+    path_type = "trail",
+    path_subtype = type,
+    status = "existing"
+  )
+
+
+raleigh <-
+  bind_rows(
+    prep_r_lanes,
+    prep_r_trails
+  ) 
+
+all_paths <-
+  bind_rows(
+    durham = durham,
+    raleigh = raleigh,
+    .id = "county"
+  )
+
+relevant_paths <-
+  all_paths |> 
+  st_intersection(relevant_areas)
+
+relevant_paths |> filter(county == "durham") |> mapview::mapview(zcol = "status")
+relevant_paths |> filter(county != "durham") |> mapview::mapview(zcol = "path_type")
+
+saveRDS(relevant_paths, "cache-data/bike-trails.Rds")  
+
+
+
 
 # analysis ---- 
 points_of_interest <-
