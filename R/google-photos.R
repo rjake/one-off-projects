@@ -5,16 +5,44 @@ setwd("~/My Pictures/google/")
 
 files <-
   list.files(
-    pattern = "jpg|png",
-    full.names = TRUE
+    path = "inputs/photos/",
+    full.names = TRUE,
+    recursive = TRUE
   )
 
-# get info (slow)
-file_info <-
-  files %>% 
-  #head() %>% 
-  file.info() 
+files_df <-
+  tibble(
+    file = files,
+    base_name = basename(file),
+    ext = tools::file_ext(files) |> tolower()
+  ) |> 
+  filter(
+    !str_detect(ext, "json|zip")
+  )
 
+files_df |>  
+  count(ext)
+
+# get info (slow)
+file_sizes <-
+  files_df$file  |>  
+  #head() |> 
+  file.size() 
+
+file_info <-
+  files_df |> 
+  mutate(
+    size = file_sizes
+  )
+
+
+file_info |> 
+  filter(
+    str_detect(
+      file,
+      "\\d/Takeout/Google Photos/Archive"
+    )
+  ) |> 
 
 # build data frame
 df <-
