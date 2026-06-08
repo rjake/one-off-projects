@@ -311,6 +311,7 @@ all_routes_all_areas <-
 
 nc <- read_csv("areas/NC/final_route_metadata.csv")
 wv <- read_csv("areas/WV/final_route_metadata.csv")
+va <- read_csv("areas/VA/final_route_metadata.csv")
 
 areas_together <-
   bind_rows(
