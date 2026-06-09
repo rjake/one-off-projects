@@ -11,7 +11,7 @@ decenial_vars <- load_variables(2020, "pl", cache = TRUE)
 decenial_vars_sf <- load_variables(2020, "sf1", cache = TRUE)
 tidycensus::acs5_geography |> view()
 
-use_counties <- c(63, 135, 183) # 63 durham, 135 orange, 183 raleigh
+use_counties <- c(63)#, 135, 183) # 63 durham, 135 orange, 183 raleigh
 
 ## block - race ----
 census_blocks <- 
@@ -149,8 +149,8 @@ raw_acs <-
   ) |> 
   rename_all(tolower)
 
-saveRDS(raw_acs, "cache-data/census-poverty-raw.Rds")
-raw_acs <- readRDS("cache-data/census-poverty-raw.Rds")
+saveRDS(raw_acs, "output/census-poverty-raw.Rds")
+raw_acs <- readRDS("output/census-poverty-raw.Rds")
   
 poverty_avg <-
   poverty_vars |> 
@@ -330,7 +330,7 @@ census_demo <-
 
 census_demo |> 
   st_as_sf() |> 
-  mapview(zcol = "current_black")
+  mapview::mapview(zcol = "current_pct_degree", layer.name = "> hs degree", col.regions= RColorBrewer::brewer.pal(4, "RdBu"), alpha.regions = 0.25)
 
 
 census_demo |> 
