@@ -1,3 +1,4 @@
 **/*.csv
 **/*.Rds
-input
+input/
+!input/crime/crime_category_lookup.csv
