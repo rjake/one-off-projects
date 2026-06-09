@@ -1,4 +1,12 @@
 **/*.csv
 **/*.Rds
-input/
+
+# Allow Git to look inside the input folder and its subfolders
+!input/
+!input/*/
+
+# Ignore everything inside input by default
+input/**
+
+# Explicitly un-ignore your specific lookup file
 !input/crime/crime_category_lookup.csv
