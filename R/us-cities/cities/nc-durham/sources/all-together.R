@@ -882,3 +882,40 @@ map_census +
 full_map <- .Last.value
 #full_map@map |> leaflet::setView(lng = -78.915, lat = 35.97, zoom = 12)
 export_map(.Last.value, "output/my-map.html")
+
+
+# make legend filterable ----
+library(leaflet)
+library(sf)
+library(RColorBrewer)
+library(leafpop)
+
+# 1. Define a color palette for your categories
+# This ensures colors are consistent across the legend and map
+cats_to_plot <- unique(census_metrics$cat)#c("Historically Black", "Other/Mixed","Deep Poverty")
+pal <- colorFactor(palette = "Set1", domain = cats_to_plot)
+
+# 2. Build the Leaflet Map
+map <- leaflet(census_metrics) %>% addProviderTiles(providers$CartoDB.Positron)
+for (category in cats_to_plot) {
+  # Create a subset for this specific layer
+  sub_data <- subset(census_metrics, cat == category)
+  
+  map <- map %>%
+    addPolygons(
+      data = sub_data,
+      fillColor = ~pal(cat),
+      fillOpacity = 0.7,
+      weight = 1,
+      color = "white",
+      group = category,
+      # This generates a clean HTML table of all columns for each polygon
+      popup = popupTable(sub_data) 
+    )
+}
+
+map %>%
+  addLayersControl(
+    overlayGroups = cats_to_plot,
+    options = layersControlOptions(collapsed = FALSE)
+  )
